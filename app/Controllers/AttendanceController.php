@@ -51,7 +51,6 @@ class AttendanceController extends BaseController
 
     public function attendance()
     {
-        dd($this->timeVar);
         $data['timeVar'] = $this->timeVar;
         return view('attendance', $data);
     }
