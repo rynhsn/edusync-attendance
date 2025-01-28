@@ -59,9 +59,10 @@ class TimeSettingController extends ResourceController
         foreach ($timeSettings as $config) {
             //kelas id untuk identifikasi edit
             $matrixData[$config['kelas_id']]['kelas_id'] = $config['kelas_id'];
-
             $matrixData[$config['kelas_id']]['kelas_nama'] = $config['kelas_nama'];
             $matrixData[$config['kelas_id']][$config['hari']] = [
+                //konfigurasi_waktu_id untuk identifikasi edit
+                'konfigurasi_waktu_id' => $config['konfigurasi_waktu_id'],
                 // format jam masuk dan jam pulang HH:MM
                 'jam_masuk' => date('H:i', strtotime($config['jam_masuk'])),
                 'jam_pulang' => date('H:i', strtotime($config['jam_pulang'])),
@@ -80,13 +81,19 @@ class TimeSettingController extends ResourceController
      */
     public function update($id = null)
     {
+        //try
+        try {
+            //get data from post
+            $data = $this->request->getRawInput();
 
-        //get data from post
-        $data = $this->request->getRawInput();
-
-        //update data
-        $this->timeSettingModel->update($id, $data);
-
-        return $this->response->setJSON(['status' => 'success']);
+            //update data
+            $this->timeSettingModel->update($id, $data);
+        } catch (\Exception $e) {
+            //return error 500
+            // return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
+            return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => $data]);
+        }
+        //return success 200
+        return $this->response->setStatusCode(200)->setJSON(['status' => 'success', 'message' => 'Data berhasil diubah']);
     }
 }
