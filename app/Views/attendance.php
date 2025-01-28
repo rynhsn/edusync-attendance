@@ -6,13 +6,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Absensi NFC</title>
+    <!-- favicon -->
+    <link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
+
     <!-- //font poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="<?= base_url() ?>assets/vendors/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="/assets/vendors/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"> -->
     <link rel="stylesheet" href="<?= base_url(); ?>assets/vendors/fonts/tabler-icons.css" />
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
-    <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/libs/sweetalert2/sweetalert2.css">
+    <link rel="stylesheet" href="/assets/vendors/libs/sweetalert2/sweetalert2.css">
     <link rel="stylesheet" href="<?= base_url(); ?>assets/vendors/libs/animate-css/animate.css">
 
     <style>
@@ -275,9 +279,9 @@
     </footer>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> -->
-    <script src="<?= base_url() ?>assets/vendors/libs/jquery/jquery.js"></script>
-    <script src="<?= base_url() ?>assets/vendors/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= base_url() ?>assets/vendors/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="/assets/vendors/libs/jquery/jquery.js"></script>
+    <script src="/assets/vendors/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/assets/vendors/libs/sweetalert2/sweetalert2.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.marquee@1.6.1/jquery.marquee.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
 
@@ -317,7 +321,7 @@
                             Swal.fire({
                                 title: 'Berhasil',
                                 html: `Absen berhasil untuk <b>${data.student.nama_siswa}</b>, kelas <b>${data.student.kelas}</b>`,
-                                imageUrl: `<?= base_url() ?>assets/img/avatars/${data.student.foto}`,
+                                imageUrl: `/assets/img/avatars/${data.student.foto}`,
                                 imageWidth: 200,
                                 imageAlt: "Custom image",
                                 timer: 2000,
