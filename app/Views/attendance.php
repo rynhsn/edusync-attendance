@@ -1,4 +1,4 @@
-<!-- <link rel="stylesheet" href="../../assets/vendor/fonts/fontawesome.css" /> -->
+<!-- <link rel="stylesheet" href="../../assets/vendors/fonts/fontawesome.css" /> -->
 <!DOCTYPE html>
 <html lang="id">
 
@@ -8,12 +8,12 @@
     <title>Absensi NFC</title>
     <!-- //font poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="<?= base_url() ?>assets/vendor/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?= base_url() ?>assets/vendors/libs/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"> -->
-    <link rel="stylesheet" href="<?= base_url(); ?>assets/vendor/fonts/tabler-icons.css" />
+    <link rel="stylesheet" href="<?= base_url(); ?>assets/vendors/fonts/tabler-icons.css" />
     <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" /> -->
-    <link rel="stylesheet" href="<?= base_url() ?>assets/vendor/libs/sweetalert2/sweetalert2.css">
-    <link rel="stylesheet" href="<?= base_url(); ?>assets/vendor/libs/animate-css/animate.css">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/libs/sweetalert2/sweetalert2.css">
+    <link rel="stylesheet" href="<?= base_url(); ?>assets/vendors/libs/animate-css/animate.css">
 
     <style>
         body {
@@ -275,9 +275,9 @@
     </footer>
 
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> -->
-    <script src="<?= base_url() ?>assets/vendor/libs/jquery/jquery.js"></script>
-    <script src="<?= base_url() ?>assets/vendor/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="<?= base_url() ?>assets/vendor/libs/sweetalert2/sweetalert2.js"></script>
+    <script src="<?= base_url() ?>assets/vendors/libs/jquery/jquery.js"></script>
+    <script src="<?= base_url() ?>assets/vendors/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="<?= base_url() ?>assets/vendors/libs/sweetalert2/sweetalert2.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jquery.marquee@1.6.1/jquery.marquee.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script> -->
 
