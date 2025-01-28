@@ -124,7 +124,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
             padding: 60px;
             text-align: center;
-            width: 1000px;
+            width: 900px;
             /* Extended width */
             backdrop-filter: blur(10px);
             animation: fadeIn 1s ease-in-out;
@@ -133,7 +133,7 @@
         }
 
         .time-container h1 {
-            font-size: 4rem;
+            font-size: 3rem;
             font-weight: 700;
             margin: 0 0 30px 0;
             letter-spacing: 1px;
@@ -142,7 +142,7 @@
         }
 
         .time-container h2 {
-            font-size: 4rem;
+            font-size: 3rem;
             margin: 15px 0;
             font-weight: 600;
             color: #fff;
