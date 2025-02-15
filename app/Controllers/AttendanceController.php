@@ -25,7 +25,7 @@ class AttendanceController extends BaseController
         $this->attendanceStatusModel = new \App\Models\AttendanceStatusModel();
 
         $this->timeVar = [
-            'time_start' => '06.00.00',
+            'time_start' => '06.40.00',
             'time_end' => '18.00.00',
             'time_limit' => '12.00.00',
             'free_day' => ['Minggu'],
