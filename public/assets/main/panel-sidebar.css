@@ -1,0 +1,24 @@
+.sidebar-nav .nav-submenu .nav-link {
+    white-space: normal !important;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.sidebar-nav .nav-submenu .nav-link span {
+    min-width: 0;
+}
+
+.sidebar-nav .nav-submenu .nav-submenu {
+    margin-left: 0.75rem;
+    width: calc(100% - 0.75rem);
+    border-left: 1px solid var(--bs-border-color);
+    border-radius: 0;
+    background-color: transparent;
+}
+
+@media (max-width: 991.98px) {
+    .sidebar-nav .nav-submenu .nav-link {
+        padding-top: 0.5rem !important;
+        padding-bottom: 0.5rem !important;
+    }
+}

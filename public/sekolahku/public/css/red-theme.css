@@ -1,0 +1,46 @@
+/* ============================================================
+   RED THEME — TK, SD, MI
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/red-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #7c1d2e;
+  --primary-dark: #4a0d19;
+  --primary-light: #b91c4b;
+  --accent: #f97316;
+  --accent-dark: #ea580c;
+  --accent-glow: rgba(249, 115, 22, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #fdf2f4;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #f8d7dc;
+  --shadow-xl: 0 20px 60px rgba(124,29,46,0.12);
+  --nav-hover: rgba(124,29,46,.04);
+  --nav-active: rgba(124,29,46,.06);
+  --hero-end: #5c1a24;
+}
+
+[data-theme="dark"] {
+  --primary: #f5a3b8;
+  --primary-dark: #7c1d2e;
+  --primary-light: #f8d7dc;
+  --accent: #fb923c;
+  --accent-dark: #f97316;
+  --accent-glow: rgba(251,146,60,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(245,163,184,.08);
+  --nav-active: rgba(245,163,184,.12);
+  --hero-end: #5c1a24;
+}

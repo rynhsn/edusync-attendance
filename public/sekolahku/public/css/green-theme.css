@@ -1,0 +1,46 @@
+/* ============================================================
+   GREEN THEME — MTs, MA / Aliyah, Pesantren
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/green-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #065f46;
+  --primary-dark: #022c22;
+  --primary-light: #10b981;
+  --accent: #14b8a6;
+  --accent-dark: #0d9488;
+  --accent-glow: rgba(20, 184, 166, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #ecfdf5;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #d1fae5;
+  --shadow-xl: 0 20px 60px rgba(6,95,70,0.12);
+  --nav-hover: rgba(6,95,70,.04);
+  --nav-active: rgba(6,95,70,.06);
+  --hero-end: #065f46;
+}
+
+[data-theme="dark"] {
+  --primary: #34d399;
+  --primary-dark: #065f46;
+  --primary-light: #6ee7b7;
+  --accent: #2dd4bf;
+  --accent-dark: #14b8a6;
+  --accent-glow: rgba(45,212,191,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(52,211,153,.08);
+  --nav-active: rgba(52,211,153,.12);
+  --hero-end: #047857;
+}

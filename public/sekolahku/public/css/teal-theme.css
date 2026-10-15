@@ -1,0 +1,46 @@
+/* ============================================================
+   TEAL THEME — Sekolah Alam, Environmental
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/teal-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #115e59;
+  --primary-dark: #042f2e;
+  --primary-light: #14b8a6;
+  --accent: #22d3ee;
+  --accent-dark: #06b6d4;
+  --accent-glow: rgba(34, 211, 238, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #f0fdfa;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #99f6e4;
+  --shadow-xl: 0 20px 60px rgba(17,94,89,0.12);
+  --nav-hover: rgba(17,94,89,.04);
+  --nav-active: rgba(17,94,89,.06);
+  --hero-end: #0f766e;
+}
+
+[data-theme="dark"] {
+  --primary: #5eead4;
+  --primary-dark: #115e59;
+  --primary-light: #99f6e4;
+  --accent: #67e8f9;
+  --accent-dark: #22d3ee;
+  --accent-glow: rgba(103,232,249,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(94,234,212,.08);
+  --nav-active: rgba(94,234,212,.12);
+  --hero-end: #0f766e;
+}

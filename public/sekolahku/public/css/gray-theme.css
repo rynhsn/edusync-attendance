@@ -1,0 +1,49 @@
+/* ============================================================
+   GRAY THEME — SMA
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/gray-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #475569;
+  --primary-dark: #1e293b;
+  --primary-light: #94a3b8;
+  --accent: #6366f1;
+  --accent-dark: #4f46e5;
+  --accent-glow: rgba(99, 102, 241, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #f8fafc;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --shadow-xl: 0 20px 60px rgba(71,85,105,0.12);
+  --nav-hover: rgba(71,85,105,.04);
+  --nav-active: rgba(71,85,105,.06);
+  --hero-end: #334155;
+}
+
+[data-theme="dark"] {
+  --primary: #94a3b8;
+  --primary-dark: #475569;
+  --primary-light: #cbd5e1;
+  --accent: #818cf8;
+  --accent-dark: #6366f1;
+  --accent-glow: rgba(129,140,248,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(148,163,184,.08);
+  --nav-active: rgba(148,163,184,.12);
+  --hero-end: #334155;
+}
+
+.hero .hc-role { color: #a5b4fc; }
+[data-theme="dark"] .hero .hc-role { color: #c7d2fe; }

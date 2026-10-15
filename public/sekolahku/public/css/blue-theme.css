@@ -1,0 +1,46 @@
+/* ============================================================
+   BLUE THEME — SMP
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/blue-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #203e77;
+  --primary-dark: #142952;
+  --primary-light: #4b7bc8;
+  --accent: #0ea5e9;
+  --accent-dark: #0284c7;
+  --accent-glow: rgba(14, 165, 233, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #eef4ff;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #c7d2fe;
+  --shadow-xl: 0 20px 60px rgba(32,62,119,0.12);
+  --nav-hover: rgba(32,62,119,.04);
+  --nav-active: rgba(32,62,119,.06);
+  --hero-end: #1e3a8a;
+}
+
+[data-theme="dark"] {
+  --primary: #60a5fa;
+  --primary-dark: #203e77;
+  --primary-light: #93c5fd;
+  --accent: #38bdf8;
+  --accent-dark: #0ea5e9;
+  --accent-glow: rgba(56,189,248,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(96,165,250,.08);
+  --nav-active: rgba(96,165,250,.12);
+  --hero-end: #1e3a8a;
+}
