@@ -1,0 +1,176 @@
+<?php return array (
+  'search' => 
+  array (
+    'Config/Services' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Services.php',
+          1 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Config\\Services.php',
+        ),
+      ),
+    ),
+    'Config/Registrar.php' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+        ),
+      ),
+    ),
+    'Helpers/kint_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\kint_helper.php',
+        ),
+      ),
+    ),
+    'Helpers/url_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\url_helper.php',
+        ),
+      ),
+    ),
+    'Helpers/filesystem_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\filesystem_helper.php',
+        ),
+      ),
+    ),
+    'Config/Events.php' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Events.php',
+        ),
+      ),
+    ),
+    'Helpers/array_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\array_helper.php',
+        ),
+      ),
+    ),
+    'Config/Filters.php' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Filters.php',
+          1 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Config\\Filters.php',
+        ),
+      ),
+    ),
+    'Config/Routes.php' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Routes.php',
+        ),
+      ),
+    ),
+    'Helpers/number_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\number_helper.php',
+        ),
+      ),
+    ),
+    'Language/en/Number.php' => 
+    array (
+      'php' => 
+      array (
+        0 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Language\\en\\Number.php',
+        ),
+      ),
+    ),
+    'Helpers/menu_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\app\\Helpers\\menu_helper.php',
+        ),
+      ),
+    ),
+    'Language/en/HTTP.php' => 
+    array (
+      'php' => 
+      array (
+        0 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Language\\en\\HTTP.php',
+        ),
+      ),
+    ),
+    'Language/en/Errors.php' => 
+    array (
+      'php' => 
+      array (
+        0 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Language\\en\\Errors.php',
+        ),
+      ),
+    ),
+    'Helpers/security_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\security_helper.php',
+        ),
+      ),
+    ),
+    'Helpers/text_helper' => 
+    array (
+      'php' => 
+      array (
+        1 => 
+        array (
+          0 => 'C:\\xampp\\htdocs\\edusync-attendance\\public\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Helpers\\text_helper.php',
+        ),
+      ),
+    ),
+  ),
+  'findQualifiedNameFromPath' => 
+  array (
+    'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Services.php' => 'Config\\Services',
+    'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Config\\Services.php' => false,
+  ),
+  'getClassname' => 
+  array (
+    'C:\\xampp\\htdocs\\sekolahku\\app\\Config\\Filters.php' => 'Config\\Filters',
+    'C:\\xampp\\htdocs\\sekolahku\\vendor\\codeigniter4\\framework\\system\\Config\\Filters.php' => 'CodeIgniter\\Config\\Filters',
+  ),
+);

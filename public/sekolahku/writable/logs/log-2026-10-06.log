@@ -1,0 +1,225 @@
+ERROR - 2026-10-06 05:48:25 --> Error connecting to the database: mysqli_sql_exception: Access denied for user ''@'localhost' (using password: NO) in C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:201
+Stack trace:
+#0 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', '', Object(SensitiveParameterValue), '', 3306, '', 0)
+#1 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(555): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Model.php(297): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\BaseModel.php(714): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\sekolahku\app\Models\PageModel.php(26): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\sekolahku\app\Controllers\Pages.php(21): App\Models\PageModel->getBySlug('sekolahku')
+#8 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(974): App\Controllers\Pages->view('sekolahku')
+#9 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pages))
+#10 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\sekolahku\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Access denied for user ''@'localhost' (using password: NO) in C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:231
+Stack trace:
+#0 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(555): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#3 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Model.php(297): CodeIgniter\Database\BaseBuilder->get()
+#4 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\BaseModel.php(714): CodeIgniter\Model->doFirst()
+#5 C:\xampp\htdocs\sekolahku\app\Models\PageModel.php(26): CodeIgniter\BaseModel->first()
+#6 C:\xampp\htdocs\sekolahku\app\Controllers\Pages.php(21): App\Models\PageModel->getBySlug('sekolahku')
+#7 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(974): App\Controllers\Pages->view('sekolahku')
+#8 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pages))
+#9 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\sekolahku\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\xampp\htdocs\sekolahku\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#14 {main}
+CRITICAL - 2026-10-06 05:48:25 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Access denied for user ''@'localhost' (using password: NO)
+[Method: GET, Route: sekolahku]
+in SYSTEMPATH\Database\BaseConnection.php on line 606.
+ 1 SYSTEMPATH\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `pages`
+WHERE `slug` = :slug:
+AND `status` = :status:
+ LIMIT 1', [...], false)
+ 3 SYSTEMPATH\Model.php(297): CodeIgniter\Database\BaseBuilder->get()
+ 4 SYSTEMPATH\BaseModel.php(714): CodeIgniter\Model->doFirst()
+ 5 APPPATH\Models\PageModel.php(26): CodeIgniter\BaseModel->first()
+ 6 APPPATH\Controllers\Pages.php(21): App\Models\PageModel->getBySlug('sekolahku')
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\Pages->view('sekolahku')
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Pages))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\sekolahku\\public\\index.php')
+CRITICAL - 2026-10-06 05:50:22 --> ParseError: syntax error, unexpected identifier "username", expecting "]"
+[Method: GET, Route: sekolahku]
+in APPPATH\Config\Database.php on line 28.
+ 1 VENDORPATH\composer\ClassLoader.php(427): Composer\Autoload\{closure}('C:\\xampp\\htdocs\\sekolahku\\vendor\\composer/../../app/Config/Database.php')
+ 2 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(255): Composer\Autoload\ClassLoader->loadClass('Config\\Database')
+ 3 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(75): CodeIgniter\Debug\Toolbar\Collectors\Database->getConnections()
+ 4 SYSTEMPATH\Debug\Toolbar.php(67): CodeIgniter\Debug\Toolbar\Collectors\Database->__construct()
+ 5 SYSTEMPATH\Config\Services.php(804): CodeIgniter\Debug\Toolbar->__construct(Object(Config\Toolbar))
+ 6 SYSTEMPATH\Config\BaseService.php(325): CodeIgniter\Config\Services::toolbar(Object(Config\Toolbar), false)
+ 7 SYSTEMPATH\Config\BaseService.php(264): CodeIgniter\Config\BaseService::__callStatic('toolbar', [...])
+ 8 SYSTEMPATH\Config\Services.php(799): CodeIgniter\Config\BaseService::getSharedInstance('toolbar', null)
+ 9 SYSTEMPATH\Config\BaseService.php(334): CodeIgniter\Config\Services::toolbar()
+10 SYSTEMPATH\Config\BaseService.php(203): CodeIgniter\Config\BaseService::__callStatic('toolbar', [])
+11 SYSTEMPATH\Common.php(1096): CodeIgniter\Config\BaseService::get('toolbar')
+12 APPPATH\Config\Events.php(49): service('toolbar')
+13 SYSTEMPATH\Events\Events.php(152): CodeIgniter\Events\Events::Config\{closure}()
+14 SYSTEMPATH\CodeIgniter.php(348): CodeIgniter\Events\Events::trigger('pre_system')
+15 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+16 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+17 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+18 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\sekolahku\\public\\index.php')
+CRITICAL - 2026-10-06 05:50:23 --> ParseError: syntax error, unexpected identifier "username", expecting "]"
+[Method: GET, Route: sekolahku]
+in APPPATH\Config\Database.php on line 28.
+ 1 VENDORPATH\composer\ClassLoader.php(427): Composer\Autoload\{closure}('C:\\xampp\\htdocs\\sekolahku\\vendor\\composer/../../app/Config/Database.php')
+ 2 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(255): Composer\Autoload\ClassLoader->loadClass('Config\\Database')
+ 3 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(75): CodeIgniter\Debug\Toolbar\Collectors\Database->getConnections()
+ 4 SYSTEMPATH\Debug\Toolbar.php(67): CodeIgniter\Debug\Toolbar\Collectors\Database->__construct()
+ 5 SYSTEMPATH\Config\Services.php(804): CodeIgniter\Debug\Toolbar->__construct(Object(Config\Toolbar))
+ 6 SYSTEMPATH\Config\BaseService.php(325): CodeIgniter\Config\Services::toolbar(Object(Config\Toolbar), false)
+ 7 SYSTEMPATH\Config\BaseService.php(264): CodeIgniter\Config\BaseService::__callStatic('toolbar', [...])
+ 8 SYSTEMPATH\Config\Services.php(799): CodeIgniter\Config\BaseService::getSharedInstance('toolbar', null)
+ 9 SYSTEMPATH\Config\BaseService.php(334): CodeIgniter\Config\Services::toolbar()
+10 SYSTEMPATH\Config\BaseService.php(203): CodeIgniter\Config\BaseService::__callStatic('toolbar', [])
+11 SYSTEMPATH\Common.php(1096): CodeIgniter\Config\BaseService::get('toolbar')
+12 APPPATH\Config\Events.php(49): service('toolbar')
+13 SYSTEMPATH\Events\Events.php(152): CodeIgniter\Events\Events::Config\{closure}()
+14 SYSTEMPATH\CodeIgniter.php(348): CodeIgniter\Events\Events::trigger('pre_system')
+15 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+16 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+17 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+18 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\sekolahku\\public\\index.php')
+CRITICAL - 2026-10-06 05:50:24 --> ParseError: syntax error, unexpected identifier "username", expecting "]"
+[Method: GET, Route: sekolahku]
+in APPPATH\Config\Database.php on line 28.
+ 1 VENDORPATH\composer\ClassLoader.php(427): Composer\Autoload\{closure}('C:\\xampp\\htdocs\\sekolahku\\vendor\\composer/../../app/Config/Database.php')
+ 2 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(255): Composer\Autoload\ClassLoader->loadClass('Config\\Database')
+ 3 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(75): CodeIgniter\Debug\Toolbar\Collectors\Database->getConnections()
+ 4 SYSTEMPATH\Debug\Toolbar.php(67): CodeIgniter\Debug\Toolbar\Collectors\Database->__construct()
+ 5 SYSTEMPATH\Config\Services.php(804): CodeIgniter\Debug\Toolbar->__construct(Object(Config\Toolbar))
+ 6 SYSTEMPATH\Config\BaseService.php(325): CodeIgniter\Config\Services::toolbar(Object(Config\Toolbar), false)
+ 7 SYSTEMPATH\Config\BaseService.php(264): CodeIgniter\Config\BaseService::__callStatic('toolbar', [...])
+ 8 SYSTEMPATH\Config\Services.php(799): CodeIgniter\Config\BaseService::getSharedInstance('toolbar', null)
+ 9 SYSTEMPATH\Config\BaseService.php(334): CodeIgniter\Config\Services::toolbar()
+10 SYSTEMPATH\Config\BaseService.php(203): CodeIgniter\Config\BaseService::__callStatic('toolbar', [])
+11 SYSTEMPATH\Common.php(1096): CodeIgniter\Config\BaseService::get('toolbar')
+12 APPPATH\Config\Events.php(49): service('toolbar')
+13 SYSTEMPATH\Events\Events.php(152): CodeIgniter\Events\Events::Config\{closure}()
+14 SYSTEMPATH\CodeIgniter.php(348): CodeIgniter\Events\Events::trigger('pre_system')
+15 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+16 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+17 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+18 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\sekolahku\\public\\index.php')
+CRITICAL - 2026-10-06 05:50:25 --> ParseError: syntax error, unexpected identifier "username", expecting "]"
+[Method: GET, Route: sekolahku]
+in APPPATH\Config\Database.php on line 28.
+ 1 VENDORPATH\composer\ClassLoader.php(427): Composer\Autoload\{closure}('C:\\xampp\\htdocs\\sekolahku\\vendor\\composer/../../app/Config/Database.php')
+ 2 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(255): Composer\Autoload\ClassLoader->loadClass('Config\\Database')
+ 3 SYSTEMPATH\Debug\Toolbar\Collectors\Database.php(75): CodeIgniter\Debug\Toolbar\Collectors\Database->getConnections()
+ 4 SYSTEMPATH\Debug\Toolbar.php(67): CodeIgniter\Debug\Toolbar\Collectors\Database->__construct()
+ 5 SYSTEMPATH\Config\Services.php(804): CodeIgniter\Debug\Toolbar->__construct(Object(Config\Toolbar))
+ 6 SYSTEMPATH\Config\BaseService.php(325): CodeIgniter\Config\Services::toolbar(Object(Config\Toolbar), false)
+ 7 SYSTEMPATH\Config\BaseService.php(264): CodeIgniter\Config\BaseService::__callStatic('toolbar', [...])
+ 8 SYSTEMPATH\Config\Services.php(799): CodeIgniter\Config\BaseService::getSharedInstance('toolbar', null)
+ 9 SYSTEMPATH\Config\BaseService.php(334): CodeIgniter\Config\Services::toolbar()
+10 SYSTEMPATH\Config\BaseService.php(203): CodeIgniter\Config\BaseService::__callStatic('toolbar', [])
+11 SYSTEMPATH\Common.php(1096): CodeIgniter\Config\BaseService::get('toolbar')
+12 APPPATH\Config\Events.php(49): service('toolbar')
+13 SYSTEMPATH\Events\Events.php(152): CodeIgniter\Events\Events::Config\{closure}()
+14 SYSTEMPATH\CodeIgniter.php(348): CodeIgniter\Events\Events::trigger('pre_system')
+15 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+16 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+17 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+18 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\sekolahku\\public\\index.php')
+DEBUG - 2026-10-06 06:55:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 06:55:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:05:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:05:46 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:06:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:06:54 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2026-10-06 07:07:22 --> CSRF token verified.
+DEBUG - 2026-10-06 07:07:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:23 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:26 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:29 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:31 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:34 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:39 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:43 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:44 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:07:47 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+INFO - 2026-10-06 07:22:36 --> CSRF token verified.
+DEBUG - 2026-10-06 07:22:36 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:22:36 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:23:03 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:23:07 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:23:11 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 07:23:16 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 09:14:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+DEBUG - 2026-10-06 09:14:37 --> Session: Class initialized using 'CodeIgniter\Session\Handlers\FileHandler' driver.
+ERROR - 2026-10-06 09:14:38 --> Error connecting to the database: mysqli_sql_exception: Unknown database 'sekolahku' in C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:201
+Stack trace:
+#0 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'sekolahku', 3306, '', 0)
+#1 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(555): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Model.php(255): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\edusync-attendance\public\sekolahku\app\Models\SettingModel.php(69): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\edusync-attendance\public\sekolahku\app\Controllers\Admin\Auth.php(22): App\Models\SettingModel->getMany(Array)
+#8 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(974): App\Controllers\Admin\Auth->login()
+#9 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Auth))
+#10 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\edusync-attendance\public\sekolahku\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#15 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Unknown database 'sekolahku' in C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\MySQLi\Connection.php:231
+Stack trace:
+#0 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(555): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#3 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Model.php(255): CodeIgniter\Database\BaseBuilder->get()
+#4 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+#5 C:\xampp\htdocs\edusync-attendance\public\sekolahku\app\Models\SettingModel.php(69): CodeIgniter\BaseModel->findAll()
+#6 C:\xampp\htdocs\edusync-attendance\public\sekolahku\app\Controllers\Admin\Auth.php(22): App\Models\SettingModel->getMany(Array)
+#7 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(974): App\Controllers\Admin\Auth->login()
+#8 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Auth))
+#9 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#10 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Boot.php(417): CodeIgniter\CodeIgniter->run()
+#11 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#12 C:\xampp\htdocs\edusync-attendance\public\sekolahku\public\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#13 C:\xampp\htdocs\edusync-attendance\public\sekolahku\vendor\codeigniter4\framework\system\rewrite.php(44): require_once('C:\\xampp\\htdocs...')
+#14 {main}
+CRITICAL - 2026-10-06 09:14:38 --> CodeIgniter\Database\Exceptions\DatabaseException: Unable to connect to the database.
+Main connection [MySQLi]: Unknown database 'sekolahku'
+[Method: GET, Route: login]
+in SYSTEMPATH\Database\BaseConnection.php on line 606.
+ 1 SYSTEMPATH\Database\BaseConnection.php(795): CodeIgniter\Database\BaseConnection->initialize()
+ 2 SYSTEMPATH\Database\BaseBuilder.php(1659): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `settings`
+WHERE `key` IN :key:', [...], false)
+ 3 SYSTEMPATH\Model.php(255): CodeIgniter\Database\BaseBuilder->get()
+ 4 SYSTEMPATH\BaseModel.php(676): CodeIgniter\Model->doFindAll(0, 0)
+ 5 APPPATH\Models\SettingModel.php(69): CodeIgniter\BaseModel->findAll()
+ 6 APPPATH\Controllers\Admin\Auth.php(22): App\Models\SettingModel->getMany([...])
+ 7 SYSTEMPATH\CodeIgniter.php(974): App\Controllers\Admin\Auth->login()
+ 8 SYSTEMPATH\CodeIgniter.php(520): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Admin\Auth))
+ 9 SYSTEMPATH\CodeIgniter.php(363): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(417): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+13 SYSTEMPATH\rewrite.php(44): require_once('C:\\xampp\\htdocs\\edusync-attendance\\public\\sekolahku\\public\\index.php')

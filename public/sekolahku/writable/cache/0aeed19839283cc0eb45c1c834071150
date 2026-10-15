@@ -1,0 +1,364 @@
+a:3:{s:4:"time";i:1791267692;s:3:"ttl";i:1;s:4:"data";s:20303:"a:4:{s:7:"headers";a:2:{s:13:"Cache-Control";s:29:"no-store, max-age=0, no-cache";s:12:"Content-Type";s:24:"text/html; charset=UTF-8";}s:6:"output";s:20102:"<!-- DEBUG-VIEW START 3 APPPATH\Views\pages\news.php -->
+<!-- DEBUG-VIEW START 1 APPPATH\Views\layouts\header.php -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berita - SekolahKu — SekolahKu</title>
+  <meta name="description" content="Sekolah unggulan yang berkomitmen mencetak generasi penerus bangsa yang berkualitas">
+  <meta name="keywords" content="sekolah, pendidikan, kurikulum merdeka, sekolah unggulan, SPMB">
+  <meta name="author" content="SekolahKu">
+  <meta property="og:title" content="Berita - SekolahKu — SekolahKu">
+  <meta property="og:description" content="Sekolah unggulan yang berkomitmen mencetak generasi penerus bangsa yang berkualitas">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://localhost:8081/news">
+  <meta property="og:image" content="http://localhost:8081/assets/img/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Berita - SekolahKu — SekolahKu">
+  <meta name="twitter:description" content="Sekolah unggulan yang berkomitmen mencetak generasi penerus bangsa yang berkualitas">
+  <meta name="twitter:image" content="http://localhost:8081/assets/img/og-default.jpg">
+  <link rel="canonical" href="http://localhost:8081/news">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Parkinsans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap"></noscript>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+  <link rel="stylesheet" href="http://localhost:8081/css/style.min.css">
+    <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "SekolahKu",
+    "url": "http://localhost:8081/",
+    "description": "Sekolah unggulan yang berkomitmen mencetak generasi penerus bangsa yang berkualitas",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Jl. Pendidikan No. 123, Kelurahan Cerdas, Kecamatan Unggul, Kota Pelajar 12345",
+      "addressLocality": "",
+      "addressRegion": "",
+      "postalCode": "",
+      "addressCountry": "ID"
+    },
+    "telephone": "(021) 1234-5678",
+    "email": "info@sekolahku.sch.id"
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ===== SKIP TO CONTENT ===== -->
+  <a href="#main-content" class="skip-link" style="position:absolute;left:-9999px;top:0;z-index:9999;background:#0c4a6e;color:#fff;padding:8px 16px;text-decoration:none;font-size:14px">Langsung ke konten utama</a>
+  <style>.skip-link:focus,.skip-link:active{left:8px!important;top:8px!important}</style>
+
+  <!-- ===== HEADER TOP ===== -->
+  <div class="header-top" role="complementary" aria-label="Kontak dan sosial media">
+    <div class="container header-top-inner">
+      <div class="header-top-left">
+        <span><i class="fas fa-phone-alt" aria-hidden="true"></i> (021) 1234-5678</span>
+        <span><i class="fas fa-envelope" aria-hidden="true"></i> info@sekolahku.sch.id</span>
+      </div>
+      <div class="header-top-right">
+                <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                        <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+              </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER MAIN ===== -->
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a href="http://localhost:8081/" class="logo" aria-label="Beranda SekolahKu">
+        <i class="graduation-cap" aria-hidden="true"></i>
+        <span>SekolahKu</span>
+      </a>
+            <nav class="nav" id="navMenu" role="navigation" aria-label="Navigasi utama">
+        <a href="http://localhost:8081/" role="menuitem">Beranda</a><a href="http://localhost:8081/#profile" role="menuitem">Profil</a><a href="http://localhost:8081/#programs" role="menuitem">Program</a><a href="http://localhost:8081/news" class="active" role="menuitem">Berita</a><a href="http://localhost:8081/#contact" role="menuitem">Kontak</a><div class="nav-dropdown"><button class="nav-dd-btn" aria-expanded="false" aria-haspopup="true">Lainnya <i class="fas fa-chevron-down" aria-hidden="true"></i></button><div class="nav-dd-menu" role="menu"><a href="http://localhost:8081/#teachers" role="menuitem">Pengajar</a><a href="http://localhost:8081/#achievements" role="menuitem">Prestasi</a><a href="http://localhost:8081/#extracurriculars" role="menuitem">Ekstrakurikuler</a><a href="http://localhost:8081/#testimonials" role="menuitem">Testimoni</a><a href="http://localhost:8081/#gallery" role="menuitem">Galeri</a><a href="http://localhost:8081/#events" role="menuitem">Agenda</a><a href="http://localhost:8081/#faq" role="menuitem">FAQ</a><a href="http://localhost:8081/downloads" role="menuitem">Download</a></div></div>        <a href="#" target="_blank" rel="noopener" class="nav-spmb" aria-label="SPMB Online">SPMB Online</a>
+      </nav>
+      <div class="header-actions">
+        <button class="dark-toggle" id="darkToggle" aria-label="Alihkan tema gelap/terang" title="Alihkan tema">
+          <i class="fas fa-moon"></i>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="Buka menu navigasi" aria-expanded="false">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+<!-- DEBUG-VIEW ENDED 1 APPPATH\Views\layouts\header.php -->
+
+  <!-- ===== PAGE BANNER ===== -->
+    <section class="page-banner" id="main-content">
+    <div class="page-banner-shape page-banner-shape--1"></div>
+    <div class="page-banner-shape page-banner-shape--2"></div>
+    <div class="container page-banner-content">
+      <span class="page-banner-badge"><i class="fas fa-newspaper"></i> Berita &amp; Artikel</span>
+      <h1>Baca Berita Terbaru <span class="text-gradient">SekolahKu</span></h1>
+      <p>Informasi terkini seputar kegiatan dan prestasi di lingkungan SekolahKu</p>
+    </div>
+  </section>
+
+  <!-- ===== NEWS CONTENT ===== -->
+  <section class="section">
+    <div class="container">
+      <div class="news-layout">
+        <div class="news-main">
+
+          <!-- Filter -->
+          <div class="news-filter">
+            <a href="http://localhost:8081/news" class="nf-btn active">Semua</a>
+                        <a href="http://localhost:8081/news?category=Kegiatan" class="nf-btn ">Kegiatan</a>
+                        <a href="http://localhost:8081/news?category=Pengumuman" class="nf-btn ">Pengumuman</a>
+                        <a href="http://localhost:8081/news?category=Prestasi" class="nf-btn ">Prestasi</a>
+                      </div>
+
+          <!-- Grid -->
+          <div class="news-grid">
+                                        <article class="news-card" data-categories="kegiatan">
+                <div class="bc-img">
+                  <img loading="lazy" src="https://placehold.co/600x400/0c4a6e/ffffff?text=Berita" alt="Kegiatan Bakti Sosial Siswa SekolahKu ke Panti Asuhan">
+                  <span class="bc-cat">Kegiatan</span>
+                </div>
+                <div class="bc-body">
+                  <div class="bc-meta">
+                    <span><i class="far fa-calendar"></i> 6 September 2026</span>
+                    <span><i class="far fa-user"></i> Admin</span>
+                  </div>
+                  <h3>Kegiatan Bakti Sosial Siswa SekolahKu ke Panti Asuhan</h3>
+                  <p>Siswa SekolahKu mengadakan kegiatan bakti sosial ke panti asuhan sebagai bagian dari program pendidikan karakter.</p>
+                  <a href="http://localhost:8081/news/kegiatan-bakti-sosial-siswa-sekolahku-ke-panti-asuhan" class="bc-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </article>
+                            <article class="news-card" data-categories="pengumuman">
+                <div class="bc-img">
+                  <img loading="lazy" src="https://placehold.co/600x400/0c4a6e/ffffff?text=Berita" alt="Pendaftaran SPMB Tahun Ajaran 2026/2027 Telah Dibuka">
+                  <span class="bc-cat">Pengumuman</span>
+                </div>
+                <div class="bc-body">
+                  <div class="bc-meta">
+                    <span><i class="far fa-calendar"></i> 1 June 2026</span>
+                    <span><i class="far fa-user"></i> Admin</span>
+                  </div>
+                  <h3>Pendaftaran SPMB Tahun Ajaran 2026/2027 Telah Dibuka</h3>
+                  <p>Penerimaan Peserta Didik Baru (SPMB) untuk tahun ajaran 2026/2027 telah resmi dibuka. Simak informasi lengkapnya di sini.</p>
+                  <a href="http://localhost:8081/news/pendaftaran-spmb-tahun-ajaran-2026-2027-telah-dibuka" class="bc-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </article>
+                            <article class="news-card" data-categories="prestasi">
+                <div class="bc-img">
+                  <img loading="lazy" src="https://placehold.co/600x400/0c4a6e/ffffff?text=Berita" alt="Siswa SekolahKu Raih Medali Emas Olimpiade Sains Nasional">
+                  <span class="bc-cat">Prestasi</span>
+                </div>
+                <div class="bc-body">
+                  <div class="bc-meta">
+                    <span><i class="far fa-calendar"></i> 22 March 2026</span>
+                    <span><i class="far fa-user"></i> Admin</span>
+                  </div>
+                  <h3>Siswa SekolahKu Raih Medali Emas Olimpiade Sains Nasional</h3>
+                  <p>Alya Putri, siswa kelas XII IPA, berhasil meraih medali emas dalam ajang Olimpiade Sains Nasional yang diselenggarakan di Jakarta.</p>
+                  <a href="http://localhost:8081/news/siswa-sekolahku-raih-medali-emas-olimpiade-sains-nasional" class="bc-link">Baca Selengkapnya <i class="fas fa-arrow-right"></i></a>
+                </div>
+              </article>
+                                    </div>
+
+          <!-- Pagination -->
+                    <div class="news-pagination">
+            <!-- DEBUG-VIEW START 1 APPPATH\Views\Pagers\default_full.php -->
+
+<div class="news-pagination">
+  
+      <a class="np-btn active" href="http://localhost:8081/news?page=1">1</a>
+  
+  </div>
+
+<!-- DEBUG-VIEW ENDED 1 APPPATH\Views\Pagers\default_full.php -->
+          </div>
+                  </div>
+
+        <!-- Sidebar -->
+        <aside class="news-sidebar">
+          <div class="ns-widget">
+            <h3>Pencarian</h3>
+            <form class="ns-search" action="http://localhost:8081/news" method="get">
+              <input type="text" name="search" placeholder="Cari berita..." value="">
+              <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
+          </div>
+
+                    <div class="ns-widget">
+            <h3>Kategori</h3>
+            <div class="ns-categories">
+                            <a href="http://localhost:8081/news?category=Kegiatan" class="">
+                Kegiatan <span>1</span>
+              </a>
+                            <a href="http://localhost:8081/news?category=Pengumuman" class="">
+                Pengumuman <span>1</span>
+              </a>
+                            <a href="http://localhost:8081/news?category=Prestasi" class="">
+                Prestasi <span>1</span>
+              </a>
+                          </div>
+          </div>
+          
+                    <div class="ns-widget">
+            <h3>Berita Terbaru</h3>
+            <div class="ns-recent">
+                            <div class="nsr-item">
+                <img loading="lazy" src="https://placehold.co/70x70/0c4a6e/ffffff?text=N" alt="thumb">
+                <div>
+                  <h4><a href="http://localhost:8081/news/kegiatan-bakti-sosial-siswa-sekolahku-ke-panti-asuhan">Kegiatan Bakti Sosial Siswa SekolahKu ke Panti Asuhan</a></h4>
+                  <span>6 September 2026</span>
+                </div>
+              </div>
+                            <div class="nsr-item">
+                <img loading="lazy" src="https://placehold.co/70x70/0c4a6e/ffffff?text=N" alt="thumb">
+                <div>
+                  <h4><a href="http://localhost:8081/news/pendaftaran-spmb-tahun-ajaran-2026-2027-telah-dibuka">Pendaftaran SPMB Tahun Ajaran 2026/2027 Telah Dibuka</a></h4>
+                  <span>1 June 2026</span>
+                </div>
+              </div>
+                            <div class="nsr-item">
+                <img loading="lazy" src="https://placehold.co/70x70/0c4a6e/ffffff?text=N" alt="thumb">
+                <div>
+                  <h4><a href="http://localhost:8081/news/siswa-sekolahku-raih-medali-emas-olimpiade-sains-nasional">Siswa SekolahKu Raih Medali Emas Olimpiade Sains Nasional</a></h4>
+                  <span>22 March 2026</span>
+                </div>
+              </div>
+                          </div>
+          </div>
+          
+                    <div class="ns-widget">
+            <h3>Arsip Berita</h3>
+            <div class="ns-archive">
+                            <a href="http://localhost:8081/news?month=2026-09" class="">September 2026 <span>1</span></a>
+                            <a href="http://localhost:8081/news?month=2026-06" class="">June 2026 <span>1</span></a>
+                            <a href="http://localhost:8081/news?month=2026-03" class="">March 2026 <span>1</span></a>
+                          </div>
+          </div>
+          
+                    <div class="ns-widget">
+            <h3>Tags</h3>
+            <div class="ns-tags">
+                            <a href="http://localhost:8081/news?tag=prestasi">prestasi</a>
+                            <a href="http://localhost:8081/news?tag=olimpiade">olimpiade</a>
+                            <a href="http://localhost:8081/news?tag=sains">sains</a>
+                            <a href="http://localhost:8081/news?tag=kegiatan">kegiatan</a>
+                            <a href="http://localhost:8081/news?tag=bakti-sosial">bakti-sosial</a>
+                            <a href="http://localhost:8081/news?tag=peduli">peduli</a>
+                            <a href="http://localhost:8081/news?tag=spmb">spmb</a>
+                            <a href="http://localhost:8081/news?tag=pendaftaran">pendaftaran</a>
+                            <a href="http://localhost:8081/news?tag=siswa-baru">siswa-baru</a>
+                          </div>
+          </div>
+          
+          <div class="ns-widget ns-widget-cta">
+            <h3>Ikuti Kami</h3>
+            <div class="ns-social">
+                            <a href="#"><i class="fab fa-facebook-f"></i></a>
+                                          <a href="#"><i class="fab fa-instagram"></i></a>
+                                          <a href="#"><i class="fab fa-youtube"></i></a>
+                                          <a href="#"><i class="fab fa-tiktok"></i></a>
+                          </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+<!-- DEBUG-VIEW START 2 APPPATH\Views\layouts\footer.php -->
+  <!-- ===== FOOTER ===== -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-shape" aria-hidden="true"></div>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="http://localhost:8081/" class="logo" aria-label="Beranda SekolahKu">
+            <i class="graduation-cap" aria-hidden="true"></i>
+            <span>SekolahKu</span>
+          </a>
+          <p>SekolahKu berkomitmen mencetak generasi penerus bangsa yang cerdas, berkarakter, dan berprestasi.</p>
+          <div class="footer-social">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                                    <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                                    <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                      </div>
+        </div>
+        <div class="footer-col footer-col-nav">
+          <h4>Navigasi</h4>
+          <a href="http://localhost:8081/">Beranda</a>
+          <a href="http://localhost:8081/#profile">Profil</a>
+          <a href="http://localhost:8081/#programs">Program</a>
+          <a href="http://localhost:8081/#extracurriculars">Ekstrakurikuler</a>
+          <a href="http://localhost:8081/#teachers">Pengajar</a>
+          <a href="http://localhost:8081/#achievements">Prestasi</a>
+          <a href="http://localhost:8081/#testimonials">Testimoni</a>
+          <a href="http://localhost:8081/news">Berita</a>
+          <a href="http://localhost:8081/#events">Agenda</a>
+          <a href="http://localhost:8081/#gallery">Galeri</a>
+          <a href="http://localhost:8081/#faq">FAQ</a>
+          <a href="http://localhost:8081/downloads">Download</a>
+          <a href="http://localhost:8081/#contact">Kontak</a>
+        </div>
+        <div class="footer-col">
+          <h4>Program</h4>
+                    <a href="#programs">Sains &amp; Teknologi</a>
+                    <a href="#programs">Seni &amp; Budaya</a>
+                    <a href="#programs">Olahraga</a>
+                    <a href="#programs">Bahasa Asing</a>
+                    <a href="#programs">Digital Literacy</a>
+                  </div>
+        <div class="footer-col">
+          <h4>Layanan</h4>
+                    <a href="#">SPMB Online</a>
+                    <a href="#">E-Learning</a>
+                    <a href="#">Perpustakaan</a>
+                    <a href="#faq">FAQ</a>
+                    <a href="#">Pengaduan</a>
+                  </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 <a href="http://localhost:8081/">SekolahKu</a> — © 2026 SekolahKu — All rights reserved.<br>
+          CMS by <a href="https://sekolahku.web.id" target="_blank" class="text-decoration-none fw-medium" style="color:#6366f1">sekolahku.web.id</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ===== BACK TO TOP ===== -->
+  <button class="back-to-top" id="backToTop" aria-label="Kembali ke atas" title="Kembali ke atas">
+    <i class="fas fa-arrow-up" aria-hidden="true"></i>
+  </button>
+
+  <!-- ===== LIGHTBOX ===== -->
+  <div class="lightbox" id="lightboxModal" role="dialog" aria-modal="true" aria-label="Pratinjau gambar">
+    <span class="lightbox-close" role="button" tabindex="0" aria-label="Tutup">&times;</span>
+    <img class="lightbox-content" id="modalImage" alt="Pratinjau">
+  </div>
+
+  <script defer src="http://localhost:8081/js/script.min.js"></script>
+<script>
+// Refresh CSRF token on cached pages — reads token from cookie
+(function(){
+  var fields = document.querySelectorAll('[name="csrf_test_name"]');
+  if (!fields.length) return;
+  var match = document.cookie.match(/(?:^|;\s*)csrf_cookie_name=([^;]*)/);
+  if (match) {
+    var token = decodeURIComponent(match[1]);
+    for (var i = 0; i < fields.length; i++) fields[i].value = token;
+  }
+})();
+</script>
+</body>
+</html>
+
+<!-- DEBUG-VIEW ENDED 2 APPPATH\Views\layouts\footer.php -->
+
+<!-- DEBUG-VIEW ENDED 3 APPPATH\Views\pages\news.php -->
+";s:6:"status";i:200;s:6:"reason";s:2:"OK";}";}

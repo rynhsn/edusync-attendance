@@ -1,0 +1,46 @@
+/* ============================================================
+   BROWN THEME — Pondok Pesantren Tradisional, Madrasah Diniyah
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/brown-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #78350f;
+  --primary-dark: #451a03;
+  --primary-light: #b45309;
+  --accent: #f59e0b;
+  --accent-dark: #d97706;
+  --accent-glow: rgba(245, 158, 11, 0.12);
+  --warm: #ef4444;
+  --surface: #ffffff;
+  --bg: #fffbeb;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #fde68a;
+  --shadow-xl: 0 20px 60px rgba(120,53,15,0.12);
+  --nav-hover: rgba(120,53,15,.04);
+  --nav-active: rgba(120,53,15,.06);
+  --hero-end: #92400e;
+}
+
+[data-theme="dark"] {
+  --primary: #fbbf24;
+  --primary-dark: #78350f;
+  --primary-light: #fcd34d;
+  --accent: #fbbf24;
+  --accent-dark: #f59e0b;
+  --accent-glow: rgba(251,191,36,.15);
+  --warm: #f87171;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(251,191,36,.08);
+  --nav-active: rgba(251,191,36,.12);
+  --hero-end: #92400e;
+}
