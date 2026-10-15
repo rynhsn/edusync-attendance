@@ -24,15 +24,118 @@ class ClassController extends ResourceController
      */
     public function index()
     {
+        $editId = filter_var($this->request->getGet('edit'), FILTER_VALIDATE_INT);
+        $editClass = $editId !== false && $editId > 0 ? $this->classModel->find($editId) : null;
 
-        //title
+        return view('panel/classes', [
+            'title'      => 'Data Kelas',
+            'activePage' => 'class',
+            'classes'    => $this->classModel->orderBy('kelas_tingkat', 'ASC')->orderBy('kelas_nama', 'ASC')->findAll(),
+            'editClass'  => $editClass,
+            'message'    => session()->getFlashdata('classMessage'),
+            'error'      => session()->getFlashdata('classError'),
+        ]);
+    }
+
+    public function saveForm()
+    {
+        $id = $this->request->getPost('kelas_id');
+        $grade = $this->request->getPost('kelas_tingkat');
+        $name = $this->request->getPost('kelas_nama');
+        $description = $this->request->getPost('kelas_keterangan');
+        $redirect = redirect()->to(site_url('class'));
+
+        if ((! is_string($id) && $id !== null)
+            || (! is_string($grade) && ! is_int($grade))
+            || ! is_string($name)
+            || ! is_string($description)) {
+            return $redirect->with('classError', 'Data kelas tidak valid.');
+        }
+
+        $id = trim((string) $id);
+        $grade = filter_var($grade, FILTER_VALIDATE_INT);
+        $name = trim($name);
+        $description = trim($description);
+        $numericId = $id === '' ? null : filter_var($id, FILTER_VALIDATE_INT);
+
+        if (($id !== '' && ($numericId === false || $numericId < 1 || $this->classModel->find($numericId) === null))
+            || $grade === false
+            || $grade < 1
+            || $grade > 12
+            || $name === ''
+            || mb_strlen($name) > 50
+            || mb_strlen($description) > 65535) {
+            return $redirect->with('classError', 'Tingkat harus antara 1 sampai 12 dan nama kelas wajib diisi (maksimal 50 karakter).');
+        }
+
         $data = [
-            'title' => 'Kelas',
-            'activePage' => 'class'
+            'kelas_tingkat' => $grade,
+            'kelas_nama' => $name,
+            'kelas_keterangan' => $description,
         ];
 
-        //return to view class/index
-        return view('class/index', $data);
+        if ($numericId !== null) {
+            if (! $this->classModel->update($numericId, $data)) {
+                return $redirect->with('classError', 'Data kelas gagal diperbarui.');
+            }
+
+            return $redirect->with('classMessage', 'Kelas berhasil diperbarui.');
+        }
+
+        $db = db_connect();
+        $db->transStart();
+        $newId = $this->classModel->insert($data, true);
+        if ($newId !== false) {
+            $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+            $timeSettings = [];
+            foreach ($days as $day) {
+                $timeSettings[] = [
+                    'kelas_id' => $newId,
+                    'hari' => $day,
+                    'jam_masuk' => '07:00:00',
+                    'jam_pulang' => '14:00:00',
+                ];
+            }
+            $this->timeSettingModel->insertBatch($timeSettings);
+        }
+        $db->transComplete();
+
+        if ($newId === false || $db->transStatus() === false) {
+            log_message('error', 'Failed to create class and default time settings.');
+
+            return $redirect->with('classError', 'Data kelas gagal disimpan.');
+        }
+
+        return $redirect->with('classMessage', 'Kelas berhasil ditambahkan.');
+    }
+
+    public function deleteForm(int $id)
+    {
+        $redirect = redirect()->to(site_url('class'));
+        $class = $id > 0 ? $this->classModel->find($id) : null;
+        if ($class === null) {
+            return $redirect->with('classError', 'Data kelas tidak ditemukan.');
+        }
+
+        $db = db_connect();
+        $isUsedByStudents = $db->table('master_siswa')->where('kelas_id', $id)->countAllResults() > 0;
+        $isUsedByAttendance = $db->table('absensi_absensi_kelas')->where('kelas_id', $id)->countAllResults() > 0;
+        if ($isUsedByStudents || $isUsedByAttendance) {
+            return $redirect->with('classError', 'Kelas tidak dapat dihapus karena masih digunakan oleh siswa atau riwayat absensi.');
+        }
+
+        $db->transStart();
+        $this->timeSettingModel->where('kelas_id', $id)->delete();
+        $this->classModel->delete($id);
+        $db->transComplete();
+
+        if ($db->transStatus() === false) {
+            log_message('error', 'Failed to delete class {id} and its time settings.', ['id' => $id]);
+
+            return $redirect->with('classError', 'Data kelas gagal dihapus.');
+        }
+
+        return $redirect->with('classMessage', 'Kelas berhasil dihapus.');
     }
 
     /**

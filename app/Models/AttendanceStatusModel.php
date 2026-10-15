@@ -13,7 +13,7 @@ class AttendanceStatusModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'status_kehadiran_nama',
+        'status_kehadiran',
         'status_kehadiran_warna',
         'status_kehadiran_keterangan',
     ];
@@ -27,8 +27,8 @@ class AttendanceStatusModel extends Model
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
-    protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $createdField  = 'created_date';
+    protected $updatedField  = 'updated_date';
 
     // Validation
     protected $validationRules      = [];

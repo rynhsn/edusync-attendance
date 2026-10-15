@@ -1,53 +1,47 @@
-<!-- Tampilan untuk Konfigurasi Waktu -->
-<?= $this->extend('layouts/template'); ?>
+<?= $this->extend('layouts/panel'); ?>
+
 <?= $this->section('content'); ?>
+<div class="container-fluid p-4 p-lg-4">
+    <div class="mb-4">
+        <h1 class="h3 mb-1">Pengaturan Waktu</h1>
+        <p class="text-muted mb-0">Atur jam masuk dan pulang untuk setiap kelas dan hari sekolah.</p>
+    </div>
 
-<div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="py-3 mb-4"><span class="text-muted fw-light">Absensi /</span> Konfigurasi Waktu</h4>
-
-    <!-- Basic Bootstrap Table -->
-    <div class="card card-action">
-        <div class="card-header">
-            <div class="card-action-title">Konfigurasi Waktu</div>
-            <div class="card-action-element">
-                <ul class="list-inline mb-0">
-                    <li class="list-inline-item">
-                        <a href="javascript:void(0);" class="card-expand"><i class="tf-icons ti ti-arrows-maximize ti-sm"></i></a>
-                    </li>
-                </ul>
+    <div class="card">
+        <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+            <div>
+                <h2 class="h5 card-title mb-1">Jadwal Waktu per Kelas</h2>
+                <p class="text-muted small mb-0">Perubahan disimpan saat Anda meninggalkan kolom jam.</p>
             </div>
+            <span id="time-setting-status" class="small text-muted" data-csrf-cookie="<?= esc(config('Security')->cookieName); ?>" data-can-manage="<?= \App\Libraries\ActionAccess::can('timesetting.manage') ? '1' : '0'; ?>" role="status" aria-live="polite"></span>
         </div>
-
-        <div class="table-responsive text-nowrap">
-            <table class="table">
-                <thead>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle text-nowrap mb-0" id="time-setting-table">
+                <thead class="table-light">
                     <tr>
-                        <th class="text-center">Kelas</th>
-                        <th class="text-center">Senin</th>
-                        <th class="text-center">Selasa</th>
-                        <th class="text-center">Rabu</th>
-                        <th class="text-center">Kamis</th>
-                        <th class="text-center">Jumat</th>
-                        <th class="text-center">Sabtu</th>
+                        <th scope="col">Kelas</th>
+                        <?php foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'] as $day) : ?>
+                            <th scope="col" class="text-center"><?= esc($day); ?><br><small class="text-muted">Masuk — Pulang</small></th>
+                        <?php endforeach; ?>
                     </tr>
                 </thead>
-                <!-- tfoot -->
-                <tfoot class="table-border-bottom-0">
+                <tbody>
                     <tr>
-                        <th class="text-center rounded-start-bottom">Kelas</th>
-                        <th class="text-center">Senin</th>
-                        <th class="text-center">Selasa</th>
-                        <th class="text-center">Rabu</th>
-                        <th class="text-center">Kamis</th>
-                        <th class="text-center">Jumat</th>
-                        <th class="text-center rounded-end-bottom">Sabtu</th>
+                        <td colspan="7" class="text-center text-muted py-4">Memuat pengaturan waktu...</td>
                     </tr>
-                </tfoot>
+                </tbody>
             </table>
         </div>
+        <div class="card-footer small text-muted">
+            Jam masuk ditandai hijau dan jam pulang ditandai merah. Format waktu menggunakan 24 jam.
+        </div>
     </div>
-    <!--/ Basic Bootstrap Table -->
 
+    <form class="d-none" aria-hidden="true"><?= csrf_field(); ?></form>
 </div>
+<?= $this->endSection(); ?>
 
+<?= $this->section('scripts'); ?>
+<script src="<?= base_url('assets/vendors/libs/jquery/jquery.js'); ?>"></script>
+<script src="<?= base_url('assets/main/tables-konfigurasi-waktu.js'); ?>"></script>
 <?= $this->endSection(); ?>

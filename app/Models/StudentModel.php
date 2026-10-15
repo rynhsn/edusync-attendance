@@ -15,12 +15,15 @@ class StudentModel extends Model
     protected $allowedFields    = [
         "kelas_id",
         "nama_siswa",
+        "orang_tua_id",
         "nis",
         "nisn",
         "jk",
         "tempat_lahir",
         "tanggal_lahir",
         "alamat",
+        "foto",
+        "status",
         "rfid_tag",
         "created_at",
         "updated_at",
@@ -60,16 +63,18 @@ class StudentModel extends Model
     //get semua data siswa dengan relasi kelas
     public function getAllStudent()
     {
-        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas')
-            ->join('master_kelas', 'master_kelas.kelas_id = master_siswa.kelas_id')
+        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas, master_orang_tua.nama_orang_tua, master_orang_tua.no_whatsapp')
+            ->join('master_kelas', 'master_kelas.kelas_id = master_siswa.kelas_id', 'left')
+            ->join('master_orang_tua', 'master_orang_tua.orang_tua_id = master_siswa.orang_tua_id', 'left')
             ->findAll();
     }
 
     //get data siswa berdasarkan kondisi
     public function getStudent($condition)
     {
-        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas')
-            ->join('master_kelas', 'master_kelas.kelas_id = master_siswa.kelas_id')
+        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas, master_orang_tua.nama_orang_tua, master_orang_tua.no_whatsapp')
+            ->join('master_kelas', 'master_kelas.kelas_id = master_siswa.kelas_id', 'left')
+            ->join('master_orang_tua', 'master_orang_tua.orang_tua_id = master_siswa.orang_tua_id', 'left')
             ->where($condition)
             ->first();
     }

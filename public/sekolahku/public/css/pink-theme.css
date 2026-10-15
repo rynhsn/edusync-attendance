@@ -1,0 +1,46 @@
+/* ============================================================
+   PINK THEME — TK/PAUD, Sekolah Perempuan
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/pink-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #9f1239;
+  --primary-dark: #6b0f24;
+  --primary-light: #e11d48;
+  --accent: #ec4899;
+  --accent-dark: #db2777;
+  --accent-glow: rgba(236, 72, 153, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #fff1f2;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #fecdd3;
+  --shadow-xl: 0 20px 60px rgba(159,18,57,0.12);
+  --nav-hover: rgba(159,18,57,.04);
+  --nav-active: rgba(159,18,57,.06);
+  --hero-end: #be123c;
+}
+
+[data-theme="dark"] {
+  --primary: #fb7185;
+  --primary-dark: #9f1239;
+  --primary-light: #fda4af;
+  --accent: #f472b6;
+  --accent-dark: #ec4899;
+  --accent-glow: rgba(244,114,182,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(251,113,133,.08);
+  --nav-active: rgba(251,113,133,.12);
+  --hero-end: #be123c;
+}

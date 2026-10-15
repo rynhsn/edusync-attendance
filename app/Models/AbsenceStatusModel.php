@@ -13,7 +13,7 @@ class AbsenceStatusModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'status_absensi_nama',
+        'status_absensi',
         'status_absensi_warna',
         'status_absensi_keterangan',
     ];
@@ -25,7 +25,7 @@ class AbsenceStatusModel extends Model
     protected array $castHandlers = [];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps   = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

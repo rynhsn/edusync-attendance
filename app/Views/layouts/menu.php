@@ -88,7 +88,7 @@
             </a>
         </li>
         <li class="menu-item <?= ($activePage == 'attendance') ? 'active' : ''; ?>">
-            <a href="<?= base_url('attendance'); ?>" class="menu-link">
+            <a href="<?= base_url('attendance/manage'); ?>" class="menu-link">
                 <i class="menu-icon tf-icons ti ti-report"></i>
                 <div data-i18n="Absensi Sekolah">Absensi Sekolah</div>
             </a>

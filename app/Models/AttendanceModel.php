@@ -73,4 +73,33 @@ class AttendanceModel extends Model
 
         return $builder->get()->getResultArray();
     }
+
+    public function getAttendanceReport(?string $dateFrom = null, ?string $dateTo = null, ?string $studentName = null): array
+    {
+        $builder = $this->db->table($this->table . ' ase')
+            ->select('ase.*, ms.nama_siswa, mk.kelas_nama, ask.status_kehadiran, ask.status_kehadiran_warna, asam.status_absensi as status_masuk, asam.status_absensi_warna as status_masuk_warna, asak.status_absensi as status_pulang, asak.status_absensi_warna as status_pulang_warna')
+            ->join('master_siswa ms', 'ms.siswa_id = ase.siswa_id', 'left')
+            ->join('master_kelas mk', 'mk.kelas_id = ms.kelas_id', 'left')
+            ->join('absensi_status_kehadiran ask', 'ask.status_kehadiran_id = ase.status_kehadiran_id', 'left')
+            ->join('absensi_status_absensi asam', 'asam.status_absensi_id = ase.status_absensi_masuk_id', 'left')
+            ->join('absensi_status_absensi asak', 'asak.status_absensi_id = ase.status_absensi_pulang_id', 'left');
+
+        if ($dateFrom !== null && $dateFrom !== '') {
+            $builder->where('ase.tanggal >=', $dateFrom);
+        }
+
+        if ($dateTo !== null && $dateTo !== '') {
+            $builder->where('ase.tanggal <=', $dateTo);
+        }
+
+        if ($studentName !== null && $studentName !== '') {
+            $builder->like('ms.nama_siswa', $studentName);
+        }
+
+        return $builder
+            ->orderBy('ms.nama_siswa', 'ASC')
+            ->orderBy('ase.tanggal', 'DESC')
+            ->get()
+            ->getResultArray();
+    }
 }

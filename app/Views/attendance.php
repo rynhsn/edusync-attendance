@@ -320,11 +320,11 @@
 
                             Swal.fire({
                                 title: 'Berhasil',
-                                html: `Absen berhasil untuk <b>${data.student.nama_siswa}</b>, kelas <b>${data.student.kelas}</b>`,
+                                html: `Absen berhasil untuk <b>${data.student.nama_siswa}</b>, kelas <b>${data.student.kelas}</b><br><small>${data.whatsapp}</small>`,
                                 imageUrl: `/assets/img/avatars/${data.student.foto}`,
                                 imageWidth: 200,
                                 imageAlt: "Custom image",
-                                timer: 2000,
+                                timer: 4000,
                                 timerProgressBar: true,
                                 showConfirmButton: false,
                                 willOpen: function() {

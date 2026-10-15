@@ -258,6 +258,7 @@
             }
         });
     </script>
+    <script src="<?= base_url('assets/main/panel-table-pagination.js'); ?>?v=<?= filemtime(FCPATH . 'assets/main/panel-table-pagination.js'); ?>" defer></script>
 </body>
 
 </html>

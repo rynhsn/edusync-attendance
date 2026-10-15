@@ -1,0 +1,46 @@
+/* ============================================================
+   PURPLE THEME — SMK, Kursus, Universitas
+   Gunakan setelah style.css di halaman HTML:
+     <link rel="stylesheet" href="css/style.css">
+     <link rel="stylesheet" href="css/purple-theme.css">
+   ============================================================ */
+
+:root {
+  --primary: #5b21b6;
+  --primary-dark: #3b0764;
+  --primary-light: #8b5cf6;
+  --accent: #d946ef;
+  --accent-dark: #c026d3;
+  --accent-glow: rgba(217, 70, 239, 0.12);
+  --warm: #f59e0b;
+  --surface: #ffffff;
+  --bg: #faf5ff;
+  --text: #1e293b;
+  --text-soft: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e9d5ff;
+  --shadow-xl: 0 20px 60px rgba(91,33,182,0.12);
+  --nav-hover: rgba(91,33,182,.04);
+  --nav-active: rgba(91,33,182,.06);
+  --hero-end: #6d28d9;
+}
+
+[data-theme="dark"] {
+  --primary: #a78bfa;
+  --primary-dark: #5b21b6;
+  --primary-light: #c4b5fd;
+  --accent: #e879f9;
+  --accent-dark: #d946ef;
+  --accent-glow: rgba(232,121,249,.15);
+  --warm: #fbbf24;
+  --surface: #1e293b;
+  --bg: #0f172a;
+  --text: #e2e8f0;
+  --text-soft: #94a3b8;
+  --text-muted: #64748b;
+  --border: #334155;
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.4);
+  --nav-hover: rgba(167,139,250,.08);
+  --nav-active: rgba(167,139,250,.12);
+  --hero-end: #6d28d9;
+}

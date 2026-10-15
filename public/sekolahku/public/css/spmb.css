@@ -1,0 +1,283 @@
+#spmb-form {
+  display: grid;
+  gap: 22px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+#spmb-form .spmb-section {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+#spmb-form .spmb-section-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px 26px 18px;
+  background: linear-gradient(135deg, #f8fbff, #f0fdfa);
+  border-bottom: 1px solid var(--border);
+}
+
+#spmb-form .spmb-section-number {
+  display: inline-flex;
+  flex: 0 0 42px;
+  width: 42px;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-dark);
+  background: var(--accent-glow);
+  border-radius: 13px;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+#spmb-form .spmb-section-heading legend {
+  float: none;
+  width: auto;
+  margin: 0 0 4px;
+  padding: 0;
+  color: var(--primary);
+  font-family: var(--font);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+#spmb-form .spmb-section-heading p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+#spmb-form .spmb-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 22px;
+  padding: 24px 26px 26px;
+}
+
+#spmb-form .form-row {
+  min-width: 0;
+  margin: 0;
+}
+
+#spmb-form .spmb-field-wide {
+  grid-column: 1 / -1;
+}
+
+#spmb-form .form-row > label,
+#spmb-form .spmb-field-label {
+  display: block;
+  margin: 0 0 7px;
+  color: var(--text);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+#spmb-form .form-row input:not([type="checkbox"]):not([type="radio"]),
+#spmb-form .form-row select,
+#spmb-form .form-row textarea {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  padding: 11px 14px;
+  color: var(--text);
+  background: #f8fbfc;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  font: 400 0.9rem var(--font-body);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+#spmb-form .form-row textarea {
+  min-height: 104px;
+  resize: vertical;
+}
+
+#spmb-form .form-row input::placeholder,
+#spmb-form .form-row textarea::placeholder {
+  color: #94a3b8;
+}
+
+#spmb-form .form-row input:focus,
+#spmb-form .form-row select:focus,
+#spmb-form .form-row textarea:focus {
+  background: var(--surface);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: 0;
+}
+
+#spmb-form .spmb-gender-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+#spmb-form .spmb-choice {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+#spmb-form .spmb-choice input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+#spmb-form .spmb-choice span {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  color: var(--text-soft);
+  background: #f8fbfc;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  font-size: 0.88rem;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+#spmb-form .spmb-choice i {
+  color: var(--text-muted);
+}
+
+#spmb-form .spmb-choice input:checked + span {
+  color: var(--primary);
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+#spmb-form .spmb-choice input:checked + span i {
+  color: var(--accent-dark);
+}
+
+#spmb-form .spmb-choice input:focus-visible + span {
+  outline: 3px solid var(--accent-glow);
+  outline-offset: 2px;
+}
+
+#spmb-form .spmb-document {
+  padding: 15px;
+  background: #f8fbfc;
+  border: 1px solid var(--border);
+  border-radius: 13px;
+}
+
+#spmb-form .spmb-document input[type="file"] {
+  min-height: auto;
+  padding: 8px;
+  background: var(--surface);
+  font-size: 0.78rem;
+}
+
+#spmb-form .spmb-declaration {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  padding: 19px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+}
+
+#spmb-form .spmb-declaration input {
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  accent-color: var(--accent-dark);
+}
+
+#spmb-form .spmb-declaration label {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.86rem;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+#spmb-form .spmb-submit {
+  padding: 4px 0 0;
+}
+
+#spmb-form .spmb-submit p {
+  margin: 0 0 16px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  line-height: 1.6;
+}
+
+#spmb-form #submit-spmb {
+  display: inline-flex;
+  width: auto;
+  min-width: 220px;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  #spmb-form {
+    gap: 16px;
+  }
+
+  #spmb-form .spmb-section-heading {
+    gap: 12px;
+    padding: 18px 17px 15px;
+  }
+
+  #spmb-form .spmb-section-number {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  #spmb-form .spmb-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 19px 17px 21px;
+  }
+
+  #spmb-form .spmb-field-wide {
+    grid-column: auto;
+  }
+
+  #spmb-form .spmb-gender-options {
+    gap: 9px;
+  }
+
+  #spmb-form .spmb-choice span {
+    gap: 7px;
+    padding: 10px;
+    font-size: 0.82rem;
+  }
+
+  #spmb-form .spmb-declaration {
+    padding: 16px;
+  }
+
+  #spmb-form #submit-spmb {
+    width: 100%;
+  }
+}

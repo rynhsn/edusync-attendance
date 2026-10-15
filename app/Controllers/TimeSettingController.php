@@ -81,19 +81,33 @@ class TimeSettingController extends ResourceController
      */
     public function update($id = null)
     {
-        //try
         try {
-            //get data from post
-            $data = $this->request->getRawInput();
+            $data = $this->request->getJSON(true);
+            if (! is_array($data)) {
+                $data = $this->request->getRawInput();
+            }
 
-            //update data
-            $this->timeSettingModel->update($id, $data);
+            if (! $this->timeSettingModel->update($id, $data)) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'status' => 'error',
+                    'message' => 'Perubahan gagal disimpan.',
+                    'csrfHash' => csrf_hash(),
+                ]);
+            }
         } catch (\Exception $e) {
-            //return error 500
-            // return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => $e->getMessage()]);
-            return $this->response->setStatusCode(500)->setJSON(['status' => 'error', 'message' => $data]);
+            log_message('error', 'Gagal memperbarui pengaturan waktu: {message}', ['message' => $e->getMessage()]);
+
+            return $this->response->setStatusCode(500)->setJSON([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menyimpan pengaturan waktu.',
+                'csrfHash' => csrf_hash(),
+            ]);
         }
-        //return success 200
-        return $this->response->setStatusCode(200)->setJSON(['status' => 'success', 'message' => 'Data berhasil diubah']);
+
+        return $this->response->setStatusCode(200)->setJSON([
+            'status' => 'success',
+            'message' => 'Data berhasil diubah',
+            'csrfHash' => csrf_hash(),
+        ]);
     }
 }
