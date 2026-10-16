@@ -2,7 +2,9 @@
 <html lang="en" data-bs-theme="light">
 
 <head>
+    <!-- Kita kunci base href langsung ke folder template di public -->
     <base href="<?= base_url('metis-1.0.0/dist-modern/') ?>">
+
     <!-- Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,12 +20,7 @@
     <meta property="og:type" content="website">
 
     <!-- Favicon -->
-    <!-- <link rel="icon" type="image/svg+xml" href="./assets/icons/favicon.svg">
-    <link rel="icon" type="image/png" href="./assets/icons/favicon.png"> -->
-    <link rel="shortcut icon" href="/assets/img/favicon/favicon.ico" type="image/x-icon">
-    <!-- Preconnect to external domains -->
-
-    <!-- Fonts -->
+    <link rel="shortcut icon" href="<?= base_url('assets/img/favicon/favicon.ico') ?>" type="image/x-icon">
 
     <!-- Title -->
     <title><?= esc($title ?? 'Dashboard') ?> - EduSync</title>
@@ -31,7 +28,7 @@
     <!-- Theme Color -->
     <meta name="theme-color" content="#2563eb">
 
-    <!-- PWA Manifest -->
+    <!-- PWA Manifest & JS Template Utama -->
     <link rel="manifest" href="./assets/manifest-D0qHSrzp.json">
     <script type="module" crossorigin src="./assets/main-BqKkk_Lj.js"></script>
     <script type="module" crossorigin src="./assets/rolldown-runtime-hePW80VL.js"></script>
@@ -39,9 +36,13 @@
     <script type="module" crossorigin src="./assets/vendor-bootstrap-Dj44xPS1.js"></script>
     <script type="module" crossorigin src="./assets/vendor-charts-_UPf9h_O.js"></script>
     <script type="module" crossorigin src="./assets/main-1Eks1J0_.js"></script>
+
+    <!-- CSS Utama Template -->
     <link rel="stylesheet" crossorigin href="./assets/main-Kuf3cpUe.css">
-    <link rel="stylesheet" href="<?= base_url('assets/main/panel-checkbox-cards.css'); ?>?v=<?= filemtime(FCPATH . 'assets/main/panel-checkbox-cards.css'); ?>">
-    <link rel="stylesheet" href="<?= base_url('assets/main/panel-sidebar.css'); ?>?v=<?= filemtime(FCPATH . 'assets/main/panel-sidebar.css'); ?>">
+
+    <!-- CSS Tambahan (Menggunakan versi statis tanpa filemtime agar terhindar dari crash jalur file) -->
+    <link rel="stylesheet" href="<?= base_url('assets/main/panel-checkbox-cards.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/main/panel-sidebar.css'); ?>">
 </head>
 
 <body data-page="dashboard" class="admin-layout">
