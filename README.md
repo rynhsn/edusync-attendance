@@ -1,47 +1,167 @@
-# CodeIgniter 4 Application Starter
+# EduSync Attendance
 
-## What is CodeIgniter?
+Sistem absensi dan administrasi akademik sekolah berbasis CodeIgniter 4.
+Aplikasi ini menggabungkan kios absensi RFID, pencatatan absensi kelas,
+penilaian akademik, penerimaan siswa baru (SPMB), dan website sekolah publik
+dalam satu basis kode.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+- Framework: CodeIgniter 4 (4.7.5)
+- PHP: 8.1 atau lebih baru (dikembangkan pada PHP 8.2)
+- Database: MySQL / MariaDB (nama database: `edusync`)
+- Antarmuka panel: tema Vuexy, jQuery, dan DataTables. Seluruh aset sudah
+  dibangun dan disertakan di `public/assets/`, jadi tidak perlu langkah build
+  untuk menjalankan aplikasi.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## Daftar Isi
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+- [Fitur Utama](#fitur-utama)
+- [Peran Pengguna](#peran-pengguna)
+- [Instalasi](#instalasi)
+- [Konfigurasi `.env`](#konfigurasi-env)
+- [Menyiapkan Basis Data](#menyiapkan-basis-data)
+- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [Peta Rute](#peta-rute)
+- [Struktur Proyek](#struktur-proyek)
+- [Notifikasi WhatsApp](#notifikasi-whatsapp)
+- [Berkas SQL Pendukung](#berkas-sql-pendukung)
+- [Dokumentasi Tambahan](#dokumentasi-tambahan)
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## Fitur Utama
 
-## Installation & updates
+### Absensi
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+- **Kios absensi RFID** di `/attendance` dan `/attendance/kiosk` (publik, tanpa
+  login). Siswa menempelkan kartu RFID; sistem mencatat jam masuk/pulang dan
+  mengirim notifikasi WhatsApp ke orang tua. Halaman `/` sendiri adalah beranda
+  website sekolah.
+- **Absensi kelas** di `/class-attendance`. Menyimpan kehadiran per kelas,
+  mata pelajaran, guru, jam pelajaran, tahun ajaran, dan tanggal. Status:
+  hadir, sakit, izin, alpa. Satu kombinasi kelas/mapel/jam/tahun hanya boleh
+  dicatat sekali per tanggal.
+- **Absensi ekstrakurikuler** di `/extracurricular-attendance`.
+- **Laporan** absensi harian (`/report/attendance`) dan rekap bulanan per kelas
+  (`/class-attendance-report`), keduanya dapat diunduh sebagai PDF.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+### Akademik
 
-## Setup
+- **Master data**: mata pelajaran, guru, orang tua/wali, jam pelajaran,
+  ekstrakurikuler, kokurikuler, tahun ajaran, kelas, dan jurusan.
+- **Penugasan guru–mapel** di `/teacher-subjects`, prasyarat untuk input nilai.
+- **Input nilai** di `/grades` dengan empat komponen (UTS, UAS, Pengetahuan,
+  Praktik), masing-masing berskala 0–100. Komponen boleh dikosongkan sampai
+  nilainya tersedia. Laporan nilai ada di `/report/grades`.
+- **Asesmen siswa** di `/academic-assessments/{jenis}` dengan tiga jenis:
+  `personality` (aspek kepribadian), `extracurricular` (ekstrakurikuler), dan
+  `kokurikuler`. Penilaian memakai skala A–D.
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+### Penerimaan Siswa Baru (SPMB)
 
-### Account registration and admin login
+- Formulir publik di `/news/spmb`. Mengumpulkan data siswa, kontak, alamat,
+  sekolah asal, dan data orang tua/wali.
+- Dokumen wajib: Kartu Keluarga, akta kelahiran/surat keterangan lahir, KTP
+  orang tua/wali, ijazah/SKL jenjang sebelumnya, dan pas foto terbaru. Setiap
+  berkas maksimal 2 MB; pas foto harus berupa gambar.
+- Berkas disimpan di `writable/uploads/spmb`; pendaftar menerima bukti
+  pendaftaran PDF.
+- Super Admin meninjau pendaftar di `/spmb/applications`.
 
-Registration asks for a name, username, password, and email. The user verifies
-their email once with a one-time code, then logs in using their username and
-password. Before running the authentication migration, set the initial Super
-Admin address in `.env`:
+### Website Sekolah Publik (SekolahKu)
+
+Beranda publik dilayani di `/` dan `/news`. Halaman publik lainnya berada di
+bawah prefiks `/news/`:
+
+- `/news` — beranda, `/news/news` — daftar berita, `/news/news/search` —
+  pencarian berita, `/news/downloads` — unduhan.
+- `/news/contact` — kontak dan pesan dari pengunjung.
+- Kelola konten dari panel: **Kelola News**, **Pengaturan Kontak**,
+  **Pengaturan Beranda**, **Pengaturan Profil**, **Pengaturan Program**, dan
+  **Pesan Masuk**.
+
+### Administrasi Sistem
+
+- **Data User** (`/users`) untuk penetapan peran, serta `/user-passwords` untuk
+  reset kata sandi.
+- **Pengaturan Sidebar** (`/sidebar-settings`) — sembunyikan/tampilkan menu.
+- **Pengaturan Akses Tombol** (`/button-settings`) — izin aksi operasional per
+  peran atau per akun.
+- **Pengaturan Menu** (`/menu-settings`) — menu sidebar kustom beserta ikon,
+  urutan, URL, dan induk menu.
+- **Profil** (`/profile`) — data diri, foto, dan ganti kata sandi.
+
+## Peran Pengguna
+
+Peran didefinisikan di `app/Libraries/RoleAccess.php`:
+
+| Peran | Cakupan bawaan |
+| --- | --- |
+| `super_admin` | Kelola data sekolah, pengguna, dan seluruh pencatatan absensi. |
+| `user` | Akses dasbor dan profil. |
+| `kepala_sekolah` | Pantau ringkasan kehadiran dan laporan sekolah. |
+| `bendahara` | Pantau ringkasan kehadiran sekolah (modul keuangan belum tersedia). |
+| `kurikulum` | Kelola dan pantau informasi akademik sesuai akses yang diberikan. |
+| `operator` | Kelola operasional sekolah sesuai akses yang diberikan. |
+
+Aturan penting:
+
+- Super Admin selalu memegang seluruh izin operasional dan merupakan satu-satunya
+  peran yang dapat mengelola pengguna serta konfigurasi akses sistem.
+- Pengaturan per akun pada `/button-settings` menimpa pengaturan perannya untuk
+  aksi yang dikonfigurasi secara eksplisit; aksi yang tidak diatur mewarisi izin
+  peran.
+- Izin tombol mengatur visibilitas tombol **dan** endpoint aksinya, dan peran
+  tetap harus memiliki akses ke menu terkait.
+- Perubahan peran berlaku pada permintaan terlindungi berikutnya dari akun
+  tersebut.
+- Menambah menu sidebar tidak membuat halaman baru maupun memberikan akses;
+  rute tujuan harus sudah ada dan tetap menegakkan otorisasinya sendiri.
+
+## Instalasi
+
+```bash
+composer install
+```
+
+Perintah ini memasang CodeIgniter 4 beserta Dompdf (untuk ekspor PDF).
+Aset tampilan sudah tersedia di `public/assets/`, sehingga tidak diperlukan
+langkah build tambahan. `package.json` hanya memuat jQuery dan DataTables
+untuk keperluan pengembangan.
+
+## Konfigurasi `.env`
+
+Salin berkas `env` menjadi `.env`, lalu sesuaikan nilainya. Jangan pernah
+meng-commit `.env` karena berisi kredensial.
+
+### Aplikasi
+
+```ini
+CI_ENVIRONMENT = development
+app.baseURL = 'http://localhost:8080/'
+```
+
+### Basis data
+
+```ini
+database.default.hostname = 127.0.0.1
+database.default.database = edusync
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+database.default.port = 3306
+```
+
+### Super Admin pertama
+
+Alamat email pada nilai ini akan dijadikan Super Admin saat migrasi
+autentikasi dijalankan. Email lain yang mendaftar menerima peran `user`.
 
 ```ini
 auth.super_admin_email = admin@example.com
 ```
 
-Configure Gmail SMTP in `.env` with the Google account that will send the codes.
-Use a Google App Password (with 2-Step Verification enabled), not the account
-password:
+### SMTP pengiriman kode verifikasi
+
+Gunakan Google App Password (dengan Verifikasi 2 Langkah aktif), bukan kata
+sandi akun:
 
 ```ini
 email.protocol = smtp
@@ -54,151 +174,142 @@ email.SMTPPort = 587
 email.SMTPCrypto = tls
 ```
 
-Keep `.env` private and do not commit SMTP credentials. Run `php spark migrate`
-with a database account that can create tables. The account used by the web
-application needs `SELECT`, `INSERT`, and `UPDATE` access to `auth_users`.
-The migration seeds the configured email as the Super Admin; other registered
-email addresses receive the regular `user` role. Registration verification
-codes expire after 10 minutes and can only be used once. Passwords must be at
-least 8 characters; usernames must be 3–32 letters, numbers, dots, underscores,
-or hyphens.
+### WhatsApp (opsional)
 
-Super Admin assigns the `user`, `kepala_sekolah`, and `bendahara` roles from
-the Data User page. The User role has dashboard and profile access by default;
-Kepala Sekolah and Bendahara can view attendance reports and class-attendance
-details by default. Super Admin can grant operational button permissions to
-any role from Pengaturan Akses Tombol. Role changes take effect on the
-account's next protected request. Bendahara currently sees attendance
-summaries only; the application does not yet contain financial records or a
-finance module.
+Lihat [Notifikasi WhatsApp](#notifikasi-whatsapp).
 
-Super Admin can show or hide items in the Super Admin sidebar from
-`/sidebar-settings`. This changes sidebar visibility only; existing role
-authorization still protects each page.
+## Menyiapkan Basis Data
 
-Super Admin can grant permissions for operational buttons per role or
-individual account from `/button-settings`, including attendance
-entry/edit/delete, student management, academic master data, grades, and
-assessments. Per-user settings override that account's role setting for actions
-that are explicitly configured; unset actions inherit the role's permission.
-These permissions control both button visibility and the corresponding action
-endpoints, and the role must also have access to the associated menu. Super
-Admin always retains all operational permissions. User/role administration and
-system access configuration remain Super Admin-only.
+Buat database `edusync`, lalu jalankan migrasi dengan akun yang berwenang
+membuat dan mengubah tabel:
 
-Super Admin can add custom sidebar menus and submenus at `/menu-settings`,
-including their Bootstrap icon, display order, internal URL, and parent menu.
-Submenus can be placed under built-in sections such as Settings or under a
-custom menu, then moved to a different section. Changing sidebar navigation
-does not create a page or grant access to it; the target route must already
-exist and continue to enforce its own role authorization.
+```bash
+php spark migrate
+```
 
-### Academic data and classroom attendance
+Akun basis data yang dipakai aplikasi saat berjalan memerlukan `SELECT`,
+`INSERT`, `UPDATE`, dan `DELETE` pada tabel yang digunakannya, termasuk
+`custom_sidebar_items`, `role_action_settings`, dan `user_action_settings`.
+Server web juga harus diizinkan menulis ke `writable/uploads/spmb`.
 
-After signing in as Super Admin, add subjects, teachers, lesson periods,
-extracurricular activities, kokurikuler activities, and an academic year from
-their Master Data pages. Kokurikuler activities have their own CRUD page at
-`/kokurikuler`; access to its create, edit, and delete actions can be managed
-per role or per user from `/button-settings`. Student kokurikuler assessments
-are entered at `/academic-assessments/kokurikuler`, using the same A-D scale as
-extracurricular assessments, and are included in the student report. Create the
-assessment storage table with `create_kokurikuler_assessments.sql` or run its
-migration. Class attendance can then be
-recorded at `/class-attendance/create`: select the class, subject, teacher,
-period, academic year, and date, then set each active student's status. The
-class attendance list and student-level details are available at
-`/class-attendance`. Attendance status options are present, sick, excused, and
-absent; a class/subject/period/year combination can only be recorded once per
-date.
+Alternatif tanpa migrasi: impor `edusync.sql`, lalu terapkan berkas SQL
+pendukung yang relevan (lihat [Berkas SQL Pendukung](#berkas-sql-pendukung)).
 
-Before entering grades, assign subjects to teachers at `/teacher-subjects`.
-The `Input Nilai` page lets an authorized role select a class, academic year,
-subject, and a teacher assigned to that subject, then save UTS, UAS, and
-Praktik scores (0–100) for each active student in the class. Scores are stored
-separately per student, class, subject, teacher, and academic year/semester;
-blank components are allowed until a score is available. From the grade list,
-use `Lihat Detail` on a student to view the saved score components and their
-class, subject, teacher, and semester context.
+### Alur pendaftaran dan masuk
 
-### Public SekolahKu website
+Pendaftaran meminta nama, nama pengguna, kata sandi, dan email. Pengguna
+memverifikasi email satu kali dengan kode sekali pakai, lalu masuk memakai
+nama pengguna dan kata sandi.
 
-Super Admin manages public articles through **Website Sekolah → Kelola News**.
-Articles are stored in the `school_website_news` table in the EduSync database;
-new installations start with no articles. **Lihat News** opens the public
-SekolahKu homepage at `/news`, and the article listing is at `/news/news`.
-The attendance kiosk remains available at `/`; public pages stay under the
-`/news/` prefix. The main EduSync application does not connect to the separate
-SekolahKu CMS database.
+- Kode verifikasi berlaku 10 menit dan hanya dapat dipakai sekali.
+- Kata sandi minimal 8 karakter.
+- Nama pengguna 3–32 karakter, hanya huruf, angka, titik, garis bawah, atau
+  tanda hubung.
 
-Super Admin can update the public contact page from **Website Sekolah →
-Pengaturan Kontak** in the EduSync panel. Changes to the school address,
-telephone, email, and working hours appear on `/news/contact`; this does not
-open a separate CMS admin.
+## Menjalankan Aplikasi
 
-The same **Website Sekolah** group includes **Pengaturan Beranda**,
-**Pengaturan Profil**, and **Pengaturan Program**. These pages update the
-homepage hero, statistics, principal welcome, school profile, and visible
-program cards using tables in the EduSync database. The website-settings,
-program, and news tables are created empty; no settings, programs, or articles
-are copied from the SekolahKu database or inserted as seed data.
+Cara tercepat, memakai server bawaan CodeIgniter:
 
-The public **SPMB Online** button opens `/news/spmb`. The registration form
-collects student, contact, address, previous-school, and parent/guardian data.
-It does not request an admission path, report-card scores, parent income,
-geotag selfie, SPTJM, or path-specific certificates.
-Required documents are limited to the family card, birth certificate, guardian
-identity, previous-school certificate, and recent photo; each upload is
-limited to 2 MB. Submitted values and private document metadata are stored in
-EduSync, while files are kept under `writable/uploads/spmb`. Applicants receive
-a PDF registration receipt after submission. Super Admin can review
-applications and download their documents from **Website Sekolah → Pendaftar
-SPMB**.
-CSRF checks remain enabled; tokens stay stable across submissions so a long
-registration form is not invalidated by another open form.
+```bash
+php spark serve
+```
 
-Run `php spark migrate` with a database account authorized to create and alter
-the website, SPMB, and custom-sidebar tables. The runtime database account
-needs `SELECT`, `INSERT`, `UPDATE`, and `DELETE` on the tables it uses,
-including `custom_sidebar_items`, and the web server must be allowed to write
-to the `writable/uploads/spmb` directory. The runtime account also needs
-`SELECT`, `INSERT`, `UPDATE`, and `DELETE` access to `role_action_settings`
-and `user_action_settings` for per-role and per-user button permissions.
+Aplikasi tersedia di <http://localhost:8080>. Port dapat diganti dengan
+`php spark serve --port 8081`.
 
-## Important Change with index.php
+Untuk XAMPP/Apache, arahkan document root virtual host ke folder `public/`,
+bukan ke akar proyek. `index.php` sengaja tidak berada di akar proyek agar
+kode aplikasi dan framework tidak terekspos. Menaruh `index.php` di akar dan
+mengaksesnya lewat `public/...` adalah praktik yang tidak disarankan.
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+## Peta Rute
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+Rute lengkap ada di `app/Config/Routes.php`. Ringkasan area utama:
 
-**Please** read the user guide for a better explanation of how CI4 works!
+| Area | Contoh rute |
+| --- | --- |
+| Kios absensi | `/`, `/attendance/kiosk`, `POST /attendance/tap` |
+| Manajemen absensi | `/attendance/manage`, `/report/attendance` |
+| Absensi kelas | `/class-attendance`, `/class-attendance/create`, `/class-attendance-report` |
+| Absensi ekstrakurikuler | `/extracurricular-attendance`, `/report/extracurricular-attendance` |
+| Nilai | `/grades`, `/grades/student/{id}`, `/report/grades` |
+| Asesmen | `/academic-assessments/{jenis}` |
+| Master data | `/subjects`, `/teachers`, `/parents`, `/lesson-periods`, `/extracurriculars`, `/kokurikuler`, `/academic-years` |
+| Kelas & jurusan | `/class`, `/major`, `/student`, `/timesetting`, `/attendance-status` |
+| Website sekolah | `/website-news`, `/website-messages`, `/website-settings/*`, `/website-content/*`, `/school-contact-settings` |
+| SPMB | `/news/spmb` (publik), `/spmb/applications` |
+| Autentikasi | `/login`, `/register`, `/auth/*` |
+| Pengaturan sistem | `/users`, `/user-passwords`, `/sidebar-settings`, `/button-settings`, `/menu-settings`, `/teacher-subjects` |
 
-## Repository Management
+Semua permintaan `POST` yang mengubah data dilindungi filter `csrf`. Rute
+panel dilindungi filter `roleAccess` atau `actionAccess`; rute konfigurasi
+sistem memakai `adminAuth`.
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+## Struktur Proyek
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+```
+app/
+  Config/         Konfigurasi aplikasi, rute, basis data, filter
+  Controllers/    28 controller (panel, absensi, akademik, website, SPMB)
+  Database/
+    Migrations/   30 migrasi skema
+  Libraries/      ActionAccess, RoleAccess, SpmbProofPdf,
+                  StudentSpreadsheet, WhatsAppAttendanceNotifier
+  Models/         16 model
+  Views/          Tampilan panel, laporan, dan website SekolahKu
+docs/             Dokumentasi pendukung
+public/           Document root; berisi index.php
+writable/         Log dan unggahan (uploads/spmb)
+```
 
-## Server Requirements
+## Notifikasi WhatsApp
 
-PHP version 8.1 or higher is required, with the following extensions installed:
+Absensi kelas dan tap RFID mengirim notifikasi ke orang tua/wali melalui API
+Fonnte. Absensi tetap tersimpan meskipun WhatsApp belum dikonfigurasi atau
+pengiriman gagal.
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+```ini
+WHATSAPP_API_URL = "https://api.fonnte.com/send"
+WHATSAPP_API_TOKEN = your_fonnte_device_token
+```
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - If you are still using PHP 7.4 or 8.0, you should upgrade immediately.
-> - The end of life date for PHP 8.1 will be December 31, 2025.
+Nomor yang diawali `08` dikonversi menjadi `62` saat pengiriman. Satu data
+orang tua dapat ditautkan ke beberapa siswa. Untuk absensi kelas yang sudah
+tersimpan, gunakan **Kirim Ulang WA** pada daftar absensi.
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+Panduan lengkap: [docs/whatsapp-attendance-setup.md](docs/whatsapp-attendance-setup.md).
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+## Berkas SQL Pendukung
+
+Berkas berikut ada di akar proyek untuk instalasi atau perbaikan manual:
+
+| Berkas | Kegunaan |
+| --- | --- |
+| `edusync.sql` | Dump skema/data keseluruhan. |
+| `create_master_kokurikuler.sql` | Tabel master kokurikuler. |
+| `create_kokurikuler_assessments.sql` | Tabel asesmen kokurikuler. |
+| `create_role_action_settings.sql` | Tabel izin aksi per peran. |
+| `setup_sidebar_menu_icon_overrides.sql` | Timpaan ikon menu sidebar. |
+| `fix_master_siswa_status.sql` | Perbaikan kolom status siswa. |
+| `grant_attendance_read_access.sql` | Hak baca untuk akun pelaporan. |
+
+## Dokumentasi Tambahan
+
+- [docs/whatsapp-attendance-setup.md](docs/whatsapp-attendance-setup.md) —
+  penyiapan Fonnte dan penautan kontak orang tua.
+- [note.md](note.md) — catatan pekerjaan yang belum selesai.
+
+## Kebutuhan Server
+
+PHP 8.1 atau lebih baru dengan ekstensi:
+
+- [intl](https://www.php.net/manual/en/intl.requirements.php)
+- [mbstring](https://www.php.net/manual/en/mbstring.installation.php)
+- json
+- [mysqlnd](https://www.php.net/manual/en/mysqlnd.install.php) untuk MySQL
+- [libcurl](https://www.php.net/manual/en/curl.requirements.php) untuk
+  `HTTP\CURLRequest`
+
+## Lisensi
+
+Lihat [LICENSE](LICENSE). Komponen CodeIgniter 4 berlisensi MIT.
