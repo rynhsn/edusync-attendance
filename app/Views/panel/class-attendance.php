@@ -28,11 +28,40 @@
                     <label class="form-label" for="filterDate">Tanggal</label>
                     <input class="form-control" id="filterDate" name="tanggal" type="date" value="<?= esc($date); ?>">
                 </div>
+                <div class="col-sm-7 col-md-4">
+                    <label class="form-label" for="filterClass">Kelas</label>
+                    <select class="form-select" id="filterClass" name="kelas_id">
+                        <option value="">Semua kelas</option>
+                        <?php foreach ($classes as $class) : ?>
+                            <option value="<?= (int) $class['kelas_id']; ?>" <?= (string) $classId === (string) $class['kelas_id'] ? 'selected' : ''; ?>>
+                                <?= esc($class['kelas_nama']); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <div class="col-auto">
                     <button class="btn btn-outline-primary" type="submit">Filter</button>
                     <a class="btn btn-outline-secondary" href="<?= site_url('class-attendance'); ?>">Reset</a>
                 </div>
             </form>
+            <p class="small text-muted mt-3 mb-0">Notifikasi dikirim per mata pelajaran hanya untuk siswa sakit, izin, atau alpa. Tap RFID mengirim notifikasi datang saja.</p>
+            <?php if ($canSendWhatsApp) : ?>
+                <hr>
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <p class="small text-muted mb-0">Kirim satu rekap untuk kelas terpilih, meliputi tap datang, status tiap jam pelajaran, dan tap pulang pada tanggal tersebut.</p>
+                    <form method="post" action="<?= site_url('class-attendance/send-daily-whatsapp'); ?>" onsubmit="return confirm('Kirim rekap WhatsApp lengkap untuk kelas dan tanggal yang dipilih? Pesan akan dikirim kepada wali murid yang memiliki nomor WhatsApp.');">
+                        <?= csrf_field(); ?>
+                        <input type="hidden" name="tanggal" value="<?= esc($date); ?>">
+                        <input type="hidden" name="kelas_id" value="<?= esc($classId); ?>">
+                        <button class="btn btn-success" type="submit" <?= $date === '' || $classId === '' ? 'disabled' : ''; ?>>
+                            <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Kirim Rekap WhatsApp Kelas
+                        </button>
+                    </form>
+                </div>
+                <?php if ($date === '' || $classId === '') : ?>
+                    <small class="text-muted d-block mt-2">Pilih tanggal dan satu kelas, lalu klik Filter untuk mengaktifkan pengiriman rekap.</small>
+                <?php endif; ?>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -76,14 +105,16 @@
                                     <i class="bi bi-file-earmark-pdf me-1" aria-hidden="true"></i>PDF
                                 </a>
                                 <a class="btn btn-sm btn-outline-info" href="<?= site_url('class-attendance/' . $record['absensi_kelas_id']); ?>">Detail</a>
+                                <?php if ($canSendWhatsApp) : ?>
+                                    <form class="d-inline" method="post" action="<?= site_url('class-attendance/' . $record['absensi_kelas_id'] . '/send-whatsapp'); ?>" onsubmit="return confirm('Kirim ulang notifikasi WhatsApp untuk siswa yang tidak hadir pada sesi mapel ini? Notifikasi yang sudah diterima Fonnte akan dilewati.');">
+                                        <?= csrf_field(); ?>
+                                        <button class="btn btn-sm btn-outline-success" type="submit">
+                                            <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Kirim Ulang WA
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
                                 <?php if ($canEdit) : ?>
                                     <a class="btn btn-sm btn-outline-primary" href="<?= site_url('class-attendance/' . $record['absensi_kelas_id'] . '/edit'); ?>">Edit</a>
-                                <?php endif; ?>
-                                <?php if ($canResendWhatsApp) : ?>
-                                    <form class="d-inline" method="post" action="<?= site_url('class-attendance/' . $record['absensi_kelas_id'] . '/resend-whatsapp'); ?>" onsubmit="return confirm('Kirim ulang notifikasi WhatsApp untuk sesi absensi ini?');">
-                                        <?= csrf_field(); ?>
-                                        <button class="btn btn-sm btn-outline-success" type="submit">Kirim Ulang WA</button>
-                                    </form>
                                 <?php endif; ?>
                                 <?php if ($canDelete) : ?>
                                     <form class="d-inline" method="post" action="<?= site_url('class-attendance/delete/' . $record['absensi_kelas_id']); ?>" onsubmit="return confirm('Hapus sesi absensi beserta seluruh detail siswanya?');">

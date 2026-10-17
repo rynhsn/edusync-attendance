@@ -3,6 +3,8 @@
 namespace App\Controllers;
 
 use App\Libraries\SpmbProofPdf;
+use App\Libraries\SpmbSchedule;
+use App\Models\AdminNotificationModel;
 use App\Models\MasterExtracurricularModel;
 use App\Models\SchoolContactSettingsModel;
 use App\Models\SpmbApplicationModel;
@@ -28,31 +30,18 @@ class SpmbController extends BaseController
         'recent_photo' => ['label' => 'Pas foto terbaru', 'required' => true, 'image_only' => true],
     ];
 
-    public function form(): string
+    public function form(): ResponseInterface|string
     {
-        $contact = (new SchoolContactSettingsModel())->getSettings();
+        $schedule = (new SpmbSchedule())->status();
+        if (! $schedule['is_open']) {
+            return $this->response
+                ->setStatusCode(403)
+                ->setBody(view('sekolahku/spmb-closed', $this->publicPageData() + [
+                    'schedule' => $schedule,
+                ]));
+        }
 
-        return view('sekolahku/spmb', [
-            'page_title' => 'SPMB Online - SekolahKu',
-            'site_name' => 'SekolahKu',
-            'site_tagline' => 'Pendaftaran peserta didik baru',
-            'site_description' => 'Formulir pendaftaran SPMB Online SekolahKu.',
-            'site_logo_text' => 'SekolahKu',
-            'site_logo_icon' => 'fas fa-graduation-cap',
-            'contact_phone' => $contact['phone'],
-            'contact_email' => $contact['email'],
-            'contact_address' => $contact['address'],
-            'contact_hours' => $contact['hours'],
-            'social_facebook' => '',
-            'social_instagram' => '',
-            'social_youtube' => '',
-            'social_tiktok' => '',
-            'footer_description' => 'Formulir pendaftaran peserta didik baru SekolahKu.',
-            'footer_copyright' => 'All rights reserved.',
-            'footer_services' => (new MasterExtracurricularModel())->getActiveActivities(),
-            'footer_links' => [],
-            'spmb_url' => site_url('news/spmb'),
-            'theme_color' => 'default',
+        return view('sekolahku/spmb', $this->publicPageData() + [
             'errors' => session()->getFlashdata('spmbErrors') ?? [],
             'error' => session()->getFlashdata('spmbError'),
             'old' => session()->getFlashdata('_ci_old_input')['post'] ?? [],
@@ -62,6 +51,10 @@ class SpmbController extends BaseController
 
     public function submit(): ResponseInterface|string
     {
+        if (! (new SpmbSchedule())->status()['is_open']) {
+            return redirect()->to(site_url('news/spmb'));
+        }
+
         $honeypot = $this->request->getPost('website');
         if (is_string($honeypot) && trim($honeypot) !== '') {
             return $this->formError('Formulir tidak dapat diproses.');
@@ -199,6 +192,13 @@ class SpmbController extends BaseController
             return $this->formError('Pendaftaran belum dapat disimpan. Silakan coba kembali atau hubungi panitia.');
         }
 
+        (new AdminNotificationModel())->create(
+            'spmb_application',
+            'Pendaftaran SPMB baru',
+            $data['student_name'] . ' mengirim pendaftaran ' . $registrationCode . '.',
+            'spmb/applications'
+        );
+
         $proof = SpmbProofPdf::generate($registrationCode, $application);
 
         return $this->response
@@ -206,11 +206,40 @@ class SpmbController extends BaseController
             ->setContentType('application/pdf');
     }
 
+    private function publicPageData(): array
+    {
+        $contact = (new SchoolContactSettingsModel())->getSettings();
+
+        return [
+            'page_title' => 'SPMB Online - SekolahKu',
+            'site_name' => 'SekolahKu',
+            'site_tagline' => 'Pendaftaran peserta didik baru',
+            'site_description' => 'Formulir pendaftaran SPMB Online SekolahKu.',
+            'site_logo_text' => 'SekolahKu',
+            'site_logo_icon' => 'fas fa-graduation-cap',
+            'contact_phone' => $contact['phone'],
+            'contact_email' => $contact['email'],
+            'contact_address' => $contact['address'],
+            'contact_hours' => $contact['hours'],
+            'social_facebook' => '',
+            'social_instagram' => '',
+            'social_youtube' => '',
+            'social_tiktok' => '',
+            'footer_description' => 'Formulir pendaftaran peserta didik baru SekolahKu.',
+            'footer_copyright' => 'All rights reserved.',
+            'footer_services' => (new MasterExtracurricularModel())->getActiveActivities(),
+            'footer_links' => [],
+            'spmb_url' => site_url('news/spmb'),
+            'theme_color' => 'default',
+        ];
+    }
+
     public function applications()
     {
         $applications = (new SpmbApplicationModel())->getLatest();
         foreach ($applications as &$application) {
             $application['application_data'] = json_decode($application['application_data'], true) ?: [];
+            $application['documents'] = json_decode($application['documents'], true) ?: [];
         }
         unset($application);
 
@@ -267,11 +296,35 @@ class SpmbController extends BaseController
             return $this->response->setStatusCode(500);
         }
 
-        return $this->response->download(
-            $this->safeDownloadName((string) ($document['original_name'] ?? ''), $key . '.' . pathinfo($storedName, PATHINFO_EXTENSION)),
-            $contents,
-            true
+        $extension = strtolower(pathinfo($storedName, PATHINFO_EXTENSION));
+        $mime = match ($extension) {
+            'pdf' => 'application/pdf',
+            'jpg', 'jpeg' => 'image/jpeg',
+            'png' => 'image/png',
+            default => null,
+        };
+        if ($mime === null) {
+            log_message('error', 'Unsupported stored SPMB document type for application {id}.', ['id' => $id]);
+
+            return $this->response->setStatusCode(500);
+        }
+
+        $downloadName = $this->safeDownloadName(
+            (string) ($document['original_name'] ?? ''),
+            $key . '.' . $extension
         );
+        if ($this->request->getGet('view') === '1') {
+            return $this->response
+                ->setHeader('Content-Type', $mime)
+                ->setHeader('Content-Disposition', 'inline; filename="' . $downloadName . '"')
+                ->setHeader('X-Content-Type-Options', 'nosniff')
+                ->setHeader('Cache-Control', 'private, no-store')
+                ->setBody($contents);
+        }
+
+        return $this->response
+            ->download($downloadName, $contents, true)
+            ->setContentType($mime);
     }
 
     private function formError(string $message): ResponseInterface

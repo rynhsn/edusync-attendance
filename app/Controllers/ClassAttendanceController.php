@@ -22,9 +22,14 @@ class ClassAttendanceController extends BaseController
     public function index()
     {
         $date = trim((string) $this->request->getGet('tanggal'));
+        $classId = trim((string) $this->request->getGet('kelas_id'));
         if ($date !== '' && ! $this->isValidDate($date)) {
             return redirect()->to(site_url('class-attendance'))
                 ->with('attendanceError', 'Format tanggal tidak valid.');
+        }
+        if ($classId !== '' && (! ctype_digit($classId) || (int) $classId < 1)) {
+            return redirect()->to(site_url('class-attendance'))
+                ->with('attendanceError', 'Pilihan kelas tidak valid.');
         }
 
         $builder = $this->db->table('absensi_absensi_kelas ak')
@@ -40,6 +45,9 @@ class ClassAttendanceController extends BaseController
         if ($date !== '') {
             $builder->where('ak.tanggal', $date);
         }
+        if ($classId !== '') {
+            $builder->where('ak.kelas_id', (int) $classId);
+        }
 
         $records = $builder->orderBy('ak.tanggal', 'DESC')->orderBy('mk.kelas_nama', 'ASC')->get()->getResultArray();
 
@@ -48,13 +56,63 @@ class ClassAttendanceController extends BaseController
             'activePage' => 'class-attendance',
             'records' => $records,
             'date' => $date,
+            'classId' => $classId,
+            'classes' => $this->db->table('master_kelas')->orderBy('kelas_nama')->get()->getResultArray(),
             'error' => session()->getFlashdata('attendanceError'),
             'message' => session()->getFlashdata('attendanceMessage'),
             'canCreate' => \App\Libraries\ActionAccess::can('class-attendance.create'),
             'canEdit' => \App\Libraries\ActionAccess::can('class-attendance.edit'),
             'canDelete' => \App\Libraries\ActionAccess::can('class-attendance.delete'),
-            'canResendWhatsApp' => \App\Libraries\ActionAccess::can('class-attendance.whatsapp'),
+            'canSendWhatsApp' => \App\Libraries\ActionAccess::can('class-attendance.whatsapp'),
         ]);
+    }
+
+    public function sendDailyWhatsAppReport(): RedirectResponse
+    {
+        $date = trim((string) $this->request->getPost('tanggal'));
+        $classId = filter_var($this->request->getPost('kelas_id'), FILTER_VALIDATE_INT);
+        if ($date === '' || ! $this->isValidDate($date) || $classId === false || $classId < 1) {
+            return redirect()->to(site_url('class-attendance'))
+                ->with('attendanceError', 'Pilih tanggal dan kelas yang valid sebelum mengirim rekap WhatsApp.');
+        }
+
+        $result = (new \App\Libraries\ClassAttendanceWhatsAppService($this->db))
+            ->sendDailyClassReport($classId, $date);
+        $redirectUrl = site_url('class-attendance') . '?' . http_build_query([
+            'tanggal' => $date,
+            'kelas_id' => $classId,
+        ]);
+        if (isset($result['error'])) {
+            return redirect()->to($redirectUrl)->with('attendanceError', $result['error']);
+        }
+        if (! empty($result['noStudents'])) {
+            return redirect()->to($redirectUrl)->with('attendanceError', 'Tidak ada siswa aktif di kelas yang dipilih.');
+        }
+        if (! empty($result['noRecords'])) {
+            return redirect()->to($redirectUrl)->with('attendanceError', 'Belum ada data tap RFID atau absensi kelas pada tanggal tersebut.');
+        }
+
+        $summary = $this->request->getLocale() === 'en'
+            ? sprintf(
+                'Class WhatsApp summary: Fonnte accepted %d guardian messages, %d failed, and %d students have no WhatsApp contact.',
+                $result['sent'],
+                $result['failed'],
+                $result['withoutContact']
+            )
+            : sprintf(
+                'Rekap WhatsApp kelas: %d wali murid diterima Fonnte, %d gagal, %d siswa tanpa kontak WhatsApp.',
+                $result['sent'],
+                $result['failed'],
+                $result['withoutContact']
+            );
+        if ($result['logErrors'] > 0) {
+            $summary .= $this->request->getLocale() === 'en'
+                ? sprintf(' Failed to save %d log records; check the application log.', $result['logErrors'])
+                : sprintf(' Status log gagal disimpan untuk %d catatan; periksa log aplikasi.', $result['logErrors']);
+        }
+
+        return redirect()->to($redirectUrl)
+            ->with($result['failed'] > 0 || $result['logErrors'] > 0 ? 'attendanceError' : 'attendanceMessage', $summary);
     }
 
     public function create()
@@ -62,18 +120,29 @@ class ClassAttendanceController extends BaseController
         return $this->form();
     }
 
-    public function resendWhatsApp(int $id): RedirectResponse
+    public function sendAbsenceWhatsApp(int $id): RedirectResponse
     {
-        if ($id < 1 || $this->db->table('absensi_absensi_kelas')
-            ->where('absensi_kelas_id', $id)->countAllResults() !== 1) {
+        $result = (new \App\Libraries\ClassAttendanceWhatsAppService($this->db))->sendAbsenceNotifications($id);
+        if (isset($result['error'])) {
             return redirect()->to(site_url('class-attendance'))
-                ->with('attendanceError', 'Data absensi tidak ditemukan.');
+                ->with('attendanceError', $result['error']);
         }
 
-        $notificationSummary = $this->notifyParentsAboutAttendance($id);
+        if (! empty($result['noAbsences'])) {
+            return redirect()->to(site_url('class-attendance'))
+                ->with('attendanceMessage', 'Tidak ada notifikasi WhatsApp yang perlu dikirim karena semua siswa hadir.');
+        }
+
+        $notificationSummary = sprintf(
+            'Notifikasi absensi per mapel: %d orang tua masuk antrean Fonnte, %d gagal, %d sudah terkirim dan dilewati, %d siswa tanpa kontak.',
+            $result['sent'],
+            $result['failed'],
+            $result['skipped'],
+            $result['withoutContact']
+        );
 
         return redirect()->to(site_url('class-attendance'))
-            ->with('attendanceMessage', $notificationSummary);
+            ->with($result['failed'] > 0 ? 'attendanceError' : 'attendanceMessage', $notificationSummary);
     }
 
     public function edit(int $id)
@@ -612,8 +681,32 @@ class ClassAttendanceController extends BaseController
                 return $redirect->with('attendanceError', 'Perubahan absensi gagal disimpan. Coba kembali.');
             }
 
+            if ($this->db->tableExists('whatsapp_daily_attendance_log')
+                && $this->db->fieldExists('absensi_kelas_id', 'whatsapp_daily_attendance_log')) {
+                $this->db->table('whatsapp_daily_attendance_log')
+                    ->where('absensi_kelas_id', $id)
+                    ->delete();
+            }
+            $notificationResult = (new \App\Libraries\ClassAttendanceWhatsAppService($this->db))->sendAbsenceNotifications($id);
+            if (isset($notificationResult['error'])) {
+                return redirect()->to(site_url('class-attendance'))
+                    ->with('attendanceError', 'Absensi berhasil diperbarui, tetapi notifikasi WhatsApp gagal diproses: ' . $notificationResult['error']);
+            }
+
+            if (! empty($notificationResult['noAbsences'])) {
+                return redirect()->to(site_url('class-attendance'))
+                    ->with('attendanceMessage', 'Absensi kelas berhasil diperbarui. Tidak ada notifikasi dikirim karena semua siswa hadir.');
+            }
+
+            $notificationMessage = sprintf(
+                'Absensi kelas diperbarui. Notifikasi ketidakhadiran: %d terkirim ke antrean Fonnte, %d gagal, %d siswa tanpa kontak.',
+                $notificationResult['sent'],
+                $notificationResult['failed'],
+                $notificationResult['withoutContact']
+            );
+
             return redirect()->to(site_url('class-attendance'))
-                ->with('attendanceMessage', 'Absensi kelas berhasil diperbarui.');
+                ->with($notificationResult['failed'] > 0 ? 'attendanceError' : 'attendanceMessage', $notificationMessage);
     }
 
     private function storeAfterValidation(
@@ -735,67 +828,27 @@ class ClassAttendanceController extends BaseController
                 ->with('attendanceError', 'Data absensi gagal disimpan. Periksa data lalu coba kembali.');
         }
 
-        $notificationSummary = $this->notifyParentsAboutAttendance($sessionId);
+        $notificationResult = (new \App\Libraries\ClassAttendanceWhatsAppService($this->db))->sendAbsenceNotifications($sessionId);
+        if (isset($notificationResult['error'])) {
+            return redirect()->to(site_url('class-attendance'))
+                ->with('attendanceError', 'Absensi berhasil disimpan, tetapi notifikasi WhatsApp gagal diproses: ' . $notificationResult['error']);
+        }
+
+        if (! empty($notificationResult['noAbsences'])) {
+            return redirect()->to(site_url('class-attendance'))
+                ->with('attendanceMessage', 'Absensi kelas berhasil disimpan. Tidak ada notifikasi dikirim karena semua siswa hadir.');
+        }
+
+        $message = sprintf(
+            'Absensi kelas berhasil disimpan. Notifikasi ketidakhadiran: %d terkirim ke antrean Fonnte, %d gagal, %d dilewati, %d siswa tanpa kontak.',
+            $notificationResult['sent'],
+            $notificationResult['failed'],
+            $notificationResult['skipped'],
+            $notificationResult['withoutContact']
+        );
 
         return redirect()->to(site_url('class-attendance'))
-            ->with('attendanceMessage', 'Absensi kelas berhasil disimpan. ' . $notificationSummary);
-    }
-
-    private function notifyParentsAboutAttendance(int $sessionId): string
-    {
-        $recipients = $this->db->table('absensi_absensi_kelas_siswa aks')
-            ->select('aks.status, ms.nama_siswa, mo.nama_orang_tua, mo.no_whatsapp, mm.mapel_nama, mk.kelas_nama, ak.tanggal')
-            ->join('master_siswa ms', 'ms.siswa_id = aks.siswa_id')
-            ->join('master_orang_tua mo', 'mo.orang_tua_id = ms.orang_tua_id', 'left')
-            ->join('absensi_absensi_kelas ak', 'ak.absensi_kelas_id = aks.absensi_kelas_id')
-            ->join('master_mapel mm', 'mm.mapel_id = ak.mapel_id')
-            ->join('master_kelas mk', 'mk.kelas_id = ak.kelas_id')
-            ->where('aks.absensi_kelas_id', $sessionId)
-            ->get()
-            ->getResultArray();
-
-        $withPhone = array_values(array_filter(
-            $recipients,
-            static fn (array $recipient): bool => trim((string) ($recipient['no_whatsapp'] ?? '')) !== ''
-        ));
-        $withoutPhone = count($recipients) - count($withPhone);
-        if ($withPhone === []) {
-            return 'Notifikasi WhatsApp tidak dikirim karena nomor orang tua belum diisi.';
-        }
-
-        $notifier = new \App\Libraries\WhatsAppAttendanceNotifier();
-        if (! $notifier->isConfigured()) {
-            $missingConfiguration = implode(', ', $notifier->missingConfiguration());
-            log_message('warning', 'Class attendance {id} was saved, but WhatsApp credentials or template settings are missing.', [
-                'id' => $sessionId,
-            ]);
-
-            return 'Notifikasi WhatsApp belum terkirim. Konfigurasi .env belum lengkap: '
-                . $missingConfiguration
-                . '. Periksa token API Fonnte dan URL endpoint, lalu coba kirim ulang.';
-        }
-
-        $sent = 0;
-        $statusLabels = ['hadir' => 'Hadir', 'sakit' => 'Sakit', 'izin' => 'Izin', 'alpa' => 'Alpa'];
-        foreach ($withPhone as $recipient) {
-            $sent += $notifier->sendAttendance(
-                (string) $recipient['no_whatsapp'],
-                [
-                    $recipient['nama_orang_tua'] ?: 'Orang Tua/Wali',
-                    $recipient['nama_siswa'],
-                    $statusLabels[$recipient['status']] ?? $recipient['status'],
-                    $recipient['mapel_nama'],
-                    $recipient['kelas_nama'],
-                    date('d/m/Y', strtotime($recipient['tanggal'])),
-                ]
-            ) ? 1 : 0;
-        }
-        $failed = count($withPhone) - $sent;
-        if ($failed > 0) {
-            return "Permintaan WhatsApp Fonnte diterima untuk {$sent} orang tua; {$failed} gagal; {$withoutPhone} dilewati karena nomor belum diisi. Periksa token/endpoint dan log aplikasi.";
-        }
-
-        return "Permintaan WhatsApp Fonnte diterima untuk {$sent} orang tua; {$withoutPhone} dilewati karena nomor belum diisi.";
+            ->with($notificationResult['failed'] > 0 ? 'attendanceError' : 'attendanceMessage', $message);
     }
 
     private function isValidDate(string $date): bool

@@ -167,8 +167,6 @@ class AttendanceController extends BaseController
         $currentDateTime = date('Y-m-d H:i:s');
         $currentDate = date('Y-m-d');
         $currentTime = date('H.i.s');
-        $tapType = null;
-
         try {
             // Cek apakah card code sudah ada di tabel siswa by condition
             $studentData = $this->studentModel->getStudent(['rfid_tag' => $cardCode]);
@@ -181,8 +179,7 @@ class AttendanceController extends BaseController
             // ambil data absensi hari ini
             $attendanceData = $this->attendanceModel->where('siswa_id', $studentData['siswa_id'])->where('tanggal', $currentDate)->first();
             $timeSettingData = $this->timeSettingModel->where('kelas_id', $studentData['kelas_id'])->first();
-            $attendanceId = (int) ($attendanceData['absensi_id'] ?? 0);
-
+            $isArrivalTap = false;
             //cek apakah ini jam masuk atau jam pulang
             if ($currentTime >= $this->timeVar['time_start'] && $currentTime <= $this->timeVar['time_limit']) {
                 // cek apakah sudah absen masuk
@@ -211,8 +208,7 @@ class AttendanceController extends BaseController
                     ])) {
                         throw new \RuntimeException('Absensi masuk gagal disimpan.');
                     }
-                    $attendanceId = (int) $this->attendanceModel->getInsertID();
-                    $tapType = 'in';
+                    $isArrivalTap = true;
                 }
             } else if ($currentTime > $this->timeVar['time_limit'] && $currentTime <= $this->timeVar['time_end']) {
                 //cek apakah sudah absen masuk dan belum absen pulang
@@ -236,7 +232,6 @@ class AttendanceController extends BaseController
                         ])) {
                             throw new \RuntimeException('Absensi pulang gagal disimpan.');
                         }
-                        $tapType = 'out';
                     }
                 } else {
                     // Belum absen hari ini, catat absensi keluar
@@ -261,59 +256,38 @@ class AttendanceController extends BaseController
                     ])) {
                         throw new \RuntimeException('Absensi pulang gagal disimpan.');
                     }
-                    $attendanceId = (int) $this->attendanceModel->getInsertID();
-                    $tapType = 'out';
                 }
             } else {
                 return $this->response->setStatusCode(400, 'Attendance not allowed')->setJSON(['error' => 'Attendance not allowed']);
             }
 
-            $whatsAppStatus = 'Notifikasi WhatsApp tidak dikirim karena nomor orang tua belum diisi.';
-            if (trim((string) ($studentData['no_whatsapp'] ?? '')) !== '') {
+            $whatsappStatus = 'Notifikasi WhatsApp tidak dikirim untuk tap pulang.';
+            if ($isArrivalTap) {
                 $notifier = new \App\Libraries\WhatsAppAttendanceNotifier();
-                if (! $notifier->isConfigured()) {
-                    $missingConfiguration = implode(', ', $notifier->missingConfiguration());
-                    log_message('warning', 'RFID attendance for student {id} was saved, but WhatsApp configuration is incomplete.', [
-                        'id' => $studentData['siswa_id'],
-                    ]);
-                    $whatsAppStatus = 'Notifikasi WhatsApp tidak dikirim karena konfigurasi belum lengkap: '
-                        . $missingConfiguration . '.';
-                } elseif ($notifier->sendRfidAttendance(
-                    (string) $studentData['no_whatsapp'],
-                    (string) ($studentData['nama_orang_tua'] ?? ''),
-                    (string) $studentData['nama_siswa'],
-                    (string) $tapType,
-                    (string) ($studentData['kelas'] ?? ''),
-                    date('d/m/Y', strtotime($currentDateTime)),
-                    date('H:i:s', strtotime($currentDateTime))
-                )) {
-                    $whatsAppStatus = 'Permintaan notifikasi WhatsApp diterima Fonnte untuk diantrekan.';
-                    $tapLabel = $tapType === 'in' ? 'Masuk WA' : 'Pulang WA';
-                    $currentKeterangan = trim((string) ($attendanceData['keterangan'] ?? ''));
-                    $statusKeterangan = $tapLabel . ': Sent Done';
-                    if (! str_contains($currentKeterangan, $statusKeterangan)) {
-                        $updatedKeterangan = $currentKeterangan === ''
-                            ? $statusKeterangan
-                            : $currentKeterangan . ' | ' . $statusKeterangan;
-
-                        if ($attendanceId < 1 || ! $this->attendanceModel->update($attendanceId, [
-                            'keterangan' => $updatedKeterangan,
-                        ])) {
-                            log_message('error', 'RFID WhatsApp was accepted for attendance {id}, but its sent status could not be saved.', [
-                                'id' => $attendanceId,
-                            ]);
-                            $whatsAppStatus .= ' Status Sent Done gagal disimpan pada keterangan absensi.';
-                        }
-                    }
+                $parentPhone = trim((string) ($studentData['no_whatsapp'] ?? ''));
+                if ($parentPhone === '') {
+                    $whatsappStatus = 'Notifikasi kedatangan tidak terkirim: nomor WhatsApp orang tua belum diisi.';
+                } elseif (! $notifier->isConfigured()) {
+                    $whatsappStatus = 'Notifikasi kedatangan tidak terkirim: konfigurasi WhatsApp belum lengkap.';
                 } else {
-                    $whatsAppStatus = 'Absensi tercatat, tetapi permintaan notifikasi WhatsApp gagal. Periksa nomor orang tua dan log aplikasi.';
+                    $accepted = $notifier->sendStudentArrivalNotification(
+                        $parentPhone,
+                        trim((string) ($studentData['nama_orang_tua'] ?? '')),
+                        (string) $studentData['nama_siswa'],
+                        (string) ($studentData['kelas'] ?? ''),
+                        date('d/m/Y', strtotime($currentDate)),
+                        date('H:i', strtotime($currentDateTime))
+                    );
+                    $whatsappStatus = $accepted
+                        ? 'Notifikasi kedatangan diterima oleh Fonnte.'
+                        : 'Pengiriman notifikasi kedatangan gagal. Periksa log aplikasi dan koneksi Fonnte.';
                 }
             }
 
             $data = [
                 'message' => 'Absensi berhasil dicatat',
                 'student' => $studentData,
-                'whatsapp' => $whatsAppStatus,
+                'whatsapp' => $whatsappStatus,
             ];
             return $this->response->setStatusCode(200)->setJSON($data);
         } catch (\Exception $e) {

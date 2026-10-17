@@ -28,7 +28,7 @@
             <div class="card-header"><h2 class="h5 mb-0">Jadwal</h2></div>
             <div class="card-body">
                 <div class="row g-3">
-                    <div class="col-md-6 col-xl-4">
+                    <div class="col-md-4">
                         <label class="form-label" for="attendanceClass">Kelas</label>
                         <select class="form-select" id="attendanceClass" name="kelas_id" required>
                             <option value="">Pilih kelas</option>
@@ -37,7 +37,16 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-6 col-xl-4">
+                    <div class="col-md-4">
+                        <label class="form-label" for="attendanceTeacher">Guru</label>
+                        <select class="form-select" id="attendanceTeacher" name="guru_id" required>
+                            <option value="">Pilih guru</option>
+                            <?php foreach ($teachers as $teacher) : ?>
+                                <option value="<?= esc($teacher['guru_id']); ?>" <?= $record !== null && (int) $record['guru_id'] === (int) $teacher['guru_id'] ? 'selected' : ''; ?>><?= esc($teacher['guru_nama']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
                         <label class="form-label" for="attendanceSubject">Mata Pelajaran</label>
                         <select class="form-select" id="attendanceSubject" name="mapel_id" required>
                             <option value="">Pilih mapel</option>
@@ -48,20 +57,9 @@
                                     <?= $record !== null && (int) $record['mapel_id'] === (int) $subject['mapel_id'] ? 'selected' : ''; ?>><?= esc($subject['mapel_nama']); ?></option>
                             <?php endforeach; ?>
                         </select>
-                    </div>
-                    <div class="col-12">
                         <div class="form-text" id="subjectAssignmentHint">Daftar mapel mengikuti pengaturan mapel untuk guru yang dipilih.</div>
                     </div>
-                    <div class="col-md-6 col-xl-4">
-                        <label class="form-label" for="attendanceTeacher">Guru</label>
-                        <select class="form-select" id="attendanceTeacher" name="guru_id" required>
-                            <option value="">Pilih guru</option>
-                            <?php foreach ($teachers as $teacher) : ?>
-                                <option value="<?= esc($teacher['guru_id']); ?>" <?= $record !== null && (int) $record['guru_id'] === (int) $teacher['guru_id'] ? 'selected' : ''; ?>><?= esc($teacher['guru_nama']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-6 col-xl-4">
+                    <div class="col-md-4">
                         <label class="form-label" for="attendancePeriod">Jam Pelajaran</label>
                         <select class="form-select" id="attendancePeriod" name="jam_pelajaran_id" required>
                             <option value="">Pilih jam pelajaran</option>
@@ -70,7 +68,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-6 col-xl-4">
+                    <div class="col-md-4">
                         <label class="form-label" for="attendanceYear">Tahun Ajaran</label>
                         <select class="form-select" id="attendanceYear" name="tahun_ajaran_id" required>
                             <option value="">Pilih tahun ajaran</option>
@@ -79,7 +77,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-md-6 col-xl-4">
+                    <div class="col-md-4">
                         <label class="form-label" for="attendanceDate">Tanggal</label>
                         <input class="form-control" id="attendanceDate" name="tanggal" type="date" value="<?= esc($record['tanggal'] ?? date('Y-m-d')); ?>" required>
                     </div>

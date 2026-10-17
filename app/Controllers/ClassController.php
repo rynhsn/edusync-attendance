@@ -32,6 +32,8 @@ class ClassController extends ResourceController
             'activePage' => 'class',
             'classes'    => $this->classModel->orderBy('kelas_tingkat', 'ASC')->orderBy('kelas_nama', 'ASC')->findAll(),
             'editClass'  => $editClass,
+            'masterDataRoute' => 'class',
+            'canImportMasterData' => \App\Libraries\ActionAccess::can('class.manage'),
             'message'    => session()->getFlashdata('classMessage'),
             'error'      => session()->getFlashdata('classError'),
         ]);

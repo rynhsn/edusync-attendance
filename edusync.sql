@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 14, 2026 at 09:35 AM
+-- Generation Time: Oct 17, 2026 at 05:02 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -47,7 +47,11 @@ CREATE TABLE `absensi_absensi_kelas` (
 INSERT INTO `absensi_absensi_kelas` (`absensi_kelas_id`, `kelas_id`, `mapel_id`, `guru_id`, `jam_pelajaran_id`, `tahun_ajaran_id`, `tanggal`, `dicatat_oleh`, `created_at`, `updated_at`) VALUES
 (1, 4, 1, 1, 1, 1, '2026-10-08', 1, NULL, NULL),
 (2, 4, 4, 1, 1, 1, '2026-10-12', 1, NULL, NULL),
-(3, 4, 3, 1, 1, 1, '2026-10-12', 1, NULL, NULL);
+(3, 4, 3, 1, 1, 1, '2026-10-12', 1, NULL, NULL),
+(4, 4, 1, 1, 1, 1, '2026-10-16', 1, NULL, NULL),
+(5, 4, 2, 1, 1, 1, '2026-10-16', 1, NULL, NULL),
+(6, 4, 4, 1, 1, 1, '2026-10-17', 1, NULL, NULL),
+(7, 4, 2, 1, 1, 1, '2026-10-17', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -86,7 +90,31 @@ INSERT INTO `absensi_absensi_kelas_siswa` (`absensi_kelas_siswa_id`, `absensi_ke
 (26, 3, 84, 'hadir', NULL, NULL, NULL),
 (27, 3, 85, 'hadir', NULL, NULL, NULL),
 (28, 3, 86, 'hadir', NULL, NULL, NULL),
-(29, 3, 87, 'hadir', 'Test', NULL, NULL);
+(29, 3, 87, 'hadir', 'Test', NULL, NULL),
+(30, 4, 82, 'hadir', NULL, NULL, NULL),
+(31, 4, 83, 'hadir', NULL, NULL, NULL),
+(32, 4, 84, 'hadir', NULL, NULL, NULL),
+(33, 4, 85, 'hadir', NULL, NULL, NULL),
+(34, 4, 86, 'hadir', NULL, NULL, NULL),
+(35, 4, 87, 'hadir', NULL, NULL, NULL),
+(42, 6, 82, 'hadir', NULL, NULL, NULL),
+(43, 6, 83, 'hadir', NULL, NULL, NULL),
+(44, 6, 84, 'hadir', NULL, NULL, NULL),
+(45, 6, 85, 'hadir', NULL, NULL, NULL),
+(46, 6, 86, 'hadir', NULL, NULL, NULL),
+(47, 6, 87, 'hadir', NULL, NULL, NULL),
+(48, 7, 82, 'hadir', NULL, NULL, NULL),
+(49, 7, 83, 'hadir', NULL, NULL, NULL),
+(50, 7, 84, 'hadir', NULL, NULL, NULL),
+(51, 7, 85, 'hadir', NULL, NULL, NULL),
+(52, 7, 86, 'hadir', NULL, NULL, NULL),
+(53, 7, 87, 'hadir', NULL, NULL, NULL),
+(54, 5, 82, 'alpa', NULL, NULL, NULL),
+(55, 5, 83, 'hadir', NULL, NULL, NULL),
+(56, 5, 84, 'hadir', NULL, NULL, NULL),
+(57, 5, 85, 'izin', NULL, NULL, NULL),
+(58, 5, 86, 'hadir', NULL, NULL, NULL),
+(59, 5, 87, 'sakit', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -10112,6 +10140,53 @@ INSERT INTO `academic_student_personality_scores` (`nilai_id`, `siswa_id`, `kela
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `admin_notifications`
+--
+
+CREATE TABLE `admin_notifications` (
+  `id` int(10) UNSIGNED NOT NULL,
+  `type` varchar(40) NOT NULL,
+  `title` varchar(150) NOT NULL,
+  `message` varchar(500) NOT NULL,
+  `target_url` varchar(255) NOT NULL,
+  `created_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_notification_reads`
+--
+
+CREATE TABLE `admin_notification_reads` (
+  `notification_id` int(10) UNSIGNED NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `read_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_online_sessions`
+--
+
+CREATE TABLE `admin_online_sessions` (
+  `session_id` varchar(128) NOT NULL,
+  `user_id` int(10) UNSIGNED NOT NULL,
+  `logged_in_at` datetime NOT NULL,
+  `last_seen_at` datetime NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_online_sessions`
+--
+
+INSERT INTO `admin_online_sessions` (`session_id`, `user_id`, `logged_in_at`, `last_seen_at`) VALUES
+('ge70p42v5oucrtdfsiu2b4q1bl8ps9j9', 1, '2026-10-17 21:57:39', '2026-10-17 22:01:56');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `auth_users`
 --
 
@@ -10530,7 +10605,8 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 (17, '2026-10-08-093000', 'App\\Database\\Migrations\\AddKnowledgeGrade', 'default', 'App', 1791428237, 7),
 (18, '2026-10-08-100000', 'App\\Database\\Migrations\\AddSubjectReportGroup', 'default', 'App', 1791428941, 8),
 (19, '2026-10-08-103000', 'App\\Database\\Migrations\\CreateStudentAssessments', 'default', 'App', 1791430753, 9),
-(20, '2026-10-08-104500', 'App\\Database\\Migrations\\CreatePersonalityAspects', 'default', 'App', 1791431250, 10);
+(20, '2026-10-08-104500', 'App\\Database\\Migrations\\CreatePersonalityAspects', 'default', 'App', 1791431250, 10),
+(21, '2026-10-17-020000', 'App\\Database\\Migrations\\CreateAdminNotificationsAndOnlineSessions', 'default', 'App', 1792176846, 11);
 
 -- --------------------------------------------------------
 
@@ -10820,7 +10896,9 @@ INSERT INTO `school_website_settings` (`id`, `setting_key`, `setting_value`, `cr
 (16, 'website_gallery', '[{\"category\":\"Test\",\"caption\":\"Test\",\"is_featured\":1,\"id\":1,\"sort_order\":1,\"show\":1,\"created_at\":\"2026-10-07 08:51:43\",\"updated_at\":\"2026-10-07 08:51:43\",\"image\":\"/uploads/school-website/gallery/a19c05ccbe34e92afb2231b57c76b493.png\"}]', NULL, '2026-10-07 08:51:43'),
 (17, 'website_events', '[{\"title\":\"Test\",\"description\":\"Test\",\"location\":\"Test\",\"event_date\":\"2026-10-08\",\"event_time\":\"Test\",\"id\":1,\"sort_order\":1,\"show\":1,\"created_at\":\"2026-10-07 08:51:58\",\"updated_at\":\"2026-10-07 08:51:58\"}]', NULL, '2026-10-07 08:51:58'),
 (18, 'website_faq', '[{\"question\":\"Test\",\"answer\":\"Test\",\"category\":\"Tes\",\"id\":1,\"sort_order\":1,\"show\":1,\"created_at\":\"2026-10-07 08:52:08\",\"updated_at\":\"2026-10-07 08:52:08\"}]', NULL, '2026-10-07 08:52:08'),
-(19, 'website_downloads', '[{\"category\":\"Test\",\"title\":\"Test\",\"description\":\"Test\",\"id\":1,\"sort_order\":1,\"show\":1,\"created_at\":\"2026-10-07 08:52:23\",\"updated_at\":\"2026-10-07 08:52:23\",\"file_path\":\"0ea0599ae548305ddeecce0a2017ebc7.pdf\",\"file_size\":\"1 KB\"}]', NULL, '2026-10-07 08:52:23');
+(19, 'website_downloads', '[{\"category\":\"Test\",\"title\":\"Test\",\"description\":\"Test\",\"id\":1,\"sort_order\":1,\"show\":1,\"created_at\":\"2026-10-07 08:52:23\",\"updated_at\":\"2026-10-07 08:52:23\",\"file_path\":\"0ea0599ae548305ddeecce0a2017ebc7.pdf\",\"file_size\":\"1 KB\"}]', NULL, '2026-10-07 08:52:23'),
+(20, 'spmb_start_date', '2026-10-15', NULL, '2026-10-17 01:38:40'),
+(21, 'spmb_end_date', '2026-10-17', NULL, '2026-10-17 01:38:40');
 
 -- --------------------------------------------------------
 
@@ -10888,7 +10966,10 @@ CREATE TABLE `spmb_applications` (
 --
 
 INSERT INTO `spmb_applications` (`id`, `registration_code`, `student_name`, `student_nik`, `student_nisn`, `contact_email`, `application_data`, `documents`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'SPMB-2026-15864E80', 'jkvbfkjsf', '6289428949827409', '3618468914', 'beehack1999@gmail.com', '{\"contact_email\":\"beehack1999@gmail.com\",\"contact_phone\":\"083812653581\",\"parent_phone\":\"083812653581\",\"student_nik\":\"6289428949827409\",\"student_nisn\":\"3618468914\",\"student_name\":\"jkvbfkjsf\",\"gender\":\"L\",\"birth_place\":\"Serang\",\"birth_date\":\"2018-01-06\",\"address\":\"Kp. Pasar Salasa RT 03/01 No.38 Ds. Ciampea Udik Kec. Ciampea Kab. Bogor 16620\",\"rt\":\"10\",\"rw\":\"10\",\"postal_code\":\"16620\",\"province\":\"JAWA BARAT\",\"regency\":\"BOGOR\",\"district\":\"ahfk\",\"village\":\"skdn\",\"previous_school\":\"faskf\",\"graduation_year\":\"2019\",\"education_level\":\"SMP\",\"parent_name\":\"asnkfns\",\"parent_relationship\":\"ayah\",\"parent_job\":\"iasknfk\"}', '{\"family_card\":{\"label\":\"Kartu Keluarga (KK)\",\"stored_name\":\"f22788128286e49ea92c2424e2efb97c.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"birth_certificate\":{\"label\":\"Akta kelahiran / surat keterangan lahir\",\"stored_name\":\"1d2713167d60a4fa7e5a487ba57d9ba9.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"guardian_identity\":{\"label\":\"KTP orang tua / wali\",\"stored_name\":\"3c734791a5f325aa5495a378e3c29a47.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"previous_school_certificate\":{\"label\":\"Ijazah / SKL jenjang sebelumnya\",\"stored_name\":\"e9742be9dec03b40e0618aa2635bb678.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"recent_photo\":{\"label\":\"Pas foto terbaru\",\"stored_name\":\"6bae61f709ea5e344381a877c751f6d1.jpg\",\"original_name\":\"WhatsApp_Image_2025-10-28_at_7.28.38_PM.jpeg\",\"mime\":\"image/jpeg\",\"size\":1614676}}', 'submitted', '2026-10-06 21:38:12', NULL);
+(1, 'SPMB-2026-15864E80', 'jkvbfkjsf', '6289428949827409', '3618468914', 'beehack1999@gmail.com', '{\"contact_email\":\"beehack1999@gmail.com\",\"contact_phone\":\"083812653581\",\"parent_phone\":\"083812653581\",\"student_nik\":\"6289428949827409\",\"student_nisn\":\"3618468914\",\"student_name\":\"jkvbfkjsf\",\"gender\":\"L\",\"birth_place\":\"Serang\",\"birth_date\":\"2018-01-06\",\"address\":\"Kp. Pasar Salasa RT 03/01 No.38 Ds. Ciampea Udik Kec. Ciampea Kab. Bogor 16620\",\"rt\":\"10\",\"rw\":\"10\",\"postal_code\":\"16620\",\"province\":\"JAWA BARAT\",\"regency\":\"BOGOR\",\"district\":\"ahfk\",\"village\":\"skdn\",\"previous_school\":\"faskf\",\"graduation_year\":\"2019\",\"education_level\":\"SMP\",\"parent_name\":\"asnkfns\",\"parent_relationship\":\"ayah\",\"parent_job\":\"iasknfk\"}', '{\"family_card\":{\"label\":\"Kartu Keluarga (KK)\",\"stored_name\":\"f22788128286e49ea92c2424e2efb97c.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"birth_certificate\":{\"label\":\"Akta kelahiran / surat keterangan lahir\",\"stored_name\":\"1d2713167d60a4fa7e5a487ba57d9ba9.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"guardian_identity\":{\"label\":\"KTP orang tua / wali\",\"stored_name\":\"3c734791a5f325aa5495a378e3c29a47.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"previous_school_certificate\":{\"label\":\"Ijazah / SKL jenjang sebelumnya\",\"stored_name\":\"e9742be9dec03b40e0618aa2635bb678.pdf\",\"original_name\":\"CV___Transkip_Nilai.pdf\",\"mime\":\"application/pdf\",\"size\":1388739},\"recent_photo\":{\"label\":\"Pas foto terbaru\",\"stored_name\":\"6bae61f709ea5e344381a877c751f6d1.jpg\",\"original_name\":\"WhatsApp_Image_2025-10-28_at_7.28.38_PM.jpeg\",\"mime\":\"image/jpeg\",\"size\":1614676}}', 'submitted', '2026-10-06 21:38:12', NULL),
+(2, 'SPMB-2026-113DFE4D', 'Bee Bee', '6289428949827409', '3618468914', 'beehack1999@gmail.com', '{\"contact_email\":\"beehack1999@gmail.com\",\"contact_phone\":\"+6281389541988\",\"parent_phone\":\"083812653581\",\"student_nik\":\"6289428949827409\",\"student_nisn\":\"3618468914\",\"student_name\":\"Bee Bee\",\"gender\":\"L\",\"birth_place\":\"Serang\",\"birth_date\":\"2026-10-17\",\"address\":\"Kp. Pasar Salasa RT 03/01 No.38 Ds. Ciampea Udik Kec. Ciampea Kab. Bogor 16620\",\"rt\":\"10\",\"rw\":\"10\",\"postal_code\":\"16620\",\"province\":\"JAWA BARAT\",\"regency\":\"Serang\",\"district\":\"ahfk\",\"village\":\"skdn\",\"previous_school\":\"faskf\",\"graduation_year\":\"2011\",\"education_level\":\"SMK\",\"parent_name\":\"aku\",\"parent_relationship\":\"wali\",\"parent_job\":\"iasknfk\"}', '{\"family_card\":{\"label\":\"Kartu Keluarga (KK)\",\"stored_name\":\"fcdc99e1d309453e8fe29040bdc41a92.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"birth_certificate\":{\"label\":\"Akta kelahiran / surat keterangan lahir\",\"stored_name\":\"287fb027c3a4a3f4e2208aff6364446d.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"guardian_identity\":{\"label\":\"KTP orang tua / wali\",\"stored_name\":\"c5662a1976bd52670c4339aa790a1779.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"previous_school_certificate\":{\"label\":\"Ijazah / SKL jenjang sebelumnya\",\"stored_name\":\"5b8b80997f4792ecfcb24c7f88bcfda3.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"recent_photo\":{\"label\":\"Pas foto terbaru\",\"stored_name\":\"c23e5be4d4773ab72bc370b17a8b3350.png\",\"original_name\":\"Printer.png\",\"mime\":\"image/png\",\"size\":3918}}', 'submitted', '2026-10-17 01:40:26', NULL),
+(3, 'SPMB-2026-42C5260C', 'Bee Bee', '6289428949827409', '3618468914', 'beehack1999@gmail.com', '{\"contact_email\":\"beehack1999@gmail.com\",\"contact_phone\":\"+6281389541988\",\"parent_phone\":\"083812653581\",\"student_nik\":\"6289428949827409\",\"student_nisn\":\"3618468914\",\"student_name\":\"Bee Bee\",\"gender\":\"L\",\"birth_place\":\"Serang\",\"birth_date\":\"2026-10-17\",\"address\":\"Kp. Pasar Salasa RT 03/01 No.38 Ds. Ciampea Udik Kec. Ciampea Kab. Bogor 16620\",\"rt\":\"10\",\"rw\":\"10\",\"postal_code\":\"16620\",\"province\":\"JAWA BARAT\",\"regency\":\"Serang\",\"district\":\"ahfk\",\"village\":\"skdn\",\"previous_school\":\"faskf\",\"graduation_year\":\"2011\",\"education_level\":\"SMK\",\"parent_name\":\"aku\",\"parent_relationship\":\"wali\",\"parent_job\":\"iasknfk\"}', '{\"family_card\":{\"label\":\"Kartu Keluarga (KK)\",\"stored_name\":\"588e2c8714be79840d8f98b9b95fca19.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"birth_certificate\":{\"label\":\"Akta kelahiran / surat keterangan lahir\",\"stored_name\":\"12f022652cfebe1715ee5dcac54ceeae.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"guardian_identity\":{\"label\":\"KTP orang tua / wali\",\"stored_name\":\"cd4e602e453c9c35ca1d8dcb6110932f.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"previous_school_certificate\":{\"label\":\"Ijazah / SKL jenjang sebelumnya\",\"stored_name\":\"c7ccbb9671e0c57667ea6456637a0bb8.pdf\",\"original_name\":\"New__CV_-_Ego_Ilham.pdf\",\"mime\":\"application/pdf\",\"size\":149468},\"recent_photo\":{\"label\":\"Pas foto terbaru\",\"stored_name\":\"0bcc0a344dc834ce6e2fe8b8714a7882.png\",\"original_name\":\"Printer.png\",\"mime\":\"image/png\",\"size\":3918}}', 'submitted', '2026-10-17 01:43:08', NULL),
+(4, 'SPMB-2026-387CD2D5', 'Bee Bee', '6289428949827409', '3618468914', 'beehack1999@gmail.com', '{\"contact_email\":\"beehack1999@gmail.com\",\"contact_phone\":\"+6281389541988\",\"parent_phone\":\"083812653581\",\"student_nik\":\"6289428949827409\",\"student_nisn\":\"3618468914\",\"student_name\":\"Bee Bee\",\"gender\":\"L\",\"birth_place\":\"Serang\",\"birth_date\":\"2026-10-17\",\"address\":\"Kp. Pasar Salasa RT 03/01 No.38 Ds. Ciampea Udik Kec. Ciampea Kab. Bogor 16620\",\"rt\":\"10\",\"rw\":\"10\",\"postal_code\":\"16620\",\"province\":\"JAWA BARAT\",\"regency\":\"Serang\",\"district\":\"ahfk\",\"village\":\"skdn\",\"previous_school\":\"faskf\",\"graduation_year\":\"2011\",\"education_level\":\"SMK\",\"parent_name\":\"aku\",\"parent_relationship\":\"ayah\",\"parent_job\":\"iasknfk\"}', '{\"family_card\":{\"label\":\"Kartu Keluarga (KK)\",\"stored_name\":\"8399c92117bdce2db62757887851a0cf.pdf\",\"original_name\":\"bukti-pendaftaran-spmb-2026-42c5260c.pdf\",\"mime\":\"application/pdf\",\"size\":3194},\"birth_certificate\":{\"label\":\"Akta kelahiran / surat keterangan lahir\",\"stored_name\":\"40f97161781fd302f74f0d660a34ac5f.pdf\",\"original_name\":\"bukti-pendaftaran-spmb-2026-113dfe4d.pdf\",\"mime\":\"application/pdf\",\"size\":3194},\"guardian_identity\":{\"label\":\"KTP orang tua / wali\",\"stored_name\":\"2e5ca1c0812b1cb99cbbfbbbf14d44b3.pdf\",\"original_name\":\"bukti-pendaftaran-spmb-2026-113dfe4d.pdf\",\"mime\":\"application/pdf\",\"size\":3194},\"previous_school_certificate\":{\"label\":\"Ijazah / SKL jenjang sebelumnya\",\"stored_name\":\"eae0442956ff9b5bddd7cc687e2b27b5.pdf\",\"original_name\":\"bukti-pendaftaran-spmb-2026-113dfe4d.pdf\",\"mime\":\"application/pdf\",\"size\":3194},\"recent_photo\":{\"label\":\"Pas foto terbaru\",\"stored_name\":\"b0d0c816808960bec787f44907529ba4.png\",\"original_name\":\"CCTV.png\",\"mime\":\"image/png\",\"size\":3858}}', 'submitted', '2026-10-17 01:43:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -10924,6 +11005,56 @@ CREATE TABLE `user_action_settings` (
   `is_enabled` tinyint(1) NOT NULL DEFAULT 0,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `whatsapp_attendance_schedule`
+--
+
+CREATE TABLE `whatsapp_attendance_schedule` (
+  `id` tinyint(3) UNSIGNED NOT NULL,
+  `send_time` time NOT NULL DEFAULT '17:00:00',
+  `is_enabled` tinyint(1) NOT NULL DEFAULT 1,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `whatsapp_attendance_schedule`
+--
+
+INSERT INTO `whatsapp_attendance_schedule` (`id`, `send_time`, `is_enabled`, `updated_at`) VALUES
+(1, '15:20:00', 1, '2026-10-16 14:59:03');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `whatsapp_daily_attendance_log`
+--
+
+CREATE TABLE `whatsapp_daily_attendance_log` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `tanggal` date NOT NULL,
+  `orang_tua_id` int(11) UNSIGNED NOT NULL,
+  `absensi_kelas_id` int(11) UNSIGNED DEFAULT NULL,
+  `status` varchar(20) NOT NULL DEFAULT 'pending',
+  `attempts` int(10) UNSIGNED NOT NULL DEFAULT 0,
+  `last_attempt_at` datetime DEFAULT NULL,
+  `sent_at` datetime DEFAULT NULL,
+  `last_error` text DEFAULT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `whatsapp_daily_attendance_log`
+--
+
+INSERT INTO `whatsapp_daily_attendance_log` (`id`, `tanggal`, `orang_tua_id`, `absensi_kelas_id`, `status`, `attempts`, `last_attempt_at`, `sent_at`, `last_error`, `created_at`, `updated_at`) VALUES
+(1, '2026-10-16', 1, NULL, 'sent', 1, '2026-10-16 14:18:17', '2026-10-16 14:18:17', NULL, '2026-10-16 14:18:17', '2026-10-16 14:18:17'),
+(5, '2026-10-17', 1, NULL, 'sent', 1, '2026-10-16 14:21:30', '2026-10-16 14:21:30', NULL, '2026-10-16 14:21:30', '2026-10-16 14:21:30'),
+(6, '2026-10-16', 1, 5, 'sent', 2, '2026-10-17 02:29:39', '2026-10-17 02:29:39', NULL, '2026-10-16 20:58:12', '2026-10-17 02:29:40'),
+(7, '2026-10-16', 1, 4, 'sent', 1, '2026-10-17 02:29:39', '2026-10-17 02:29:39', NULL, '2026-10-17 02:29:39', '2026-10-17 02:29:40');
 
 --
 -- Indexes for dumped tables
@@ -11024,6 +11155,28 @@ ALTER TABLE `academic_student_personality`
 ALTER TABLE `academic_student_personality_scores`
   ADD PRIMARY KEY (`nilai_id`),
   ADD UNIQUE KEY `uq_student_personality_aspect_score` (`siswa_id`,`kelas_id`,`tahun_ajaran_id`,`aspek_id`);
+
+--
+-- Indexes for table `admin_notifications`
+--
+ALTER TABLE `admin_notifications`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_admin_notifications_created` (`created_at`);
+
+--
+-- Indexes for table `admin_notification_reads`
+--
+ALTER TABLE `admin_notification_reads`
+  ADD PRIMARY KEY (`notification_id`,`user_id`),
+  ADD KEY `idx_admin_notification_reads_user` (`user_id`,`read_at`);
+
+--
+-- Indexes for table `admin_online_sessions`
+--
+ALTER TABLE `admin_online_sessions`
+  ADD PRIMARY KEY (`session_id`),
+  ADD KEY `idx_admin_online_sessions_user_seen` (`user_id`,`last_seen_at`),
+  ADD KEY `idx_admin_online_sessions_seen` (`last_seen_at`);
 
 --
 -- Indexes for table `auth_users`
@@ -11183,6 +11336,19 @@ ALTER TABLE `user_action_settings`
   ADD PRIMARY KEY (`user_id`,`action_key`);
 
 --
+-- Indexes for table `whatsapp_attendance_schedule`
+--
+ALTER TABLE `whatsapp_attendance_schedule`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `whatsapp_daily_attendance_log`
+--
+ALTER TABLE `whatsapp_daily_attendance_log`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `whatsapp_daily_attendance_date_parent_session_unique` (`tanggal`,`orang_tua_id`,`absensi_kelas_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -11190,13 +11356,13 @@ ALTER TABLE `user_action_settings`
 -- AUTO_INCREMENT for table `absensi_absensi_kelas`
 --
 ALTER TABLE `absensi_absensi_kelas`
-  MODIFY `absensi_kelas_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `absensi_kelas_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `absensi_absensi_kelas_siswa`
 --
 ALTER TABLE `absensi_absensi_kelas_siswa`
-  MODIFY `absensi_kelas_siswa_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+  MODIFY `absensi_kelas_siswa_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `absensi_absensi_sekolah`
@@ -11263,6 +11429,12 @@ ALTER TABLE `academic_student_personality`
 --
 ALTER TABLE `academic_student_personality_scores`
   MODIFY `nilai_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `admin_notifications`
+--
+ALTER TABLE `admin_notifications`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `auth_users`
@@ -11340,7 +11512,7 @@ ALTER TABLE `master_tahun_ajaran`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `school_website_messages`
@@ -11364,13 +11536,19 @@ ALTER TABLE `school_website_programs`
 -- AUTO_INCREMENT for table `school_website_settings`
 --
 ALTER TABLE `school_website_settings`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `spmb_applications`
 --
 ALTER TABLE `spmb_applications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `whatsapp_daily_attendance_log`
+--
+ALTER TABLE `whatsapp_daily_attendance_log`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables

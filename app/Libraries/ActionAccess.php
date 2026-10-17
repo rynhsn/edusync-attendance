@@ -14,7 +14,7 @@ class ActionAccess
                 'class-attendance.create' => 'Catat absensi kelas',
                 'class-attendance.edit' => 'Edit absensi kelas',
                 'class-attendance.delete' => 'Hapus absensi kelas',
-                'class-attendance.whatsapp' => 'Kirim ulang WhatsApp absensi',
+                'class-attendance.whatsapp' => 'Kirim notifikasi dan rekap absensi melalui WhatsApp',
             ],
             'Data Kelas dan Jadwal' => [
                 'class.manage' => 'Tambah atau edit kelas',
@@ -70,6 +70,7 @@ class ActionAccess
                 'website-news.delete' => 'Hapus berita website',
                 'school-contact-settings.save' => 'Simpan pengaturan kontak sekolah',
                 'website-home-settings.save' => 'Simpan pengaturan beranda website',
+                'website-spmb-schedule.save' => 'Simpan jadwal SPMB Online',
                 'website-profile-settings.save' => 'Simpan profil website',
                 'website-programs.section' => 'Simpan pengaturan bagian program',
                 'website-programs.manage' => 'Tambah atau edit program website',

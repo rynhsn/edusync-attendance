@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= esc(service('request')->getLocale()); ?>">
 
 <head>
     <meta charset="UTF-8">

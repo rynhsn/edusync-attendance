@@ -142,6 +142,21 @@ program cards using tables in the EduSync database. The website-settings,
 program, and news tables are created empty; no settings, programs, or articles
 are copied from the SekolahKu database or inserted as seed data.
 
+Set the SPMB registration period from **Website Sekolah → Jadwal SPMB Online**.
+The start and end dates are inclusive in the `Asia/Jakarta` timezone. Leaving
+both dates empty keeps registration open without a schedule; entering a period
+closes the public form outside that range, shows a notice when visitors open
+SPMB Online, and rejects direct submissions after it closes.
+
+The panel notification bell shows new account registrations and successful
+SPMB applications for Super Admin. **Settings → User Sedang Login** lists
+verified accounts active in the previous five minutes; stale session activity
+is removed after two hours, and logging out removes that session immediately.
+Run `php spark migrate` to create the notification, per-user read-status, and
+online-session tables. The runtime database account needs `SELECT`, `INSERT`,
+`UPDATE`, and `DELETE` access to `admin_notifications`,
+`admin_notification_reads`, and `admin_online_sessions`.
+
 The public **SPMB Online** button opens `/news/spmb`. The registration form
 collects student, contact, address, previous-school, and parent/guardian data.
 It does not request an admission path, report-card scores, parent income,
@@ -152,7 +167,7 @@ limited to 2 MB. Submitted values and private document metadata are stored in
 EduSync, while files are kept under `writable/uploads/spmb`. Applicants receive
 a PDF registration receipt after submission. Super Admin can review
 applications and download their documents from **Website Sekolah → Pendaftar
-SPMB**.
+SPMB**. Applicant details are presented in a grouped popup with document links.
 CSRF checks remain enabled; tokens stay stable across submissions so a long
 registration form is not invalidated by another open form.
 

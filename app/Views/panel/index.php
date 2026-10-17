@@ -10,7 +10,7 @@ $canManage = $role === 'super_admin';
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
         <div>
             <h1 class="h3 mb-0">Dashboard</h1>
-            <p class="text-muted mb-0"><?= esc($roleLabel); ?> &middot; Ringkasan absensi &middot; diperbarui <?= esc(date('H:i')); ?></p>
+            <p class="text-muted mb-0"><span data-no-translate><?= esc($roleLabel); ?></span> &middot; <span>Ringkasan absensi</span> &middot; <span>diperbarui</span> <?= esc(date('H:i')); ?></p>
         </div>
         <div class="d-flex gap-2 flex-shrink-0">
             <?php if ($canManage) : ?>
@@ -126,7 +126,7 @@ $canManage = $role === 'super_admin';
                         <?php $percentage = (int) round(($status['value'] / $attendanceTotal) * 100); ?>
                         <div class="mb-4">
                             <div class="d-flex justify-content-between mb-2">
-                                <span><?= esc($status['label']); ?></span>
+                                <span data-no-translate><?= esc($status['label']); ?></span>
                                 <span class="text-muted"><?= number_format($status['value']); ?> (<?= $percentage; ?>%)</span>
                             </div>
                             <div class="progress" role="progressbar" aria-label="<?= esc($status['label']); ?>" aria-valuenow="<?= $percentage; ?>" aria-valuemin="0" aria-valuemax="100" style="height: 10px;">

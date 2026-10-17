@@ -218,9 +218,10 @@
 
 <script>
 (() => {
+  const form = document.getElementById('spmb-form');
   const fileInputs = Object.fromEntries(Array.from(document.querySelectorAll('[data-document] input[type="file"]')).map(input => [input.name, input]));
 
-  document.getElementById('spmb-form').addEventListener('submit', event => {
+  form.addEventListener('submit', event => {
     for (const input of Object.values(fileInputs)) {
       if (input.files[0] && input.files[0].size > 2 * 1024 * 1024) {
         event.preventDefault();
@@ -229,6 +230,8 @@
         return;
       }
     }
+
+    window.setTimeout(() => form.reset(), 0);
   });
 
 })();

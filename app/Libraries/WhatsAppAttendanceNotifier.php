@@ -33,39 +33,108 @@ class WhatsAppAttendanceNotifier
         return $missing;
     }
 
-    public function sendAttendance(string $phoneNumber, array $parameters): bool
-    {
+    public function sendStudentArrivalNotification(
+        string $phoneNumber,
+        string $parentName,
+        string $studentName,
+        string $className,
+        string $date,
+        string $time
+    ): bool {
         $message = sprintf(
-            "Yth. %s,\n\nKami informasikan kehadiran %s tercatat %s pada mata pelajaran %s di kelas %s tanggal %s.\n\nTerima kasih.",
-            $parameters[0] ?? 'Orang Tua/Wali',
-            $parameters[1] ?? 'siswa',
-            $parameters[2] ?? '-',
-            $parameters[3] ?? '-',
-            $parameters[4] ?? '-',
-            $parameters[5] ?? '-'
+            "Yth. %s,\n\nKami informasikan bahwa %s (%s) telah melakukan tap kartu dan tercatat datang pada %s pukul %s.\n\nTerima kasih.",
+            $parentName !== '' ? $parentName : 'Orang Tua/Wali',
+            $studentName,
+            $className !== '' ? $className : '-',
+            $date,
+            $time
         );
 
         return $this->sendMessage($phoneNumber, $message);
     }
 
-    public function sendRfidAttendance(
+    public function sendClassAbsenceNotification(
         string $phoneNumber,
         string $parentName,
-        string $studentName,
-        string $tapType,
-        string $className,
         string $date,
-        string $time
+        string $className,
+        string $subjectName,
+        string $period,
+        string $startTime,
+        string $endTime,
+        array $students
     ): bool {
-        $tapLabel = $tapType === 'in' ? 'masuk sekolah' : 'pulang sekolah';
+        $details = [];
+        foreach ($students as $student) {
+            $details[] = sprintf(
+                '- %s: %s%s',
+                $student['name'],
+                ucfirst($student['status']),
+                $student['note'] !== '' ? ' (' . $student['note'] . ')' : ''
+            );
+        }
+
         $message = sprintf(
-            "Yth. %s,\n\nKami informasikan %s telah melakukan tap RFID untuk %s pada %s pukul %s di kelas %s.\n\nTerima kasih.",
+            "Yth. %s,\n\nInformasi absensi pada %s:\nKelas: %s\nMata pelajaran: %s\nJam ke-%s (%s-%s)\n\nSiswa tidak hadir:\n%s\n\nTerima kasih.",
             $parentName !== '' ? $parentName : 'Orang Tua/Wali',
-            $studentName,
-            $tapLabel,
             $date,
-            $time,
-            $className !== '' ? $className : '-'
+            $className !== '' ? $className : '-',
+            $subjectName,
+            $period,
+            substr($startTime, 0, 5),
+            substr($endTime, 0, 5),
+            implode("\n", $details)
+        );
+
+        return $this->sendMessage($phoneNumber, $message);
+    }
+
+    public function sendDailyClassAttendanceReport(
+        string $phoneNumber,
+        string $studentName,
+        string $date,
+        string $className,
+        array $students
+    ): bool {
+        $studentReports = [];
+        foreach ($students as $student) {
+            $details = [
+                sprintf(
+                    'Tap datang: %s',
+                    $this->formatTap($student['arrival_time'], $student['arrival_status'])
+                ),
+            ];
+
+            foreach ($student['lessons'] as $lesson) {
+                $details[] = sprintf(
+                    'Mapel %s (jam ke %s, %s-%s): %s%s',
+                    $lesson['subject'],
+                    $lesson['period'],
+                    $lesson['start_time'],
+                    $lesson['end_time'],
+                    $lesson['status'],
+                    $lesson['note'] !== '' ? ' (' . $lesson['note'] . ')' : ''
+                );
+            }
+
+            $details[] = sprintf(
+                'Tap pulang: %s',
+                $this->formatTap($student['departure_time'], $student['departure_status'])
+            );
+
+            $studentReports[] = sprintf(
+                "%s (%s)\n%s",
+                $student['name'],
+                $className !== '' ? $className : '-',
+                implode("\n", $details)
+            );
+        }
+
+        $message = sprintf(
+            "Yth. Kepada Bapak/Ibu Wali Murid %s,\n\nBerikut rekap kehadiran siswa pada %s:\n\n%s\n\nTerima kasih.",
+            $studentName,
+            $date,
+            implode("\n\n", $studentReports)
         );
 
         return $this->sendMessage($phoneNumber, $message);
@@ -114,6 +183,19 @@ class WhatsAppAttendanceNotifier
         }
 
         return true;
+    }
+
+    private function formatTap(?string $time, ?string $status): string
+    {
+        if ($time === null || $time === '') {
+            return 'Tidak ada tap';
+        }
+
+        $formattedTime = substr($time, 0, 5);
+
+        return $status !== null && $status !== ''
+            ? $formattedTime . ' - ' . $status
+            : $formattedTime;
     }
 
     private function normalizeApiUrl(string $apiUrl): string

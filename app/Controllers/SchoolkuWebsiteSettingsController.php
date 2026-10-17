@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\SchoolkuWebsiteContentModel;
 use CodeIgniter\Database\Exceptions\DatabaseException;
+use DateTimeImmutable;
 
 class SchoolkuWebsiteSettingsController extends BaseController
 {
@@ -28,6 +29,49 @@ class SchoolkuWebsiteSettingsController extends BaseController
     private const PROGRAM_DEFAULTS = [
         'section_settings' => '{"programs":{"title":"Program Unggulan","subtitle":"Berbagai program unggulan untuk mengembangkan potensi dan bakat siswa","show":1}}',
     ];
+
+    public function spmbSchedule()
+    {
+        $settings = (new SchoolkuWebsiteContentModel())->getSettings([
+            'spmb_start_date' => '',
+            'spmb_end_date' => '',
+        ]);
+
+        return view('panel/website-spmb-schedule', [
+            'title' => 'Jadwal SPMB Online',
+            'activePage' => 'website-spmb-schedule',
+            'settings' => $settings,
+            'schedule' => (new \App\Libraries\SpmbSchedule())->status(),
+            'message' => session()->getFlashdata('websiteMessage'),
+            'error' => session()->getFlashdata('websiteError'),
+        ]);
+    }
+
+    public function saveSpmbSchedule()
+    {
+        $startDate = $this->request->getPost('spmb_start_date');
+        $endDate = $this->request->getPost('spmb_end_date');
+        if (! is_string($startDate) || ! is_string($endDate)) {
+            return $this->redirectBack('website-settings/spmb-schedule', 'Tanggal jadwal SPMB tidak valid.');
+        }
+        $startDate = trim($startDate);
+        $endDate = trim($endDate);
+
+        if (($startDate === '') !== ($endDate === '')) {
+            return $this->redirectBack('website-settings/spmb-schedule', 'Isi kedua tanggal atau kosongkan keduanya agar jadwal tidak dibatasi.');
+        }
+        if ($startDate !== '' && (! $this->isIsoDate($startDate) || ! $this->isIsoDate($endDate))) {
+            return $this->redirectBack('website-settings/spmb-schedule', 'Tanggal harus valid dengan format hari, bulan, dan tahun.');
+        }
+        if ($startDate !== '' && $endDate < $startDate) {
+            return $this->redirectBack('website-settings/spmb-schedule', 'Tanggal penutupan harus sama dengan atau setelah tanggal pembukaan.');
+        }
+
+        return $this->saveSettings('website-settings/spmb-schedule', [
+            'spmb_start_date' => $startDate,
+            'spmb_end_date' => $endDate,
+        ]);
+    }
 
     public function home()
     {
@@ -341,6 +385,13 @@ class SchoolkuWebsiteSettingsController extends BaseController
         $decoded = json_decode((string) $value, true);
 
         return is_array($decoded) ? $decoded : [];
+    }
+
+    private function isIsoDate(string $date): bool
+    {
+        $parsed = DateTimeImmutable::createFromFormat('!Y-m-d', $date);
+
+        return $parsed !== false && $parsed->format('Y-m-d') === $date;
     }
 
     private function formatRows(array $rows, array $fields): string

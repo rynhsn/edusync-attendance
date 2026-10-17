@@ -9,6 +9,7 @@
 
     <?php if (! empty($message)) : ?><div class="alert alert-success" role="status"><?= esc($message); ?></div><?php endif; ?>
     <?php if (! empty($error)) : ?><div class="alert alert-danger" role="alert"><?= esc($error); ?></div><?php endif; ?>
+    <?= $this->include('panel/partials/master-data-import-export'); ?>
 
     <?php if (\App\Libraries\ActionAccess::can('major.manage')) : ?>
     <div class="card mb-4">
