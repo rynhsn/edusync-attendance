@@ -34,7 +34,7 @@
 
 #--------------------------------------------------------------------
 
-app.baseURL = 'http://localhost:8080'
+# app.baseURL = 'http://localhost:8080'
 
 # If you have trouble with `.`, you could also use `_`.
 
