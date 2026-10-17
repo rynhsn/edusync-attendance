@@ -37,7 +37,7 @@
     </div>
 
     <div class="menu-inner-shadow"></div>
-
+    <?php $activePage = $activePage ?? ''; ?>
     <ul class="menu-inner py-1">
         <!-- Page -->
         <li class="menu-item <?= ($activePage == 'panel') ? 'active' : ''; ?>">

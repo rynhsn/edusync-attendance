@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use App\Libraries\RoleAccess;
+use App\Libraries\OnlineUserTracker;
 use App\Models\AuthUserModel;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
@@ -35,6 +36,7 @@ class RoleAccessFilter implements FilterInterface
             'avatar_path' => $user['avatar_path'],
             'role' => $user['role'],
         ]);
+        OnlineUserTracker::touch();
 
         $allowedRoles = $arguments ?? [];
         if (! in_array($user['role'], $allowedRoles, true)) {

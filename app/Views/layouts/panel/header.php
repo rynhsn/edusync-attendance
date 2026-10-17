@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="light">
+<html lang="<?= esc(service('request')->getLocale()); ?>" data-bs-theme="light">
 
 <head>
     <!-- Kita kunci base href langsung ke folder template di public -->

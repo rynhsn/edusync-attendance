@@ -92,6 +92,7 @@ class RoleAccess
                     'sidebar-settings' => ['label' => 'Setting Akses Menu Role', 'url' => 'sidebar-settings', 'icon' => 'bi-layout-sidebar', 'page' => 'sidebar-settings'],
                     'button-settings' => ['label' => 'Pengaturan Akses Tombol', 'url' => 'button-settings', 'icon' => 'bi-toggles', 'page' => 'button-settings'],
                     'menu-settings' => ['label' => 'Pengaturan Menu', 'url' => 'menu-settings', 'icon' => 'bi-list-nested', 'page' => 'menu-settings'],
+                    'online-users' => ['label' => 'User Sedang Login', 'url' => 'online-users', 'icon' => 'bi-person-check', 'page' => 'online-users'],
                     'teacher-subjects' => ['label' => 'Mapel Guru', 'url' => 'teacher-subjects', 'icon' => 'bi-journal-bookmark', 'page' => 'teacher-subjects'],
                 ],
             ],
@@ -100,6 +101,7 @@ class RoleAccess
                 'key' => 'school-website',
                 'items' => [
                     'website-home-settings' => ['label' => 'Pengaturan Beranda', 'url' => 'website-settings/home', 'icon' => 'bi-house', 'page' => 'website-home-settings'],
+                    'website-spmb-schedule' => ['label' => 'Jadwal SPMB Online', 'url' => 'website-settings/spmb-schedule', 'icon' => 'bi-calendar2-range', 'page' => 'website-spmb-schedule'],
                     'website-profile-settings' => ['label' => 'Pengaturan Profil', 'url' => 'website-settings/profile', 'icon' => 'bi-building', 'page' => 'website-profile-settings'],
                     'website-program-settings' => ['label' => 'Pengaturan Program', 'url' => 'website-settings/programs', 'icon' => 'bi-grid', 'page' => 'website-program-settings'],
                     'school-contact-settings' => ['label' => 'Pengaturan Kontak', 'url' => 'school-contact-settings', 'icon' => 'bi-telephone', 'page' => 'school-contact-settings'],
@@ -255,10 +257,12 @@ class RoleAccess
                 'sidebar-settings' => 'Setting Akses Menu Role',
                 'button-settings' => 'Pengaturan Akses Tombol',
                 'menu-settings' => 'Pengaturan Menu',
+                'online-users' => 'User Sedang Login',
                 'teacher-subjects' => 'Mapel Guru',
             ],
             'Website Sekolah' => [
                 'website-home-settings' => 'Pengaturan Beranda',
+                'website-spmb-schedule' => 'Jadwal SPMB Online',
                 'website-profile-settings' => 'Pengaturan Profil',
                 'website-program-settings' => 'Pengaturan Program',
                 'school-contact-settings' => 'Pengaturan Kontak',
@@ -370,6 +374,7 @@ class RoleAccess
         $uri = trim($uri, '/');
         $prefixes = [
             'website-settings/home' => 'website-home-settings',
+            'website-settings/spmb-schedule' => 'website-spmb-schedule',
             'website-settings/profile' => 'website-profile-settings',
             'website-settings/programs' => 'website-program-settings',
             'website-content/achievements' => 'website-content-achievements',
@@ -390,6 +395,7 @@ class RoleAccess
             'sidebar-settings' => 'sidebar-settings',
             'button-settings' => 'button-settings',
             'menu-settings' => 'menu-settings',
+            'online-users' => 'online-users',
             'report/attendance' => 'attendance-report',
             'report/extracurricular-attendance' => 'extracurricular-attendance-report',
             'extracurricular-attendance' => 'extracurricular-attendance',

@@ -18,6 +18,7 @@
 <?= $this->renderSection('scripts'); ?>
 <script src="<?= base_url('assets/main/panel-table-pagination.js'); ?>" defer></script>
 <script src="<?= base_url('assets/main/panel-sidebar.js'); ?>"></script>
+<script src="<?= base_url('assets/main/panel-language.js'); ?>"></script>
 </body>
 
 </html>

@@ -122,39 +122,39 @@
 
                                     <!-- 1. Tombol Edit -->
                                     <?php if (\App\Libraries\ActionAccess::can('student.edit')) : ?>
-                                    <button type="button" class="btn btn-sm btn-outline-primary edit-student"
-                                        data-id="<?= esc($student['siswa_id']); ?>"
-                                        data-student="<?= esc(json_encode($student, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP), 'attr'); ?>"
-                                        aria-label="Edit <?= esc($student['nama_siswa']); ?>"
-                                        title="Edit">
-                                        <i class="bi bi-pencil" aria-hidden="true"></i>
-                                    </button>
+                                        <button type="button" class="btn btn-sm btn-outline-primary edit-student"
+                                            data-id="<?= esc($student['siswa_id']); ?>"
+                                            data-student="<?= esc(json_encode($student, JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP), 'attr'); ?>"
+                                            aria-label="Edit <?= esc($student['nama_siswa']); ?>"
+                                            title="Edit">
+                                            <i class="bi bi-pencil" aria-hidden="true"></i>
+                                        </button>
                                     <?php endif; ?>
 
                                     <!-- 2. Sakelar Status (Padding & Margin Bawaan Dikunci Total) -->
                                     <?php if (\App\Libraries\ActionAccess::can('student.status')) : ?>
-                                    <span class="form-check form-switch d-inline-flex align-items-center" style="padding: 0 !important; margin: 0 !important; min-height: auto;">
-                                        <input class="form-check-input toggle-student-status cursor-pointer"
-                                            type="checkbox"
-                                            role="switch"
-                                            id="switch-<?= esc($student['siswa_id']); ?>"
-                                            data-id="<?= esc($student['siswa_id']); ?>"
-                                            data-next-status="<?= $studentStatus === 'aktif' ? 'tidak_aktif' : 'aktif'; ?>"
-                                            aria-label="<?= $studentStatus === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?> <?= esc($student['nama_siswa']); ?>"
-                                            title="<?= $studentStatus === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>"
-                                            <?= $studentStatus === 'aktif' ? 'checked' : ''; ?>
-                                            style="width: 2.0em; height: 1.0em; margin: 0 !important; padding: 0 !important; float: none;">
-                                    </span>
+                                        <span class="form-check form-switch d-inline-flex align-items-center" style="padding: 0 !important; margin: 0 !important; min-height: auto;">
+                                            <input class="form-check-input toggle-student-status cursor-pointer"
+                                                type="checkbox"
+                                                role="switch"
+                                                id="switch-<?= esc($student['siswa_id']); ?>"
+                                                data-id="<?= esc($student['siswa_id']); ?>"
+                                                data-next-status="<?= $studentStatus === 'aktif' ? 'tidak_aktif' : 'aktif'; ?>"
+                                                aria-label="<?= $studentStatus === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?> <?= esc($student['nama_siswa']); ?>"
+                                                title="<?= $studentStatus === 'aktif' ? 'Nonaktifkan' : 'Aktifkan'; ?>"
+                                                <?= $studentStatus === 'aktif' ? 'checked' : ''; ?>
+                                                style="width: 2.0em; height: 1.0em; margin: 0 !important; padding: 0 !important; float: none;">
+                                        </span>
                                     <?php endif; ?>
 
                                     <!-- 3. Tombol Hapus -->
                                     <?php if (\App\Libraries\ActionAccess::can('student.delete')) : ?>
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-student"
-                                        data-id="<?= esc($student['siswa_id']); ?>"
-                                        aria-label="Hapus <?= esc($student['nama_siswa']); ?>"
-                                        title="Hapus siswa">
-                                        <i class="bi bi-trash" aria-hidden="true"></i>
-                                    </button>
+                                        <button type="button" class="btn btn-sm btn-outline-danger delete-student"
+                                            data-id="<?= esc($student['siswa_id']); ?>"
+                                            aria-label="Hapus <?= esc($student['nama_siswa']); ?>"
+                                            title="Hapus siswa">
+                                            <i class="bi bi-trash" aria-hidden="true"></i>
+                                        </button>
                                     <?php endif; ?>
 
                                 </div>
@@ -262,7 +262,10 @@
 </div>
 
 <style>
-    .student-import-error { white-space: pre-line; }
+    .student-import-error {
+        white-space: pre-line;
+    }
+
     .student-modal-open {
         overflow: hidden;
     }

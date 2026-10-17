@@ -9,7 +9,7 @@
                 <?= $type === 'subjects'
                     ? 'Atur kelompok setiap mata pelajaran untuk pengelompokan raport SMK.'
                     : ($type === 'parents'
-                        ? 'Kelola kontak orang tua/wali yang dapat dipilih pada data siswa dan menerima notifikasi absensi kelas.'
+                        ? 'Kelola kontak orang tua/wali, hubungkan dengan siswa melalui pencarian, dan gunakan untuk notifikasi absensi.'
                         : 'Kelola data yang digunakan pada pencatatan absensi kelas.'); ?>
             </p>
         </div>
@@ -29,6 +29,9 @@
     <?php if (! empty($warning)) : ?>
         <div class="alert alert-warning" role="alert"><?= esc($warning); ?></div>
     <?php endif; ?>
+    <?php if (in_array($type, ['subjects', 'teachers', 'parents', 'lesson-periods', 'academic-years'], true)) : ?>
+        <?= $this->include('panel/partials/master-data-import-export'); ?>
+    <?php endif; ?>
     <?php if (! empty($editRecord) && \App\Libraries\ActionAccess::can($type . '.edit')) : ?>
         <div class="card mb-4">
             <div class="card-header"><h2 class="h5 mb-0">Edit <?= esc($config['title']); ?></h2></div>
@@ -38,7 +41,13 @@
                     <div class="row g-3">
                         <?php foreach ($config['fields'] as $field) : ?>
                             <?php $fieldValue = $editRecord[$field['name']] ?? ''; ?>
-                            <?php if (($field['type'] ?? '') === 'checkbox') : ?>
+                            <?php if (($field['type'] ?? '') === 'student-picker') : ?>
+                                <?= $this->include('panel/partials/parent-student-picker', [
+                                    'students' => $students,
+                                    'selectedStudentIds' => $selectedStudentIds,
+                                    'pickerId' => 'editParentStudents',
+                                ]); ?>
+                            <?php elseif (($field['type'] ?? '') === 'checkbox') : ?>
                                 <div class="col-12">
                                     <input type="hidden" name="<?= esc($field['name']); ?>" value="0">
                                     <div class="form-check">
@@ -47,7 +56,7 @@
                                     </div>
                                 </div>
                             <?php else : ?>
-                                <div class="col-md-6">
+                                <div class="<?= ($field['type'] ?? '') === 'textarea' ? 'col-12' : 'col-md-6'; ?>">
                                     <label class="form-label" for="edit_<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
                                     <?php if (($field['type'] ?? '') === 'textarea') : ?>
                                         <textarea class="form-control" id="edit_<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" rows="2"><?= esc($fieldValue); ?></textarea>
@@ -86,7 +95,13 @@
                     <?= csrf_field(); ?>
                     <div class="row g-3">
                         <?php foreach ($config['fields'] as $field) : ?>
-                            <?php if (($field['type'] ?? '') === 'checkbox') : ?>
+                            <?php if (($field['type'] ?? '') === 'student-picker') : ?>
+                                <?= $this->include('panel/partials/parent-student-picker', [
+                                    'students' => $students,
+                                    'selectedStudentIds' => [],
+                                    'pickerId' => 'newParentStudents',
+                                ]); ?>
+                            <?php elseif (($field['type'] ?? '') === 'checkbox') : ?>
                                 <div class="col-12">
                                     <input type="hidden" name="<?= esc($field['name']); ?>" value="0">
                                     <div class="form-check">
@@ -95,7 +110,7 @@
                                     </div>
                                 </div>
                             <?php elseif (($field['type'] ?? '') === 'select') : ?>
-                                <div class="col-md-6">
+                                <div class="<?= ($field['type'] ?? '') === 'textarea' ? 'col-12' : 'col-md-6'; ?>">
                                     <label class="form-label" for="<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
                                     <select class="form-select" id="<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" required>
                                         <option value="">Pilih <?= esc(strtolower($field['label'])); ?></option>
@@ -169,6 +184,8 @@
                                             }
                                         }
                                         ?>
+                                    <?php elseif ($column === 'siswa_list') : ?>
+                                        <?= esc(($row[$column] ?? '') !== '' ? $row[$column] : '-'); ?>
                                     <?php else : ?>
                                         <?= esc(($row[$column] ?? '') !== '' ? $row[$column] : '-'); ?>
                                     <?php endif; ?>

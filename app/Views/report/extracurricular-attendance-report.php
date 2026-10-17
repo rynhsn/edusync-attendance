@@ -122,7 +122,10 @@
     const syncStudentId = () => {
         const selectedOption = Array.from(studentOptions.options).find((option) => option.value === studentInput.value);
         studentIdInput.value = selectedOption?.dataset.studentId ?? '';
-        studentInput.setCustomValidity(studentIdInput.value ? '' : 'Pilih siswa dari daftar nama atau NIS.');
+        const invalidStudentMessage = document.documentElement.lang === 'en'
+            ? 'Select a student from the name or student ID list.'
+            : 'Pilih siswa dari daftar nama atau NIS.';
+        studentInput.setCustomValidity(studentIdInput.value ? '' : invalidStudentMessage);
     };
 
     studentInput.addEventListener('input', syncStudentId);

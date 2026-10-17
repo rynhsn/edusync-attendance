@@ -67,10 +67,12 @@ class AcademicDataController extends Controller
             'columns' => [
                 'nama_orang_tua' => 'Nama Orang Tua / Wali',
                 'no_whatsapp' => 'No. WhatsApp',
+                'siswa_list' => 'Nama Siswa',
             ],
             'fields' => [
                 ['name' => 'nama_orang_tua', 'label' => 'Nama Orang Tua / Wali', 'required' => true, 'maxlength' => 100],
                 ['name' => 'no_whatsapp', 'label' => 'No. WhatsApp', 'required' => true, 'maxlength' => 30, 'placeholder' => 'Contoh: 081234567890'],
+                ['name' => 'student_ids', 'label' => 'Nama Siswa', 'type' => 'student-picker'],
             ],
         ],
         'lesson-periods' => [
@@ -161,6 +163,30 @@ class AcademicDataController extends Controller
             ->orderBy($config['key'], 'DESC')
             ->get()
             ->getResultArray();
+        $students = [];
+        $selectedStudentIds = [];
+        if ($type === 'parents') {
+            $students = $this->db->table('master_siswa ms')
+                ->select('ms.siswa_id, ms.nama_siswa, ms.nis, ms.orang_tua_id, mk.kelas_nama, mo.nama_orang_tua')
+                ->join('master_kelas mk', 'mk.kelas_id = ms.kelas_id', 'left')
+                ->join('master_orang_tua mo', 'mo.orang_tua_id = ms.orang_tua_id', 'left')
+                ->orderBy('ms.nama_siswa')
+                ->get()
+                ->getResultArray();
+            $studentsByParent = [];
+            foreach ($students as $student) {
+                $parentId = (int) ($student['orang_tua_id'] ?? 0);
+                if ($parentId > 0) {
+                    $studentsByParent[$parentId][] = $student['nama_siswa'];
+                }
+            }
+            foreach ($rows as &$row) {
+                $parentId = (int) $row['orang_tua_id'];
+                $row['siswa_list'] = implode(', ', $studentsByParent[$parentId] ?? []);
+            }
+            unset($row);
+        }
+
         $editRecord = null;
         if (! empty($this->request->getGet('edit'))) {
             $editId = filter_var($this->request->getGet('edit'), FILTER_VALIDATE_INT);
@@ -169,6 +195,19 @@ class AcademicDataController extends Controller
                     ->where($config['key'], $editId)
                     ->get()
                     ->getRowArray();
+                if ($type === 'parents' && $editRecord !== null) {
+                    $selectedStudentIds = array_map(
+                        'intval',
+                        array_column(
+                            $this->db->table('master_siswa')
+                                ->select('siswa_id')
+                                ->where('orang_tua_id', $editId)
+                                ->get()
+                                ->getResultArray(),
+                            'siswa_id'
+                        )
+                    );
+                }
             }
         }
 
@@ -179,6 +218,10 @@ class AcademicDataController extends Controller
             'config' => $config,
             'rows' => $rows,
             'editRecord' => $editRecord,
+            'students' => $students,
+            'selectedStudentIds' => $selectedStudentIds,
+            'masterDataRoute' => $type,
+            'canImportMasterData' => \App\Libraries\ActionAccess::can($type . '.create'),
             'message' => session()->getFlashdata('academicMessage'),
             'error' => session()->getFlashdata('academicError'),
             'warning' => session()->getFlashdata('academicWarning'),
@@ -309,6 +352,9 @@ class AcademicDataController extends Controller
         $data = [];
         foreach ($config['fields'] as $field) {
             $name = $field['name'];
+            if (($field['type'] ?? '') === 'student-picker') {
+                continue;
+            }
             $value = trim((string) $this->request->getPost($name));
 
             if (($field['type'] ?? '') === 'checkbox') {
@@ -383,6 +429,32 @@ class AcademicDataController extends Controller
             }
         }
 
+        $selectedStudentIds = [];
+        if ($type === 'parents') {
+            $studentIds = $this->request->getPost('student_ids');
+            if ($studentIds !== null && ! is_array($studentIds)) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Pilihan siswa tidak valid.');
+            }
+            foreach ($studentIds ?? [] as $studentId) {
+                $validatedId = filter_var($studentId, FILTER_VALIDATE_INT);
+                if ($validatedId === false || $validatedId < 1) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'Pilihan siswa tidak valid.');
+                }
+                $selectedStudentIds[] = (int) $validatedId;
+            }
+            if (count($selectedStudentIds) !== count(array_unique($selectedStudentIds))) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Siswa yang sama tidak boleh dipilih lebih dari satu kali.');
+            }
+            if ($selectedStudentIds !== []
+                && $this->db->table('master_siswa')->whereIn('siswa_id', $selectedStudentIds)->countAllResults() !== count($selectedStudentIds)) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Satu atau beberapa siswa yang dipilih tidak ditemukan.');
+            }
+        }
+
         $uniqueFields = [
             'subjects' => ['mapel_kode' => 'Kode mapel'],
             'teachers' => ['guru_nip' => 'NIP'],
@@ -426,6 +498,21 @@ class AcademicDataController extends Controller
 
             if (! $saved) {
                 throw new DatabaseException('Saving academic data returned false.');
+            }
+
+            if ($type === 'parents') {
+                $parentId = $id ?? (int) $this->db->insertID();
+                if (! $this->db->table('master_siswa')
+                    ->where('orang_tua_id', $parentId)
+                    ->update(['orang_tua_id' => null])) {
+                    throw new DatabaseException('Could not clear current parent-student links.');
+                }
+                if ($selectedStudentIds !== []
+                    && ! $this->db->table('master_siswa')
+                        ->whereIn('siswa_id', $selectedStudentIds)
+                        ->update(['orang_tua_id' => $parentId])) {
+                    throw new DatabaseException('Could not save parent-student links.');
+                }
             }
 
             if ($this->db->transStatus() === false) {
@@ -484,6 +571,11 @@ class AcademicDataController extends Controller
         }
 
         return redirect()->to(site_url($type))->with('academicMessage', $message);
+    }
+
+    public function syncImportedTeacher(int $teacherId, array $teacher): string
+    {
+        return $this->syncTeacherUser($teacherId, $teacher);
     }
 
     private function syncTeacherUser(int $teacherId, array $teacher): string

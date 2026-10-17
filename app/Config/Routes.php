@@ -26,10 +26,14 @@ $routes->post('website-news/save', 'SchoolWebsiteNewsController::save', ['filter
 $routes->post('website-news/delete/(:num)', 'SchoolWebsiteNewsController::delete/$1', ['filter' => ['actionAccess:website-news.delete', 'csrf']]);
 $routes->get('website-messages', 'SchoolWebsiteMessagesController::index', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('website-messages/read/(:num)', 'SchoolWebsiteMessagesController::markRead/$1', ['filter' => ['roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator', 'csrf']]);
+$routes->get('notifications', 'NotificationsController::index', ['filter' => 'adminAuth']);
+$routes->get('notifications/open/(:num)', 'NotificationsController::open/$1', ['filter' => 'adminAuth']);
 $routes->get('school-contact-settings', 'SchoolContactSettingsController::index', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('school-contact-settings', 'SchoolContactSettingsController::save', ['filter' => ['actionAccess:school-contact-settings.save', 'csrf']]);
 $routes->get('website-settings/home', 'SchoolkuWebsiteSettingsController::home', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('website-settings/home', 'SchoolkuWebsiteSettingsController::saveHome', ['filter' => ['actionAccess:website-home-settings.save', 'csrf']]);
+$routes->get('website-settings/spmb-schedule', 'SchoolkuWebsiteSettingsController::spmbSchedule', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
+$routes->post('website-settings/spmb-schedule', 'SchoolkuWebsiteSettingsController::saveSpmbSchedule', ['filter' => ['actionAccess:website-spmb-schedule.save', 'csrf']]);
 $routes->get('website-settings/profile', 'SchoolkuWebsiteSettingsController::profile', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('website-settings/profile', 'SchoolkuWebsiteSettingsController::saveProfile', ['filter' => ['actionAccess:website-profile-settings.save', 'csrf']]);
 $routes->get('website-settings/programs', 'SchoolkuWebsiteSettingsController::programs', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
@@ -54,6 +58,7 @@ $routes->post('auth/login', 'AuthController::authenticate', ['filter' => 'csrf']
 $routes->post('auth/resend-code', 'AuthController::resendVerificationCode', ['filter' => 'csrf']);
 $routes->post('auth/verify-code', 'AuthController::verifyCode', ['filter' => 'csrf']);
 $routes->post('auth/logout', 'AuthController::logout', ['filter' => 'csrf']);
+$routes->post('language', 'LanguageController::set', ['filter' => 'csrf']);
 
 // Authenticated users can manage their own profile, including regular users.
 $routes->get('profile', 'ProfileController::index', ['filter' => 'authenticated']);
@@ -94,8 +99,24 @@ $routes->get('menu-settings', 'MenuSettingsController::index', ['filter' => 'adm
 $routes->post('menu-settings/save', 'MenuSettingsController::save', ['filter' => ['adminAuth', 'csrf']]);
 $routes->post('menu-settings/icon', 'MenuSettingsController::saveIcon', ['filter' => ['adminAuth', 'csrf']]);
 $routes->post('menu-settings/delete/(:num)', 'MenuSettingsController::delete/$1', ['filter' => ['adminAuth', 'csrf']]);
+$routes->get('online-users', 'OnlineUsersController::index', ['filter' => 'adminAuth']);
 $routes->get('teacher-subjects', 'TeacherSubjectController::index', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('teacher-subjects', 'TeacherSubjectController::save', ['filter' => ['actionAccess:teacher-subjects.save', 'csrf']]);
+
+// Master data spreadsheet import and export
+foreach ([
+    'major' => 'major.manage',
+    'class' => 'class.manage',
+    'subjects' => 'subjects.create',
+    'teachers' => 'teachers.create',
+    'parents' => 'parents.create',
+    'lesson-periods' => 'lesson-periods.create',
+    'academic-years' => 'academic-years.create',
+] as $masterDataType => $importAction) {
+    $routes->get($masterDataType . '/import-template', 'MasterDataSpreadsheetController::template/' . $masterDataType, ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
+    $routes->get($masterDataType . '/export', 'MasterDataSpreadsheetController::export/' . $masterDataType, ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
+    $routes->post($masterDataType . '/import', 'MasterDataSpreadsheetController::import/' . $masterDataType, ['filter' => ['actionAccess:' . $importAction, 'csrf']]);
+}
 
 // Academic master data
 $routes->get('subjects', 'AcademicDataController::index/subjects', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
@@ -141,7 +162,8 @@ $routes->get('class-attendance/(:num)/edit', 'ClassAttendanceController::edit/$1
 $routes->get('class-attendance/(:num)/pdf', 'ClassAttendanceController::downloadPdf/$1', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->get('class-attendance/(:num)', 'ClassAttendanceController::show/$1', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->post('class-attendance', 'ClassAttendanceController::store', ['filter' => ['actionAccess:class-attendance.create', 'csrf']]);
-$routes->post('class-attendance/(:num)/resend-whatsapp', 'ClassAttendanceController::resendWhatsApp/$1', ['filter' => ['actionAccess:class-attendance.whatsapp', 'csrf']]);
+$routes->post('class-attendance/send-daily-whatsapp', 'ClassAttendanceController::sendDailyWhatsAppReport', ['filter' => ['actionAccess:class-attendance.whatsapp', 'csrf']]);
+$routes->post('class-attendance/(:num)/send-whatsapp', 'ClassAttendanceController::sendAbsenceWhatsApp/$1', ['filter' => ['actionAccess:class-attendance.whatsapp', 'csrf']]);
 $routes->post('class-attendance/update/(:num)', 'ClassAttendanceController::update/$1', ['filter' => ['actionAccess:class-attendance.edit', 'csrf']]);
 $routes->post('class-attendance/delete/(:num)', 'ClassAttendanceController::delete/$1', ['filter' => ['actionAccess:class-attendance.delete', 'csrf']]);
 

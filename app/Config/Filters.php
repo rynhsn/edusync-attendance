@@ -15,6 +15,7 @@ use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\AdminAuthFilter;
 use App\Filters\ActionAccessFilter;
 use App\Filters\AuthenticatedFilter;
+use App\Filters\LanguageFilter;
 use App\Filters\RoleAccessFilter;
 
 class Filters extends BaseFilters
@@ -41,6 +42,7 @@ class Filters extends BaseFilters
         'adminAuth'     => AdminAuthFilter::class,
         'actionAccess'  => ActionAccessFilter::class,
         'authenticated' => AuthenticatedFilter::class,
+        'language'      => LanguageFilter::class,
         'roleAccess'    => RoleAccessFilter::class,
     ];
 
@@ -77,6 +79,7 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
+            'language',
             // 'honeypot',
             // 'csrf',
             // 'invalidchars',

@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use App\Libraries\ActionAccess;
+use App\Libraries\OnlineUserTracker;
 use App\Libraries\RoleAccess;
 use App\Models\AuthUserModel;
 use CodeIgniter\Filters\FilterInterface;
@@ -36,6 +37,7 @@ class ActionAccessFilter implements FilterInterface
             'avatar_path' => $user['avatar_path'],
             'role' => $user['role'],
         ]);
+        OnlineUserTracker::touch();
 
         $actionKey = $arguments[0] ?? '';
         $menuKey = RoleAccess::menuKeyForUri($request->getUri()->getPath());

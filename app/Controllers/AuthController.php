@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Libraries\OnlineUserTracker;
+use App\Models\AdminNotificationModel;
 use App\Models\AuthUserModel;
 use CodeIgniter\Controller;
 
@@ -109,6 +111,7 @@ class AuthController extends Controller
             'is_verified'  => 0,
         ];
 
+        $isNewAccount = $user === null;
         if ($user === null) {
             $userId = $this->users->insert($account, true);
             if ($userId === false) {
@@ -130,6 +133,15 @@ class AuthController extends Controller
             log_message('error', 'EduSync account could not be loaded after registration.');
             return redirect()->to(site_url('register'))
                 ->with('authError', 'Akun gagal diproses. Silakan coba kembali.');
+        }
+
+        if ($isNewAccount) {
+            (new AdminNotificationModel())->create(
+                'user_registered',
+                'Pendaftaran user baru',
+                $user['display_name'] . ' (' . $user['email'] . ') mendaftar dan menunggu verifikasi email.',
+                'users'
+            );
         }
 
         return $this->issueVerificationCode($user, 'register');
@@ -241,12 +253,14 @@ class AuthController extends Controller
             'avatar_path'  => $user['avatar_path'] ?? null,
             'role'         => $user['role'],
         ]);
+        OnlineUserTracker::touch();
 
         return redirect()->to($this->destination());
     }
 
     public function logout()
     {
+        OnlineUserTracker::removeCurrent();
         session()->destroy();
 
         return redirect()->to(site_url('login'));
