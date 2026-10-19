@@ -49,6 +49,12 @@ class ClassAttendanceController extends BaseController
             $builder->where('ak.kelas_id', (int) $classId);
         }
 
+        $authUser = session()->get('authUser');
+        if (is_array($authUser) && ($authUser['role'] ?? '') !== 'super_admin') {
+            $userId = filter_var($authUser['user_id'] ?? null, FILTER_VALIDATE_INT);
+            $builder->where('ak.dicatat_oleh', $userId !== false && $userId > 0 ? $userId : 0);
+        }
+
         $records = $builder->orderBy('ak.tanggal', 'DESC')->orderBy('mk.kelas_nama', 'ASC')->get()->getResultArray();
 
         return view('panel/class-attendance', [
@@ -70,18 +76,100 @@ class ClassAttendanceController extends BaseController
     public function sendDailyWhatsAppReport(): RedirectResponse
     {
         $date = trim((string) $this->request->getPost('tanggal'));
-        $classId = filter_var($this->request->getPost('kelas_id'), FILTER_VALIDATE_INT);
-        if ($date === '' || ! $this->isValidDate($date) || $classId === false || $classId < 1) {
+        $postedClassId = $this->request->getPost('kelas_id');
+        $classValue = $postedClassId === null
+            ? ''
+            : (is_string($postedClassId) ? trim($postedClassId) : 'invalid');
+        $classId = $classValue === '' ? null : filter_var($classValue, FILTER_VALIDATE_INT);
+        if ($date === '' || ! $this->isValidDate($date)
+            || ($classId !== null && ($classId === false || $classId < 1))) {
             return redirect()->to(site_url('class-attendance'))
                 ->with('attendanceError', 'Pilih tanggal dan kelas yang valid sebelum mengirim rekap WhatsApp.');
         }
 
-        $result = (new \App\Libraries\ClassAttendanceWhatsAppService($this->db))
-            ->sendDailyClassReport($classId, $date);
+        $service = new \App\Libraries\ClassAttendanceWhatsAppService($this->db);
         $redirectUrl = site_url('class-attendance') . '?' . http_build_query([
             'tanggal' => $date,
-            'kelas_id' => $classId,
+            'kelas_id' => $classId ?? '',
         ]);
+
+        if ($classId === null) {
+            $classes = $this->db->table('master_kelas')
+                ->select('kelas_id, kelas_nama')
+                ->orderBy('kelas_nama')
+                ->get()
+                ->getResultArray();
+            if ($classes === []) {
+                return redirect()->to($redirectUrl)
+                    ->with('attendanceError', 'Belum ada data kelas untuk dikirimi rekap.');
+            }
+
+            $totals = [
+                'classesSent' => 0,
+                'classesWithoutStudents' => 0,
+                'classesWithoutRecords' => 0,
+                'sent' => 0,
+                'failed' => 0,
+                'withoutContact' => 0,
+                'logErrors' => 0,
+            ];
+            $classErrors = [];
+            foreach ($classes as $class) {
+                $result = $service->sendDailyClassReport((int) $class['kelas_id'], $date);
+                if (isset($result['error'])) {
+                    $classErrors[] = $class['kelas_nama'] . ': ' . $result['error'];
+                    continue;
+                }
+                if (! empty($result['noStudents'])) {
+                    $totals['classesWithoutStudents']++;
+                    continue;
+                }
+                if (! empty($result['noRecords'])) {
+                    $totals['classesWithoutRecords']++;
+                    continue;
+                }
+
+                $totals['classesSent']++;
+                foreach (['sent', 'failed', 'withoutContact', 'logErrors'] as $key) {
+                    $totals[$key] += (int) ($result[$key] ?? 0);
+                }
+            }
+
+            if ($totals['classesSent'] === 0) {
+                $message = $classErrors !== []
+                    ? 'Rekap semua kelas gagal diproses: ' . implode(' ', $classErrors)
+                    : 'Tidak ada kelas dengan siswa aktif dan data tap RFID atau absensi kelas pada tanggal tersebut.';
+                return redirect()->to($redirectUrl)->with('attendanceError', $message);
+            }
+
+            $summary = sprintf(
+                'Rekap semua kelas (%d kelas diproses): %d pesan diterima Fonnte, %d gagal, %d siswa tanpa kontak WhatsApp.',
+                $totals['classesSent'],
+                $totals['sent'],
+                $totals['failed'],
+                $totals['withoutContact']
+            );
+            if ($totals['classesWithoutRecords'] > 0 || $totals['classesWithoutStudents'] > 0) {
+                $summary .= sprintf(
+                    ' Dilewati: %d kelas tanpa catatan absensi, %d kelas tanpa siswa aktif.',
+                    $totals['classesWithoutRecords'],
+                    $totals['classesWithoutStudents']
+                );
+            }
+            if ($classErrors !== []) {
+                $summary .= ' Kelas yang gagal diproses: ' . implode(' ', $classErrors);
+            }
+            if ($totals['logErrors'] > 0) {
+                $summary .= sprintf(' Gagal menyimpan %d status log; periksa log aplikasi.', $totals['logErrors']);
+            }
+
+            return redirect()->to($redirectUrl)
+                ->with($totals['failed'] > 0 || $totals['logErrors'] > 0 || $classErrors !== []
+                    ? 'attendanceError'
+                    : 'attendanceMessage', $summary);
+        }
+
+        $result = $service->sendDailyClassReport((int) $classId, $date);
         if (isset($result['error'])) {
             return redirect()->to($redirectUrl)->with('attendanceError', $result['error']);
         }
@@ -214,6 +302,31 @@ class ClassAttendanceController extends BaseController
             $subjectTeacherIds[(int) $assignment['mapel_id']][] = (int) $assignment['guru_id'];
         }
 
+        $dutyTeacherSubjectIds = [];
+        foreach ($this->db->table('master_jadwal_piket_guru')
+            ->select('guru_id, hari, tugas, mapel_ids')
+            ->where('is_active', 1)
+            ->get()->getResultArray() as $duty) {
+            if (! in_array($duty['tugas'], ['absen_kelas', 'keduanya'], true)) {
+                continue;
+            }
+
+            $teacherId = (int) $duty['guru_id'];
+            $parsedMapelIds = [];
+            if (! empty($duty['mapel_ids'])) {
+                foreach (preg_split('/[,\s]+/', trim((string) $duty['mapel_ids']), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $token) {
+                    $value = filter_var($token, FILTER_VALIDATE_INT);
+                    if ($value !== false && $value > 0) {
+                        $parsedMapelIds[] = (int) $value;
+                    }
+                }
+            }
+            if ($parsedMapelIds === []) {
+                continue;
+            }
+            $dutyTeacherSubjectIds[$teacherId][(string) $duty['hari']] = array_values(array_unique($parsedMapelIds));
+        }
+
         return view('panel/class-attendance-form', [
             'title' => $record === null ? 'Catat Absensi Kelas' : 'Edit Absensi Kelas',
             'activePage' => 'class-attendance',
@@ -221,6 +334,7 @@ class ClassAttendanceController extends BaseController
             'students' => $students,
             'subjects' => $this->db->table('master_mapel')->orderBy('mapel_nama')->get()->getResultArray(),
             'subjectTeacherIds' => $subjectTeacherIds,
+            'dutyTeacherSubjectIds' => $dutyTeacherSubjectIds,
             'teachers' => $this->db->table('master_guru')->orderBy('guru_nama')->get()->getResultArray(),
             'periods' => $this->db->table('master_jam_pelajaran')->orderBy('jam_ke')->get()->getResultArray(),
             'academicYears' => $this->db->table('master_tahun_ajaran')->orderBy('is_active', 'DESC')->orderBy('tahun_ajaran_nama', 'DESC')->orderBy('semester')->get()->getResultArray(),

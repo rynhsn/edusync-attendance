@@ -17,6 +17,7 @@ $translatedMenuLabels = [
     'student' => 'Student Data',
     'parents' => 'Parent Data',
     'teachers' => 'Teacher Data',
+    'teacher-duty-schedules' => 'Teacher Duty Schedule',
     'users' => 'User Data',
     'academic-years' => 'Academic Year',
     'major' => 'Majors',
@@ -62,9 +63,11 @@ $translatedMenuLabels = [
     'schoolku-news-public' => 'View News',
 ];
 $translatedSubmenuLabels = [
+    'academic-data' => 'Academic Data',
     'assessment' => 'Assessments',
     'attendance' => 'Attendance',
     'reports' => 'Reports',
+    'website-settings' => 'Settings',
 ];
 
 foreach ($menuGroups as &$menuGroup) {
@@ -138,17 +141,21 @@ unset($menuGroup);
                                         $nestedId = 'sidebarNested' . $groupIndex . ucfirst($nestedMenuKey);
                                         $nestedExpanded = in_array($activePage ?? '', $nestedPages, true);
                                         $nestedLabels = [
+                                            'academic-data' => 'Data Akademik',
                                             'assessment' => 'Penilaian',
                                             'attendance' => 'Absensi',
                                             'reports' => 'Laporan',
+                                            'website-settings' => 'Pengaturan',
                                         ];
                                         if ($currentLocale === 'en') {
                                             $nestedLabels = $translatedSubmenuLabels;
                                         }
                                         $nestedIcons = [
+                                            'academic-data' => 'bi-collection',
                                             'assessment' => 'bi-ui-checks-grid',
                                             'attendance' => 'bi-clipboard-check',
                                             'reports' => 'bi-file-earmark-text',
+                                            'website-settings' => 'bi-gear',
                                         ];
                                         ?>
                                         <li class="nav-item">
