@@ -45,7 +45,7 @@ class SchoolkuController extends BaseController
             'hero_btn_secondary_url' => '/news/contact',
             'hero_stats' => '[]',
             'counter_stats' => '[]',
-            'principal' => '{}',
+            'principal' => '{"smp":{"name":"Kepala Sekolah SMP","role":"Kepala Sekolah SMP","quote":"","photo":""},"smk":{"name":"Kepala Sekolah SMK","role":"Kepala Sekolah SMK","quote":"","photo":""}}',
             'about' => '{}',
             'section_settings' => '{}',
         ]);
@@ -54,6 +54,32 @@ class SchoolkuController extends BaseController
 
             return is_array($result) ? $result : [];
         };
+        $principals = $decode($settings['principal']);
+        if (! isset($principals['smp']) && ! isset($principals['smk'])) {
+            $legacyPrincipal = $principals;
+            if (($legacyPrincipal['role'] ?? $legacyPrincipal['role_title'] ?? '') === 'Kepala Sekolah') {
+                $legacyPrincipal['role'] = 'Kepala Sekolah SMP';
+            }
+            $principals = [
+                'smp' => $legacyPrincipal,
+                'smk' => [
+                    'name' => 'Kepala Sekolah SMK',
+                    'role' => 'Kepala Sekolah SMK',
+                    'quote' => '',
+                    'photo' => '',
+                    'meta' => [],
+                ],
+            ];
+        }
+        foreach (['smp', 'smk'] as $schoolLevel) {
+            $principals[$schoolLevel] = array_merge([
+                'name' => 'Kepala Sekolah ' . strtoupper($schoolLevel),
+                'role' => 'Kepala Sekolah ' . strtoupper($schoolLevel),
+                'quote' => '',
+                'photo' => '',
+                'meta' => [],
+            ], is_array($principals[$schoolLevel] ?? null) ? $principals[$schoolLevel] : []);
+        }
 
         return view('sekolahku/home', $this->pageData('Beranda - SekolahKu') + [
             'hero_badge'            => $settings['hero_badge'],
@@ -65,7 +91,7 @@ class SchoolkuController extends BaseController
             'hero_btn_secondary_url' => $settings['hero_btn_secondary_url'],
             'hero_stats'            => $decode($settings['hero_stats']),
             'counter_stats'         => $decode($settings['counter_stats']),
-            'principal'             => $decode($settings['principal']),
+            'principal'             => $principals,
             'about'                 => $decode($settings['about']),
             'section_settings'      => $decode($settings['section_settings']),
             'programs'              => $contentModel->getPrograms(true),

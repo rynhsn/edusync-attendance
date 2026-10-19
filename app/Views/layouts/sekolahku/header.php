@@ -31,6 +31,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     </noscript>
     <link rel="stylesheet" href="<?= base_url('sekolahku/public/css/style.min.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('sekolahku/public/css/principal-carousel.css') ?>?v=<?= filemtime(FCPATH . 'sekolahku/public/css/principal-carousel.css') ?>">
     <link rel="stylesheet" href="<?= base_url('sekolahku/public/css/spmb.css'); ?>?v=<?= filemtime(FCPATH . 'sekolahku/public/css/spmb.css'); ?>">
     <?php
     $themeColor = (string) ($theme_color ?? 'default');

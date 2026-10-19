@@ -10,7 +10,7 @@
     <?php if (! empty($message)) : ?><div class="alert alert-success" role="status"><?= esc($message); ?></div><?php endif; ?>
     <?php if (! empty($error)) : ?><div class="alert alert-danger" role="alert"><?= esc($error); ?></div><?php endif; ?>
 
-    <form action="<?= site_url('website-settings/home'); ?>" method="post">
+    <form action="<?= site_url('website-settings/home'); ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field(); ?>
         <div class="card mb-4">
             <div class="card-header"><h2 class="h5 card-title mb-0">Sambutan Utama</h2></div>
@@ -67,26 +67,45 @@
         </div>
 
         <div class="card mb-4">
-            <div class="card-header"><h2 class="h5 card-title mb-0">Sambutan Kepala Sekolah</h2></div>
+            <div class="card-header"><h2 class="h5 card-title mb-0">Sambutan Kepala Sekolah SMP dan SMK</h2></div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="principal-name" class="form-label">Nama</label>
-                        <input id="principal-name" name="principal_name" class="form-control" maxlength="200" value="<?= esc(old('principal_name', $principal['name'] ?? '')); ?>">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="principal-role" class="form-label">Jabatan</label>
-                        <input id="principal-role" name="principal_role" class="form-control" maxlength="150" value="<?= esc(old('principal_role', $principal['role'] ?? $principal['role_title'] ?? 'Kepala Sekolah')); ?>">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="principal-quote" class="form-label">Kata sambutan</label>
-                    <textarea id="principal-quote" name="principal_quote" class="form-control" rows="3" maxlength="1000"><?= esc(old('principal_quote', $principal['quote'] ?? $principal['sambutan'] ?? $principal['welcome_message'] ?? '')); ?></textarea>
-                </div>
-                <div class="mb-0">
-                    <label for="principal-photo" class="form-label">URL foto</label>
-                    <input id="principal-photo" name="principal_photo" class="form-control" maxlength="500" value="<?= esc(old('principal_photo', $principal['photo'] ?? '')); ?>">
-                    <div class="form-text">Masukkan URL gambar lengkap atau path gambar yang dapat diakses website publik.</div>
+                <div class="row g-4">
+                    <?php foreach (['smp' => 'SMP', 'smk' => 'SMK'] as $level => $levelLabel) : ?>
+                        <?php
+                        $principalItem = $principal[$level] ?? [];
+                        $principalPhoto = (string) ($principalItem['photo'] ?? '');
+                        $principalPhotoUrl = $principalPhoto === ''
+                            ? base_url('sekolahku/public/images/default-principal.jpg')
+                            : (preg_match('#^https?://#i', $principalPhoto) === 1
+                                ? $principalPhoto
+                                : base_url(ltrim($principalPhoto, '/')));
+                        ?>
+                        <div class="col-lg-6">
+                            <section class="border rounded p-3 h-100" aria-labelledby="principal-<?= esc($level); ?>-heading">
+                                <h3 class="h6 fw-bold mb-3" id="principal-<?= esc($level); ?>-heading">Kepala Sekolah <?= esc($levelLabel); ?></h3>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="principal-<?= esc($level); ?>-name" class="form-label">Nama</label>
+                                        <input id="principal-<?= esc($level); ?>-name" name="principal_<?= esc($level); ?>_name" class="form-control" maxlength="200" value="<?= esc(old('principal_' . $level . '_name', $principalItem['name'] ?? '')); ?>">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="principal-<?= esc($level); ?>-role" class="form-label">Jabatan</label>
+                                        <input id="principal-<?= esc($level); ?>-role" name="principal_<?= esc($level); ?>_role" class="form-control" maxlength="150" value="<?= esc(old('principal_' . $level . '_role', $principalItem['role'] ?? 'Kepala Sekolah ' . $levelLabel)); ?>">
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="principal-<?= esc($level); ?>-quote" class="form-label">Kata sambutan</label>
+                                    <textarea id="principal-<?= esc($level); ?>-quote" name="principal_<?= esc($level); ?>_quote" class="form-control" rows="3" maxlength="1000"><?= esc(old('principal_' . $level . '_quote', $principalItem['quote'] ?? '')); ?></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <img src="<?= esc($principalPhotoUrl); ?>" alt="Foto saat ini Kepala Sekolah <?= esc($levelLabel); ?>" class="img-thumbnail mb-2" style="width: 120px; height: 120px; object-fit: cover;">
+                                    <label for="principal-<?= esc($level); ?>-photo" class="form-label d-block">Upload foto kepala sekolah <?= esc($levelLabel); ?></label>
+                                    <input id="principal-<?= esc($level); ?>-photo" name="principal_<?= esc($level); ?>_photo" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                                    <div class="form-text">JPG, PNG, atau WebP; maksimal 5 MB. Kosongkan jika tidak ingin mengganti foto.</div>
+                                </div>
+                            </section>
+                        </div>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
