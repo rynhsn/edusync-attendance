@@ -8,9 +8,11 @@
             <p class="text-muted mb-0">
                 <?= $type === 'subjects'
                     ? 'Atur kelompok setiap mata pelajaran untuk pengelompokan raport SMK.'
+                    : ($type === 'teacher-duty-schedules'
+                        ? 'Atur guru piket berdasarkan hari, jam, dan tugas untuk menangani keterlambatan siswa serta mengabsen kelas saat guru berhalangan hadir.'
                     : ($type === 'parents'
                         ? 'Kelola kontak orang tua/wali, hubungkan dengan siswa melalui pencarian, dan gunakan untuk notifikasi absensi.'
-                        : 'Kelola data yang digunakan pada pencatatan absensi kelas.'); ?>
+                        : 'Kelola data yang digunakan pada pencatatan absensi kelas.')); ?>
             </p>
         </div>
         <?php if (\App\Libraries\ActionAccess::can($type . '.create')) : ?>
@@ -55,6 +57,22 @@
                                         <label class="form-check-label" for="edit_<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
                                     </div>
                                 </div>
+                            <?php elseif (($field['type'] ?? '') === 'subject-checklist') : ?>
+                                <div class="col-12" data-duty-subject-field data-form-mode="edit" <?= ($editRecord['tugas'] ?? '') === 'keterlambatan' ? 'hidden' : ''; ?>>
+                                    <label class="form-label"><?= esc($field['label']); ?></label>
+                                    <div class="row g-3">
+                                        <?php $selectedSubjectIdsForField = $selectedSubjectIds; ?>
+                                        <?php foreach ($subjects as $subject) : ?>
+                                            <?php $subjectId = (int) $subject['mapel_id']; ?>
+                                            <div class="col-md-6 col-xl-4">
+                                                <div class="form-check d-flex align-items-center gap-2 border rounded p-3 h-100">
+                                                    <input class="form-check-input position-static m-0 flex-shrink-0" id="edit_<?= esc($field['name']); ?>_<?= esc($subjectId); ?>" name="<?= esc($field['name']); ?>[]" type="checkbox" value="<?= esc((string) $subjectId); ?>" <?= in_array($subjectId, $selectedSubjectIdsForField, true) ? 'checked' : ''; ?>>
+                                                    <label class="form-check-label m-0" for="edit_<?= esc($field['name']); ?>_<?= esc($subjectId); ?>"><?= esc($subject['mapel_nama']); ?></label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
                             <?php else : ?>
                                 <div class="<?= ($field['type'] ?? '') === 'textarea' ? 'col-12' : 'col-md-6'; ?>">
                                     <label class="form-label" for="edit_<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
@@ -62,6 +80,7 @@
                                         <textarea class="form-control" id="edit_<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" rows="2"><?= esc($fieldValue); ?></textarea>
                                     <?php elseif (($field['type'] ?? '') === 'select') : ?>
                                         <select class="form-select" id="edit_<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" required>
+                                            <option value="" disabled <?= (string) $fieldValue === '' ? 'selected' : ''; ?>>Pilih <?= esc(strtolower($field['label'])); ?></option>
                                             <?php foreach ($field['options'] as $optionValue => $optionLabel) : ?>
                                                 <option value="<?= esc((string) $optionValue); ?>" <?= (string) $fieldValue === (string) $optionValue ? 'selected' : ''; ?>><?= esc($optionLabel); ?></option>
                                             <?php endforeach; ?>
@@ -105,15 +124,30 @@
                                 <div class="col-12">
                                     <input type="hidden" name="<?= esc($field['name']); ?>" value="0">
                                     <div class="form-check">
-                                        <input class="form-check-input" id="<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" type="checkbox" value="1">
+                                        <input class="form-check-input" id="<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" type="checkbox" value="1" <?= ! empty($field['checked']) ? 'checked' : ''; ?>>
                                         <label class="form-check-label" for="<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
+                                    </div>
+                                </div>
+                            <?php elseif (($field['type'] ?? '') === 'subject-checklist') : ?>
+                                <div class="col-12" data-duty-subject-field data-form-mode="create" hidden>
+                                    <label class="form-label"><?= esc($field['label']); ?></label>
+                                    <div class="row g-3">
+                                        <?php foreach ($subjects as $subject) : ?>
+                                            <?php $subjectId = (int) $subject['mapel_id']; ?>
+                                            <div class="col-md-6 col-xl-4">
+                                                <div class="form-check d-flex align-items-center gap-2 border rounded p-3 h-100">
+                                                    <input class="form-check-input position-static m-0 flex-shrink-0" id="<?= esc($field['name']); ?>_<?= esc($subjectId); ?>" name="<?= esc($field['name']); ?>[]" type="checkbox" value="<?= esc((string) $subjectId); ?>">
+                                                    <label class="form-check-label m-0" for="<?= esc($field['name']); ?>_<?= esc($subjectId); ?>"><?= esc($subject['mapel_nama']); ?></label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                             <?php elseif (($field['type'] ?? '') === 'select') : ?>
                                 <div class="<?= ($field['type'] ?? '') === 'textarea' ? 'col-12' : 'col-md-6'; ?>">
                                     <label class="form-label" for="<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
                                     <select class="form-select" id="<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" required>
-                                        <option value="">Pilih <?= esc(strtolower($field['label'])); ?></option>
+                                        <option value="" disabled selected>Pilih <?= esc(strtolower($field['label'])); ?></option>
                                         <?php foreach ($field['options'] as $optionValue => $optionLabel) : ?>
                                             <option value="<?= esc((string) $optionValue); ?>"><?= esc($optionLabel); ?></option>
                                         <?php endforeach; ?>
@@ -212,4 +246,26 @@
         </div>
     </div>
 </div>
+<?php if ($type === 'teacher-duty-schedules') : ?>
+<script>
+(() => {
+    document.querySelectorAll('[data-duty-subject-field]').forEach((field) => {
+        const form = field.closest('form');
+        const taskSelect = form?.querySelector('select[name="tugas"]');
+        if (!taskSelect) return;
+
+        const updateSubjectVisibility = () => {
+            const shouldShow = ['absen_kelas', 'keduanya'].includes(taskSelect.value);
+            field.hidden = !shouldShow;
+            field.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
+                checkbox.disabled = !shouldShow;
+            });
+        };
+
+        taskSelect.addEventListener('change', updateSubjectVisibility);
+        updateSubjectVisibility();
+    });
+})();
+</script>
+<?php endif; ?>
 <?= $this->endSection(); ?>

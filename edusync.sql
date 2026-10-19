@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 17, 2026 at 05:02 PM
+-- Generation Time: Oct 19, 2026 at 06:13 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -10182,7 +10182,20 @@ CREATE TABLE `admin_online_sessions` (
 --
 
 INSERT INTO `admin_online_sessions` (`session_id`, `user_id`, `logged_in_at`, `last_seen_at`) VALUES
-('ge70p42v5oucrtdfsiu2b4q1bl8ps9j9', 1, '2026-10-17 21:57:39', '2026-10-17 22:01:56');
+('14tbq6velfatpqq37usm2d3ktefkjt96', 1, '2026-10-19 10:50:45', '2026-10-19 10:55:45'),
+('217gblc44j3bmugatih505qk1pbvg6qr', 1, '2026-10-19 10:29:02', '2026-10-19 10:30:44'),
+('6hsnc8ra8q6ei5itu79udvp326j7cd9h', 1, '2026-10-19 10:23:11', '2026-10-19 10:24:26'),
+('9813fcbee0r1grrhciljnidfdl2kete6', 1, '2026-10-19 10:16:32', '2026-10-19 10:19:54'),
+('9pf2eq9h671olnprbgbc1fjqv9uoetaf', 1, '2026-10-19 10:06:09', '2026-10-19 10:07:25'),
+('ba3okoeveq0qs7gfkfpab9m3li0ulsvr', 1, '2026-10-19 09:19:16', '2026-10-19 09:19:17'),
+('c8ams708o6clp107cat62f41tcmltcao', 1, '2026-10-19 11:06:13', '2026-10-19 11:06:13'),
+('f9stgq7viju2nj4e7nktpakq3b4g4ns6', 5, '2026-10-19 11:00:34', '2026-10-19 11:00:46'),
+('ge70p42v5oucrtdfsiu2b4q1bl8ps9j9', 1, '2026-10-17 21:57:39', '2026-10-17 22:01:56'),
+('hao4csptntm83o26hick9s7uib6jq188', 1, '2026-10-19 10:43:43', '2026-10-19 10:44:02'),
+('kcai92hoi1efvc1n2bgma1aehbk2jjpv', 1, '2026-10-19 10:55:55', '2026-10-19 11:00:01'),
+('lcfr4c8h6927pk6lnm56a1b1ecp9i9ec', 1, '2026-10-19 10:36:37', '2026-10-19 10:38:40'),
+('rc3076dtj6pv11h2aqellcevvhnjf7oi', 5, '2026-10-19 11:04:47', '2026-10-19 11:08:34'),
+('sig25ejtgtrd1lc81nga79rg9v6a5ubj', 1, '2026-10-19 11:01:11', '2026-10-19 11:05:58');
 
 -- --------------------------------------------------------
 
@@ -10198,6 +10211,7 @@ CREATE TABLE `auth_users` (
   `password_hash` varchar(255) DEFAULT NULL,
   `avatar_path` varchar(100) DEFAULT NULL,
   `role` varchar(20) NOT NULL DEFAULT 'user',
+  `guru_id` int(11) UNSIGNED DEFAULT NULL,
   `is_verified` tinyint(1) NOT NULL DEFAULT 0,
   `otp_hash` varchar(255) DEFAULT NULL,
   `otp_expires_at` datetime DEFAULT NULL,
@@ -10212,12 +10226,12 @@ CREATE TABLE `auth_users` (
 -- Dumping data for table `auth_users`
 --
 
-INSERT INTO `auth_users` (`user_id`, `email`, `display_name`, `username`, `password_hash`, `avatar_path`, `role`, `is_verified`, `otp_hash`, `otp_expires_at`, `otp_sent_at`, `otp_attempts`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'egoilham1999@gmail.com', 'Ego', 'ego.ilham', '$2y$10$hlJ8aVTNRoDuYN2alP4tyuuliZ6TOB37O4E0y75d1SjjNLzfr6Tg.', NULL, 'super_admin', 1, NULL, NULL, NULL, 0, NULL, '2026-10-06 16:14:02', 'active'),
-(2, 'riyan.husen42@guru.smk.belajar.id', 'Riyan Husen', 'riyan', '$2y$10$FEbg5S6bRML0aVhYF8PttearC8j1bZBImmx2RGiSyoSjDluruTcBy', NULL, 'user', 1, NULL, NULL, NULL, 0, '2026-10-07 11:02:41', '2026-10-08 09:20:20', 'active'),
-(3, 'ego.ilham3@guru.smk.belajar.id', 'Ego Ilham', 'ego.ilham3', '$2y$10$cGQJqal04mJC1hy9yxi0ae1Iy1fUs0tzzGM0kZ3kWLZs1A48uRh1u', NULL, 'user', 1, NULL, NULL, NULL, 0, '2026-10-08 14:23:05', '2026-10-08 14:29:06', 'active'),
-(4, 'uswatunhasanah9318@gmail.com', 'Uswatun Hasanah', 'uswatun.hasanah', '$2y$10$DipEudRpUNScfZuwQ.tk9usNVB9e01iXBgNADzX/4F6jiMScjK2bu', NULL, 'kepala_sekolah', 1, NULL, NULL, NULL, 0, '2026-10-08 18:40:26', '2026-10-08 18:42:52', 'active'),
-(5, 'rifamahmudatul@gmail.com', 'Rifa', 'rifa', '$2y$10$Xhyqt1iWAIyhKdy8bpcXIum898DTfv5yBaweIRJuDyiFVuY/kE3L6', NULL, 'kurikulum', 1, NULL, NULL, NULL, 0, '2026-10-09 08:08:19', '2026-10-09 08:08:56', 'active');
+INSERT INTO `auth_users` (`user_id`, `email`, `display_name`, `username`, `password_hash`, `avatar_path`, `role`, `guru_id`, `is_verified`, `otp_hash`, `otp_expires_at`, `otp_sent_at`, `otp_attempts`, `created_at`, `updated_at`, `status`) VALUES
+(1, 'egoilham1999@gmail.com', 'Ego', 'ego.ilham', '$2y$10$hlJ8aVTNRoDuYN2alP4tyuuliZ6TOB37O4E0y75d1SjjNLzfr6Tg.', NULL, 'super_admin', NULL, 1, NULL, NULL, NULL, 0, NULL, '2026-10-06 16:14:02', 'active'),
+(2, 'riyan.husen42@guru.smk.belajar.id', 'Riyan Husen', 'riyan', '$2y$10$FEbg5S6bRML0aVhYF8PttearC8j1bZBImmx2RGiSyoSjDluruTcBy', NULL, 'user', NULL, 1, NULL, NULL, NULL, 0, '2026-10-07 11:02:41', '2026-10-08 09:20:20', 'active'),
+(3, 'ego.ilham3@guru.smk.belajar.id', 'Ego Ilham', 'ego.ilham3', '$2y$10$cGQJqal04mJC1hy9yxi0ae1Iy1fUs0tzzGM0kZ3kWLZs1A48uRh1u', NULL, 'user', NULL, 1, NULL, NULL, NULL, 0, '2026-10-08 14:23:05', '2026-10-08 14:29:06', 'active'),
+(4, 'uswatunhasanah9318@gmail.com', 'Uswatun Hasanah', 'uswatun.hasanah', '$2y$10$DipEudRpUNScfZuwQ.tk9usNVB9e01iXBgNADzX/4F6jiMScjK2bu', NULL, 'kepala_sekolah', NULL, 1, NULL, NULL, NULL, 0, '2026-10-08 18:40:26', '2026-10-08 18:42:52', 'active'),
+(5, 'rifamahmudatul@gmail.com', 'Rifa', 'rifa', '$2y$10$Xhyqt1iWAIyhKdy8bpcXIum898DTfv5yBaweIRJuDyiFVuY/kE3L6', NULL, 'kurikulum', NULL, 1, NULL, NULL, NULL, 0, '2026-10-09 08:08:19', '2026-10-09 08:08:56', 'active');
 
 -- --------------------------------------------------------
 
@@ -10280,7 +10294,35 @@ CREATE TABLE `master_guru` (
 --
 
 INSERT INTO `master_guru` (`guru_id`, `guru_nip`, `guru_nama`, `guru_email`, `guru_telepon`, `created_at`, `updated_at`) VALUES
-(1, '01', 'Ego Ilham', 'ego.ilham3@guru.smk.belajar.id', '083812653581', NULL, NULL);
+(1, '01', 'Ego Ilham', 'ego.ilham3@guru.smk.belajar.id', '083812653581', NULL, NULL),
+(2, '02', 'Rifa', 'rifamahmudatul@gmail.com', '083812653581', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `master_jadwal_piket_guru`
+--
+
+CREATE TABLE `master_jadwal_piket_guru` (
+  `jadwal_piket_guru_id` int(11) UNSIGNED NOT NULL,
+  `guru_id` int(11) UNSIGNED NOT NULL,
+  `hari` varchar(10) NOT NULL,
+  `tugas` varchar(20) NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `mapel_ids` text DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `master_jadwal_piket_guru`
+--
+
+INSERT INTO `master_jadwal_piket_guru` (`jadwal_piket_guru_id`, `guru_id`, `hari`, `tugas`, `jam_mulai`, `jam_selesai`, `mapel_ids`, `is_active`, `created_at`, `updated_at`) VALUES
+(1, 1, 'Senin', 'keduanya', '10:23:00', '11:23:00', NULL, 1, NULL, NULL),
+(2, 2, 'Senin', 'keduanya', '13:59:00', '14:59:00', '1', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -10400,7 +10442,8 @@ INSERT INTO `master_mapel` (`mapel_id`, `mapel_kode`, `mapel_nama`, `kelompok_ra
 (1, 'KDJ', 'Komputer & Jaringan Dasar', 'program_keahlian', 'Kelas X', NULL, NULL),
 (2, 'BI', 'Bahasa Indonesia', 'nasional', 'Kelas X', NULL, NULL),
 (3, 'PJ', 'PJOK', 'kewilayahan', 'Kelas X', NULL, NULL),
-(4, 'KM', 'Kimia', 'dasar_keahlian', 'Kelas X', NULL, NULL);
+(4, 'KM', 'Kimia', 'dasar_keahlian', 'Kelas X', NULL, NULL),
+(5, 'BA', 'Bahasa Arab', 'kewilayahan', 'Kelas VII', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -10433,6 +10476,8 @@ CREATE TABLE `master_siswa` (
   `siswa_id` int(11) NOT NULL,
   `kelas_id` int(11) DEFAULT NULL,
   `nama_siswa` varchar(100) NOT NULL,
+  `nama_orang_tua` varchar(100) DEFAULT NULL,
+  `no_whatsapp_orang_tua` varchar(30) DEFAULT NULL,
   `orang_tua_id` int(10) UNSIGNED DEFAULT NULL,
   `nis` varchar(20) DEFAULT NULL,
   `nisn` varchar(10) DEFAULT NULL,
@@ -10452,94 +10497,94 @@ CREATE TABLE `master_siswa` (
 -- Dumping data for table `master_siswa`
 --
 
-INSERT INTO `master_siswa` (`siswa_id`, `kelas_id`, `nama_siswa`, `orang_tua_id`, `nis`, `nisn`, `jk`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `foto`, `rfid_tag`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
-(1, 1, 'A. Rizky Maulana', NULL, '24.25.187', '0129120612', 'l', 'Pandeglang', '2012-02-21', 'Kp. Purbasari', '', '1356657841', '2025-01-11 22:29:54', '2026-10-07 11:43:02', NULL, 'aktif'),
-(2, 1, 'Citra Nur Fadillah', NULL, '24.25.188', '0125374250', 'p', 'Bekasis', '2012-02-22', 'Kp. Bangkonol', '', '1563981824', '2025-01-11 22:29:54', '2026-10-07 11:45:51', NULL, 'aktif'),
-(3, 1, 'Erwin Permana', NULL, '24.25.189', '0129899074', 'l', 'Pandeglang', '2012-02-23', 'Kp. Pasir Pariuk', '', '1354217681', '2025-01-11 22:29:54', '2026-10-07 10:40:52', NULL, 'aktif'),
-(4, 1, 'Fitratun Nada', NULL, '24.25.190', '0113694989', 'p', 'Pandeglang', '2012-02-24', 'Kp. Sidamukti', '', '1560755712', '2025-01-11 22:29:54', '2026-10-07 11:09:14', NULL, 'aktif'),
-(5, 1, 'Fitratun Nida', NULL, '24.25.191', '0118722549', 'p', 'Pandeglang', '2012-02-25', 'Kp. Sidamukti', '', '1347436241', '2025-01-11 22:29:54', '2026-10-07 11:49:04', NULL, 'aktif'),
-(6, 1, 'Ibnu Nadzril', NULL, '24.25.192', '0115307306', 'l', 'Pandeglang', '2012-02-26', 'Kp. Kadupandak', '', '1552080624', '2025-01-11 22:29:54', '2026-10-07 11:52:30', NULL, 'aktif'),
-(7, 1, 'Muhamad Fathir Rizqi', NULL, NULL, NULL, 'l', NULL, NULL, NULL, '', '1573396480', '2025-01-11 22:29:54', '2026-10-08 09:11:26', NULL, 'aktif'),
-(8, 1, 'M. Elfin Suftiana', NULL, '24.25.194', '0122758784', 'l', 'Pandeglang', '2012-02-27', 'Kp. Kadomas', '', '1425431363', '2025-01-11 22:29:54', '2026-10-08 09:11:29', NULL, 'aktif'),
-(9, 1, 'M. Kafi Maula\'Abdillah', NULL, '24.25.195', '3116396879', 'l', 'Pandeglang', '2012-02-28', 'Kp. Kadubanen', '', '1418992435', '2025-01-11 22:29:54', '2026-10-08 09:11:31', NULL, 'aktif'),
-(10, 1, 'M. Reyfan Shahrusiyam Putra', NULL, '24.25.196', '0127420021', 'l', 'Pandeglang', '2012-02-29', 'Kp. Pakalongan ', '', '1352512977', '2025-01-11 22:29:54', '2026-10-08 09:11:34', NULL, 'aktif'),
-(11, 1, 'Nakhla Izzatunnisa', NULL, '24.25.197', '0127165287', 'p', 'Pandeglang', '2012-03-01', 'Kp. Pasir Walet', '', '1416024627', '2025-01-11 22:29:54', '2026-10-08 18:40:12', NULL, 'aktif'),
-(12, 1, 'Raffi Ulhak', NULL, '24.25.198', '0128731991', 'l', 'Pandeglang', '2012-03-02', 'Kp. Tari Kolot', '', '1424293171', '2025-01-11 22:29:54', '2026-10-08 18:40:17', NULL, 'aktif'),
-(13, 1, 'Ratu Dwifa Nurana', NULL, '24.25.199', '0111802790', 'p', 'Pandeglang', '2012-03-03', 'Kp. Andihiang Lebak', '', '1344248033', '2025-01-11 22:29:54', '2026-10-08 18:40:23', NULL, 'aktif'),
-(14, 1, 'Saiful Anwar ', NULL, '24.25.200', '3110068149', 'l', 'Pandeglang', '2012-03-04', 'Kp. Ciekek Babakan Karaton', '', '1555924464', '2025-01-11 22:29:54', '2026-10-08 18:40:36', NULL, 'aktif'),
-(15, 1, 'Sani', NULL, '24.25.202', '3113748807', 'l', 'Lebak', '2012-03-05', 'Kp. Ledug ', '', '1347030977', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(16, 1, 'Silpa', NULL, '24.25.203', '0116226537', 'p', 'Pandeglang', '2012-03-06', 'Kp. Mangkubumi', '', '1354823857', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(17, 1, 'St. Azkia Bilkis', NULL, '24.25.204', '0125236888', 'p', 'Pandeglang', '2012-03-07', 'Kp. Pabuaran', '', '1352998113', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(18, 1, 'Siti Aisyah', NULL, '24.25.205', '118773663', 'p', 'Pandeglang', '2012-03-08', 'Kp. Sabi Kumtir', '', '1358431169', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(19, 1, 'Siti Rachel Quaneisha', NULL, '24.25.206', '0116350776', 'p', 'Pandeglang', '2012-03-09', 'Kp. Jaliti', '', '1358466529', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(20, 1, 'Siti Wedal Arum', NULL, '24.25.207', '3112881688', 'p', 'Pandeglang', '2012-03-10', 'Kp. Ciekek Babakan Karaton', '', '1413165379', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(21, 1, 'Tb. Azka Ali', NULL, '24.25.208', '0115017335', 'l', 'Pandeglang', '2012-03-11', 'Kp. Pasir Kalapa', '', '1351616705', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(22, 1, 'Zahwa Anggraeni ', NULL, '24.25.209', '0122508467', 'p', 'Pandeglang', '2012-03-12', 'Kp. Beunying', '', '1422605907', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(23, 2, 'Agisni Aulia Sapitri ', NULL, '23.24.152', '3113370746', 'p', 'Pandeglang', '2011-10-05', 'Kp. Kadupandak', '', '1357241041', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(24, 2, 'Ahmad Munawar Sajali ', NULL, '23.24.153', '0111497623', 'l', 'Pandeglang', '2011-04-16', 'Kumalirang', '', '1356224481', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(25, 2, 'An Nazwa Baehaki ', NULL, '23.24.154', '0116286608', 'l', 'Lebak', '2011-01-22', 'Kp. Rumbut', '', '1574380800', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(26, 2, 'Fariz Abdu Raziq', NULL, '23.24.156', '3127286338', 'l', 'Pandeglang', '2012-01-09', 'Kp. Pasir Kalapa', '', '1549561328', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(27, 2, 'Fithrotul Muzayyanah', NULL, '23.24.157', '0104931112', 'p', 'Pandeglang', '2010-09-06', 'Kp. Kumalirang ', '', '1357604561', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(28, 2, 'Ida Lailatul Munawaroh ', NULL, '23.24.158', '3116789856', 'p', 'Cilacap', '2011-08-01', 'Kp. Pelag ', '', '1352742369', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(29, 2, 'Lina Rohimah', NULL, '23.24.160', '3115574965', 'p', 'Pandeglang', '2011-10-08', 'Kp. Pasir Kalapa', '', '1413566515', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(30, 2, 'M. Lutfi Alfansyah', NULL, '23.24.161', '0112284637', 'l', 'Pandeglang', '2011-09-02', 'Kp. Pasir Kalapa', '', '1349985249', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(31, 2, 'M. Miftahudin ', NULL, '23.24.162', '0115189299', 'l', 'Pandeglang', '2011-04-24', 'Kp. Cikole', '', '1351281585', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(32, 2, 'Moch Rafki Mubarok ', NULL, '23.24.164', '3117056214', 'l', 'Pandeglang', '2011-01-18', 'Kp. Pasir Kalapa ', '', '1565794560', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(33, 2, 'Muhamad Rifki', NULL, '23.24.168', '3110593462', 'l', 'Pandeglang', '2011-05-11', 'Kp. Pasir Kalapa', '', '1344310497', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(34, 2, 'Muhamad Zulfa', NULL, '23.24.169', '3118322524', 'l', 'Pandeglang', '2011-06-23', 'Kp. Cicalung ', '', '1548855024', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(35, 2, 'Nun Agis Kuraisin ', NULL, '23.24.171', '0109718385', 'p', 'Pandeglang', '2010-10-25', 'Kp. Kumalirang ', '', '1414426675', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(36, 2, 'Nurfikri ', NULL, '23.24.172', '0106450875', 'l', 'Pandeglang', '2010-10-31', 'Kp. Batu Karut ', '', '1345956065', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(37, 2, 'Rani Apriani', NULL, '23.24.173', '3111816419', 'p', 'Pandeglang', '2011-04-22', 'Kp. Pasir Kalapa ', '', '1353226721', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(38, 2, 'Ridho', NULL, '23.24.174', '0104865544', 'l', 'Lebak', '2010-06-23', 'Kp. Pasir Kalapa ', '', '1346816961', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(39, 2, 'Sahrul Rizal ', NULL, '23.24.175', '3119866878', 'l', 'Pandeglang', '2011-02-08', 'Kp. Paniis Baru ', '', '1348253889', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(40, 2, 'Septi Ramadani', NULL, '23.24.176', '3106534397', 'p', 'Pandeglang', '2010-09-08', 'Kp. Pasir Kalapa ', '', '1349783265', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(41, 2, 'Sindi Anggraeni', NULL, '23.24.177', '0111784903', 'p', 'Pandeglang', '2011-02-18', 'Kp. Pasir Kalapa ', '', '1357342673', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(42, 2, 'Siti Hanifah', NULL, '23.24.178', '0115343991', 'p', 'Pandeglang', '2011-04-12', 'Kp. Sabitangtu ', '', '1351957473', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(43, 2, 'Siti Maya Handayani ', NULL, '23.24.180', '0105002248', 'p', 'Pandeglang', '2010-10-06', 'Kp. Cikapais', '', '1413663027', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(44, 2, 'Siti Safnatussaniah', NULL, '23.24.181', '0105235320', 'p', 'Pandeglang', '2010-10-01', 'Kp. Pasir Kalapa ', '', '1342530017', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(45, 2, 'Siti Zahira Septia', NULL, '23.24.182', '0111207468', 'p', 'Pandeglang', '2011-07-25', 'Kp. Kalanganyar ', '', '1559704304', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(46, 2, 'Zahiratul Aprilia', NULL, '23.24.183', '0119290991', 'p', 'Jakarta', '2011-04-24', NULL, '', '1549165296', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(47, 2, 'Zahra Putri Maulida ', NULL, '23.24.184', '3119509837', 'p', 'Pandeglang', '2011-02-04', NULL, '', '1352588241', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(48, 2, 'Patimah Nurpidiah', NULL, NULL, NULL, 'p', NULL, NULL, NULL, '', '1412004931', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(49, 3, 'A. Albian Fahrezi ', NULL, NULL, NULL, 'l', NULL, NULL, NULL, '', NULL, '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(50, 3, 'Aira Pelia ', NULL, '22.23.133', '0096267290', 'p', 'Pandeglang', '2009-07-09', 'Kp. Pasir Kalapa', '', '1348913121', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(51, 3, 'Azzahra Putriani Muhtian ', NULL, '22.23.134', '0098416838', 'p', 'Tangerang', '2009-11-26', 'Kp. Kadulisung Keboncau', '', '1560679936', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(52, 3, 'Fadira ', NULL, '23.24.180', '0105002248', 'p', 'Pandeglang', '2010-07-30', 'Kp. Sabitangtu', '', '1410511411', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(53, 3, 'Lia Aulia Sari ', NULL, '22.23.138', '0104664916', 'p', 'Pandeglang', '2010-07-15', 'Kp.Kebon ', '', '1417094211', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(54, 3, 'M. Ahda Maulana ', NULL, '22.23.139', '0093926245', 'l', 'Pandeglang', '2009-12-21', 'Kp.Kadukempol', '', '1411253811', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(55, 3, 'Maria Ulfah ', NULL, '22.23.140', '0093284576', 'p', 'Pandeglang', '2009-09-17', 'Kp.Pasir Kalapa ', '', '1554874096', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(56, 3, 'Melda', NULL, '22.23.141', '0108131298', 'p', 'Cilegon', '2010-06-25', 'Linkungan Sukasari', '', '1413389395', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(57, 3, 'Muhamad Wildan Maulana', NULL, '22.23.142', '0102023247', 'l', 'Pandeglang', '2010-03-19', 'Kp. Kadugajah', '', '1352356801', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(58, 3, 'Raysard Hady ', NULL, '22.23.144', NULL, 'l', 'Cirebon', '2009-05-14', 'Dusun 01', '', '1345427153', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(59, 3, 'Realpatwa Pirdaus ', NULL, '22.23.145', '0107569567', 'l', 'Pandeglang', '2010-11-08', 'Kp.Kadugajah', '', '1564879360', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(60, 3, 'Riza Umami ', NULL, '22.23.146', '0097712711', 'p', 'Pandeglang', '2009-10-25', 'Kp.Pasir Kalapa ', '', '1350062545', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(61, 3, 'Abdul Malik', NULL, '22.23.147', '0096633138', 'l', 'Karawang', '2009-04-29', 'Blokkaraton', '', '1423024467', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(62, 3, 'Ahmad Fadliyudinal-Zabar', NULL, '23.24.151', '3104341498', 'l', 'Pandeglang', '2010-04-04', 'Kp. Nangka Beureum', '', '1347914977', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(63, 3, 'Asyifa Zahra Ramadani', NULL, '23.24.185', '0104268226', 'p', 'Pandeglang', '2010-08-13', NULL, '', '1344610273', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
-(64, 5, 'Linggar Al Latifah', NULL, '23.24.024', '0099174423', 'p', 'Tangerang', '2007-01-18', 'Kp. Pabuaran', '', '1342392273', NULL, NULL, NULL, 'aktif'),
-(65, 6, 'Pahruroji Aprian', NULL, '22.23.014', '0079176188', 'l', 'Lebak', '2007-04-07', 'Kp. Cibugang Pasir', '', '1410793539', NULL, NULL, NULL, 'aktif'),
-(66, 5, 'Hamdatun Nisa', NULL, '23.24.022', '0085561638', 'p', 'Pandeglang', '2008-01-15', 'Kp. Kebon', '', '1424960323', NULL, NULL, NULL, 'aktif'),
-(67, 5, 'Siti Ilfi Zakiyyatunnaja', NULL, '23.24.032', '0086166804', 'p', 'Pandeglang', '2008-07-28', 'Kp. Pasekon', '', '1357328097', NULL, NULL, NULL, 'aktif'),
-(68, 5, 'Wafa Aula Kholifah', NULL, '23.24.031', '0087253296', 'p', 'Pandeglang', '2008-11-15', 'Kp. Sindang Adipati', '', '1357095393', NULL, NULL, NULL, 'aktif'),
-(69, 5, 'Fathur Wazhi', NULL, '23.24.021', '0078080864', 'l', 'Pandeglang', '2007-10-13', 'Kp. Pasir Kalapa ', '', '1350702017', NULL, NULL, NULL, 'aktif'),
-(70, 5, 'M. Abdan Abadi', NULL, '23.24.025', '0077857818', 'l', 'Lebak', '2007-10-24', 'Kp. Rumbut', '', '1418485315', NULL, NULL, NULL, 'aktif'),
-(71, 5, 'Siti Badriah', NULL, '23.24.029', '0088820513', 'p', 'Lebak', '2008-06-27', 'Kp. Sempuren ', '', '1357565633', NULL, NULL, NULL, 'aktif'),
-(72, 5, 'Ahmad Salim Murtado', NULL, '23.24.016', '0088281184', 'l', 'Pandeglang', '2008-12-20', 'Kp. Pasir Kalapa ', '', '1357707217', NULL, NULL, NULL, 'aktif'),
-(73, 5, 'Andika', NULL, '23.24.017', '0084759318', 'l', 'Pandeglang', '2008-05-25', 'Kp. Pasir Pariuk ', '', '1557859056', NULL, NULL, NULL, 'aktif'),
-(74, 5, 'Silva Masfufah', NULL, '23.24.028', '0084888820', 'p', 'Pandeglang', '2008-04-07', 'Kp. Pasir Kalapa ', '', '1569546752', NULL, NULL, NULL, 'aktif'),
-(75, 5, 'Jepri Aminudin', NULL, '23.24.023', '0075671364', 'l', 'Pandeglang', '2007-12-31', 'Kp. Pasir Kalapa ', '', '1344760001', NULL, NULL, NULL, 'aktif'),
-(76, 5, 'Nailul Muna', NULL, '23.24.026', '0084159681', 'p', 'Pandeglang', '2008-01-21', 'Kp. Kumalirang', '', '1563460352', NULL, NULL, NULL, 'aktif'),
-(77, 5, 'Danu', NULL, '23.24.020', '0079402260', 'l', 'Pandeglang', '2007-05-02', 'Kp. Mangkubumi ', '', '1552424432', NULL, NULL, NULL, 'aktif'),
-(78, 5, 'Arilliansyah', NULL, '23.24.028', '0075828230', 'l', 'Pandeglang', '2005-04-05', 'Kp. Ciboboko', '', '1355010769', NULL, NULL, NULL, 'aktif'),
-(79, 5, 'Fatir Erpansyah', NULL, '23.24.033', '0083327157', 'l', 'Lebak', '2008-07-22', 'Kp. Rumbut', '', '1348619201', NULL, NULL, NULL, 'aktif'),
-(80, 5, 'Perdi Duhriansyah', NULL, '23.24.027', '0086315785', 'l', 'Pandeglang', '2008-05-26', 'Kp. Sindang', '', '1345445345', '2025-01-25 14:27:44', '2025-01-25 14:27:44', NULL, 'aktif'),
-(81, 5, 'Siti Sulistiani', NULL, '23.24.030', '0081769339', 'p', 'Pandeglang', '2008-04-17', 'Kp. Sampora', '', '1418475843', '2025-01-25 14:27:44', '2025-01-25 14:27:44', NULL, 'aktif'),
-(82, 4, 'Munajar Alvian Prasetya', 1, '24.25.038', '0094892260', 'l', 'Pandeglang', '2009-11-03', 'Perum Teras', '', '1419823155', '2025-01-25 14:27:44', '2026-10-12 13:24:20', NULL, 'aktif'),
-(83, 4, 'Vina Zahrotu Ni\'mah', 1, '24.25.037', '0102703114', 'p', 'Bogor', '2010-04-24', 'Kp. Juga Raya', '', '1552137712', '2025-01-25 14:27:44', '2026-10-12 13:24:30', NULL, 'aktif'),
-(84, 4, 'Reina Raudanisa A.', 1, '24.25.036', '0095106535', 'p', 'Lampung', '2009-02-26', 'Kp. Pasir Walet', '', '1348060353', '2025-01-25 14:35:35', '2026-10-12 13:24:38', NULL, 'aktif'),
-(85, 4, 'Fatimah Ayu Rayhana P.', 1, '24.25.034', '0094365575', 'p', 'Suban', '2009-03-23', 'Suban', '', '1351606977', '2025-01-25 14:37:38', '2026-10-12 13:24:46', NULL, 'aktif'),
-(86, 4, 'Nurul Aulia', 1, '24.25.035', '0099681140', 'p', 'Pandeglang', '2009-12-17', 'Kp. Kadulisung', '', '1409363283', '2025-01-25 14:39:17', '2026-10-12 13:24:53', NULL, 'aktif'),
-(87, 4, 'ego', 1, '795793', '8058358', 'l', 'serang', '2000-06-17', 'serang', '1.png', '758937753', '2026-10-08 19:48:22', '2026-10-12 13:22:54', NULL, 'aktif');
+INSERT INTO `master_siswa` (`siswa_id`, `kelas_id`, `nama_siswa`, `nama_orang_tua`, `no_whatsapp_orang_tua`, `orang_tua_id`, `nis`, `nisn`, `jk`, `tempat_lahir`, `tanggal_lahir`, `alamat`, `foto`, `rfid_tag`, `created_at`, `updated_at`, `deleted_at`, `status`) VALUES
+(1, 1, 'A. Rizky Maulana', NULL, NULL, NULL, '24.25.187', '0129120612', 'l', 'Pandeglang', '2012-02-21', 'Kp. Purbasari', '', '1356657841', '2025-01-11 22:29:54', '2026-10-07 11:43:02', NULL, 'aktif'),
+(2, 1, 'Citra Nur Fadillah', NULL, NULL, NULL, '24.25.188', '0125374250', 'p', 'Bekasis', '2012-02-22', 'Kp. Bangkonol', '', '1563981824', '2025-01-11 22:29:54', '2026-10-07 11:45:51', NULL, 'aktif'),
+(3, 1, 'Erwin Permana', NULL, NULL, NULL, '24.25.189', '0129899074', 'l', 'Pandeglang', '2012-02-23', 'Kp. Pasir Pariuk', '', '1354217681', '2025-01-11 22:29:54', '2026-10-07 10:40:52', NULL, 'aktif'),
+(4, 1, 'Fitratun Nada', NULL, NULL, NULL, '24.25.190', '0113694989', 'p', 'Pandeglang', '2012-02-24', 'Kp. Sidamukti', '', '1560755712', '2025-01-11 22:29:54', '2026-10-07 11:09:14', NULL, 'aktif'),
+(5, 1, 'Fitratun Nida', NULL, NULL, NULL, '24.25.191', '0118722549', 'p', 'Pandeglang', '2012-02-25', 'Kp. Sidamukti', '', '1347436241', '2025-01-11 22:29:54', '2026-10-07 11:49:04', NULL, 'aktif'),
+(6, 1, 'Ibnu Nadzril', NULL, NULL, NULL, '24.25.192', '0115307306', 'l', 'Pandeglang', '2012-02-26', 'Kp. Kadupandak', '', '1552080624', '2025-01-11 22:29:54', '2026-10-07 11:52:30', NULL, 'aktif'),
+(7, 1, 'Muhamad Fathir Rizqi', NULL, NULL, NULL, NULL, NULL, 'l', NULL, NULL, NULL, '', '1573396480', '2025-01-11 22:29:54', '2026-10-08 09:11:26', NULL, 'aktif'),
+(8, 1, 'M. Elfin Suftiana', NULL, NULL, NULL, '24.25.194', '0122758784', 'l', 'Pandeglang', '2012-02-27', 'Kp. Kadomas', '', '1425431363', '2025-01-11 22:29:54', '2026-10-08 09:11:29', NULL, 'aktif'),
+(9, 1, 'M. Kafi Maula\'Abdillah', NULL, NULL, NULL, '24.25.195', '3116396879', 'l', 'Pandeglang', '2012-02-28', 'Kp. Kadubanen', '', '1418992435', '2025-01-11 22:29:54', '2026-10-08 09:11:31', NULL, 'aktif'),
+(10, 1, 'M. Reyfan Shahrusiyam Putra', NULL, NULL, NULL, '24.25.196', '0127420021', 'l', 'Pandeglang', '2012-02-29', 'Kp. Pakalongan ', '', '1352512977', '2025-01-11 22:29:54', '2026-10-08 09:11:34', NULL, 'aktif'),
+(11, 1, 'Nakhla Izzatunnisa', NULL, NULL, NULL, '24.25.197', '0127165287', 'p', 'Pandeglang', '2012-03-01', 'Kp. Pasir Walet', '', '1416024627', '2025-01-11 22:29:54', '2026-10-08 18:40:12', NULL, 'aktif'),
+(12, 1, 'Raffi Ulhak', NULL, NULL, NULL, '24.25.198', '0128731991', 'l', 'Pandeglang', '2012-03-02', 'Kp. Tari Kolot', '', '1424293171', '2025-01-11 22:29:54', '2026-10-08 18:40:17', NULL, 'aktif'),
+(13, 1, 'Ratu Dwifa Nurana', NULL, NULL, NULL, '24.25.199', '0111802790', 'p', 'Pandeglang', '2012-03-03', 'Kp. Andihiang Lebak', '', '1344248033', '2025-01-11 22:29:54', '2026-10-08 18:40:23', NULL, 'aktif'),
+(14, 1, 'Saiful Anwar ', NULL, NULL, NULL, '24.25.200', '3110068149', 'l', 'Pandeglang', '2012-03-04', 'Kp. Ciekek Babakan Karaton', '', '1555924464', '2025-01-11 22:29:54', '2026-10-08 18:40:36', NULL, 'aktif'),
+(15, 1, 'Sani', NULL, NULL, NULL, '24.25.202', '3113748807', 'l', 'Lebak', '2012-03-05', 'Kp. Ledug ', '', '1347030977', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(16, 1, 'Silpa', NULL, NULL, NULL, '24.25.203', '0116226537', 'p', 'Pandeglang', '2012-03-06', 'Kp. Mangkubumi', '', '1354823857', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(17, 1, 'St. Azkia Bilkis', NULL, NULL, NULL, '24.25.204', '0125236888', 'p', 'Pandeglang', '2012-03-07', 'Kp. Pabuaran', '', '1352998113', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(18, 1, 'Siti Aisyah', NULL, NULL, NULL, '24.25.205', '118773663', 'p', 'Pandeglang', '2012-03-08', 'Kp. Sabi Kumtir', '', '1358431169', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(19, 1, 'Siti Rachel Quaneisha', NULL, NULL, NULL, '24.25.206', '0116350776', 'p', 'Pandeglang', '2012-03-09', 'Kp. Jaliti', '', '1358466529', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(20, 1, 'Siti Wedal Arum', NULL, NULL, NULL, '24.25.207', '3112881688', 'p', 'Pandeglang', '2012-03-10', 'Kp. Ciekek Babakan Karaton', '', '1413165379', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(21, 1, 'Tb. Azka Ali', NULL, NULL, NULL, '24.25.208', '0115017335', 'l', 'Pandeglang', '2012-03-11', 'Kp. Pasir Kalapa', '', '1351616705', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(22, 1, 'Zahwa Anggraeni ', NULL, NULL, NULL, '24.25.209', '0122508467', 'p', 'Pandeglang', '2012-03-12', 'Kp. Beunying', '', '1422605907', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(23, 2, 'Agisni Aulia Sapitri ', NULL, NULL, NULL, '23.24.152', '3113370746', 'p', 'Pandeglang', '2011-10-05', 'Kp. Kadupandak', '', '1357241041', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(24, 2, 'Ahmad Munawar Sajali ', NULL, NULL, NULL, '23.24.153', '0111497623', 'l', 'Pandeglang', '2011-04-16', 'Kumalirang', '', '1356224481', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(25, 2, 'An Nazwa Baehaki ', NULL, NULL, NULL, '23.24.154', '0116286608', 'l', 'Lebak', '2011-01-22', 'Kp. Rumbut', '', '1574380800', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(26, 2, 'Fariz Abdu Raziq', NULL, NULL, NULL, '23.24.156', '3127286338', 'l', 'Pandeglang', '2012-01-09', 'Kp. Pasir Kalapa', '', '1549561328', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(27, 2, 'Fithrotul Muzayyanah', NULL, NULL, NULL, '23.24.157', '0104931112', 'p', 'Pandeglang', '2010-09-06', 'Kp. Kumalirang ', '', '1357604561', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(28, 2, 'Ida Lailatul Munawaroh ', NULL, NULL, NULL, '23.24.158', '3116789856', 'p', 'Cilacap', '2011-08-01', 'Kp. Pelag ', '', '1352742369', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(29, 2, 'Lina Rohimah', NULL, NULL, NULL, '23.24.160', '3115574965', 'p', 'Pandeglang', '2011-10-08', 'Kp. Pasir Kalapa', '', '1413566515', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(30, 2, 'M. Lutfi Alfansyah', NULL, NULL, NULL, '23.24.161', '0112284637', 'l', 'Pandeglang', '2011-09-02', 'Kp. Pasir Kalapa', '', '1349985249', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(31, 2, 'M. Miftahudin ', NULL, NULL, NULL, '23.24.162', '0115189299', 'l', 'Pandeglang', '2011-04-24', 'Kp. Cikole', '', '1351281585', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(32, 2, 'Moch Rafki Mubarok ', NULL, NULL, NULL, '23.24.164', '3117056214', 'l', 'Pandeglang', '2011-01-18', 'Kp. Pasir Kalapa ', '', '1565794560', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(33, 2, 'Muhamad Rifki', NULL, NULL, NULL, '23.24.168', '3110593462', 'l', 'Pandeglang', '2011-05-11', 'Kp. Pasir Kalapa', '', '1344310497', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(34, 2, 'Muhamad Zulfa', NULL, NULL, NULL, '23.24.169', '3118322524', 'l', 'Pandeglang', '2011-06-23', 'Kp. Cicalung ', '', '1548855024', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(35, 2, 'Nun Agis Kuraisin ', NULL, NULL, NULL, '23.24.171', '0109718385', 'p', 'Pandeglang', '2010-10-25', 'Kp. Kumalirang ', '', '1414426675', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(36, 2, 'Nurfikri ', NULL, NULL, NULL, '23.24.172', '0106450875', 'l', 'Pandeglang', '2010-10-31', 'Kp. Batu Karut ', '', '1345956065', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(37, 2, 'Rani Apriani', NULL, NULL, NULL, '23.24.173', '3111816419', 'p', 'Pandeglang', '2011-04-22', 'Kp. Pasir Kalapa ', '', '1353226721', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(38, 2, 'Ridho', NULL, NULL, NULL, '23.24.174', '0104865544', 'l', 'Lebak', '2010-06-23', 'Kp. Pasir Kalapa ', '', '1346816961', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(39, 2, 'Sahrul Rizal ', NULL, NULL, NULL, '23.24.175', '3119866878', 'l', 'Pandeglang', '2011-02-08', 'Kp. Paniis Baru ', '', '1348253889', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(40, 2, 'Septi Ramadani', NULL, NULL, NULL, '23.24.176', '3106534397', 'p', 'Pandeglang', '2010-09-08', 'Kp. Pasir Kalapa ', '', '1349783265', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(41, 2, 'Sindi Anggraeni', NULL, NULL, NULL, '23.24.177', '0111784903', 'p', 'Pandeglang', '2011-02-18', 'Kp. Pasir Kalapa ', '', '1357342673', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(42, 2, 'Siti Hanifah', NULL, NULL, NULL, '23.24.178', '0115343991', 'p', 'Pandeglang', '2011-04-12', 'Kp. Sabitangtu ', '', '1351957473', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(43, 2, 'Siti Maya Handayani ', NULL, NULL, NULL, '23.24.180', '0105002248', 'p', 'Pandeglang', '2010-10-06', 'Kp. Cikapais', '', '1413663027', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(44, 2, 'Siti Safnatussaniah', NULL, NULL, NULL, '23.24.181', '0105235320', 'p', 'Pandeglang', '2010-10-01', 'Kp. Pasir Kalapa ', '', '1342530017', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(45, 2, 'Siti Zahira Septia', NULL, NULL, NULL, '23.24.182', '0111207468', 'p', 'Pandeglang', '2011-07-25', 'Kp. Kalanganyar ', '', '1559704304', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(46, 2, 'Zahiratul Aprilia', NULL, NULL, NULL, '23.24.183', '0119290991', 'p', 'Jakarta', '2011-04-24', NULL, '', '1549165296', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(47, 2, 'Zahra Putri Maulida ', NULL, NULL, NULL, '23.24.184', '3119509837', 'p', 'Pandeglang', '2011-02-04', NULL, '', '1352588241', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(48, 2, 'Patimah Nurpidiah', NULL, NULL, NULL, NULL, NULL, 'p', NULL, NULL, NULL, '', '1412004931', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(49, 3, 'A. Albian Fahrezi ', NULL, NULL, NULL, NULL, NULL, 'l', NULL, NULL, NULL, '', NULL, '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(50, 3, 'Aira Pelia ', NULL, NULL, NULL, '22.23.133', '0096267290', 'p', 'Pandeglang', '2009-07-09', 'Kp. Pasir Kalapa', '', '1348913121', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(51, 3, 'Azzahra Putriani Muhtian ', NULL, NULL, NULL, '22.23.134', '0098416838', 'p', 'Tangerang', '2009-11-26', 'Kp. Kadulisung Keboncau', '', '1560679936', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(52, 3, 'Fadira ', NULL, NULL, NULL, '23.24.180', '0105002248', 'p', 'Pandeglang', '2010-07-30', 'Kp. Sabitangtu', '', '1410511411', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(53, 3, 'Lia Aulia Sari ', NULL, NULL, NULL, '22.23.138', '0104664916', 'p', 'Pandeglang', '2010-07-15', 'Kp.Kebon ', '', '1417094211', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(54, 3, 'M. Ahda Maulana ', NULL, NULL, NULL, '22.23.139', '0093926245', 'l', 'Pandeglang', '2009-12-21', 'Kp.Kadukempol', '', '1411253811', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(55, 3, 'Maria Ulfah ', NULL, NULL, NULL, '22.23.140', '0093284576', 'p', 'Pandeglang', '2009-09-17', 'Kp.Pasir Kalapa ', '', '1554874096', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(56, 3, 'Melda', NULL, NULL, NULL, '22.23.141', '0108131298', 'p', 'Cilegon', '2010-06-25', 'Linkungan Sukasari', '', '1413389395', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(57, 3, 'Muhamad Wildan Maulana', NULL, NULL, NULL, '22.23.142', '0102023247', 'l', 'Pandeglang', '2010-03-19', 'Kp. Kadugajah', '', '1352356801', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(58, 3, 'Raysard Hady ', NULL, NULL, NULL, '22.23.144', NULL, 'l', 'Cirebon', '2009-05-14', 'Dusun 01', '', '1345427153', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(59, 3, 'Realpatwa Pirdaus ', NULL, NULL, NULL, '22.23.145', '0107569567', 'l', 'Pandeglang', '2010-11-08', 'Kp.Kadugajah', '', '1564879360', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(60, 3, 'Riza Umami ', NULL, NULL, NULL, '22.23.146', '0097712711', 'p', 'Pandeglang', '2009-10-25', 'Kp.Pasir Kalapa ', '', '1350062545', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(61, 3, 'Abdul Malik', NULL, NULL, NULL, '22.23.147', '0096633138', 'l', 'Karawang', '2009-04-29', 'Blokkaraton', '', '1423024467', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(62, 3, 'Ahmad Fadliyudinal-Zabar', NULL, NULL, NULL, '23.24.151', '3104341498', 'l', 'Pandeglang', '2010-04-04', 'Kp. Nangka Beureum', '', '1347914977', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(63, 3, 'Asyifa Zahra Ramadani', NULL, NULL, NULL, '23.24.185', '0104268226', 'p', 'Pandeglang', '2010-08-13', NULL, '', '1344610273', '2025-01-11 22:29:54', '2025-01-11 22:29:54', NULL, 'aktif'),
+(64, 5, 'Linggar Al Latifah', NULL, NULL, NULL, '23.24.024', '0099174423', 'p', 'Tangerang', '2007-01-18', 'Kp. Pabuaran', '', '1342392273', NULL, NULL, NULL, 'aktif'),
+(65, 6, 'Pahruroji Aprian', NULL, NULL, NULL, '22.23.014', '0079176188', 'l', 'Lebak', '2007-04-07', 'Kp. Cibugang Pasir', '', '1410793539', NULL, NULL, NULL, 'aktif'),
+(66, 5, 'Hamdatun Nisa', NULL, NULL, NULL, '23.24.022', '0085561638', 'p', 'Pandeglang', '2008-01-15', 'Kp. Kebon', '', '1424960323', NULL, NULL, NULL, 'aktif'),
+(67, 5, 'Siti Ilfi Zakiyyatunnaja', NULL, NULL, NULL, '23.24.032', '0086166804', 'p', 'Pandeglang', '2008-07-28', 'Kp. Pasekon', '', '1357328097', NULL, NULL, NULL, 'aktif'),
+(68, 5, 'Wafa Aula Kholifah', NULL, NULL, NULL, '23.24.031', '0087253296', 'p', 'Pandeglang', '2008-11-15', 'Kp. Sindang Adipati', '', '1357095393', NULL, NULL, NULL, 'aktif'),
+(69, 5, 'Fathur Wazhi', NULL, NULL, NULL, '23.24.021', '0078080864', 'l', 'Pandeglang', '2007-10-13', 'Kp. Pasir Kalapa ', '', '1350702017', NULL, NULL, NULL, 'aktif'),
+(70, 5, 'M. Abdan Abadi', NULL, NULL, NULL, '23.24.025', '0077857818', 'l', 'Lebak', '2007-10-24', 'Kp. Rumbut', '', '1418485315', NULL, NULL, NULL, 'aktif'),
+(71, 5, 'Siti Badriah', NULL, NULL, NULL, '23.24.029', '0088820513', 'p', 'Lebak', '2008-06-27', 'Kp. Sempuren ', '', '1357565633', NULL, NULL, NULL, 'aktif'),
+(72, 5, 'Ahmad Salim Murtado', NULL, NULL, NULL, '23.24.016', '0088281184', 'l', 'Pandeglang', '2008-12-20', 'Kp. Pasir Kalapa ', '', '1357707217', NULL, NULL, NULL, 'aktif'),
+(73, 5, 'Andika', NULL, NULL, NULL, '23.24.017', '0084759318', 'l', 'Pandeglang', '2008-05-25', 'Kp. Pasir Pariuk ', '', '1557859056', NULL, NULL, NULL, 'aktif'),
+(74, 5, 'Silva Masfufah', NULL, NULL, NULL, '23.24.028', '0084888820', 'p', 'Pandeglang', '2008-04-07', 'Kp. Pasir Kalapa ', '', '1569546752', NULL, NULL, NULL, 'aktif'),
+(75, 5, 'Jepri Aminudin', NULL, NULL, NULL, '23.24.023', '0075671364', 'l', 'Pandeglang', '2007-12-31', 'Kp. Pasir Kalapa ', '', '1344760001', NULL, NULL, NULL, 'aktif'),
+(76, 5, 'Nailul Muna', NULL, NULL, NULL, '23.24.026', '0084159681', 'p', 'Pandeglang', '2008-01-21', 'Kp. Kumalirang', '', '1563460352', NULL, NULL, NULL, 'aktif'),
+(77, 5, 'Danu', NULL, NULL, NULL, '23.24.020', '0079402260', 'l', 'Pandeglang', '2007-05-02', 'Kp. Mangkubumi ', '', '1552424432', NULL, NULL, NULL, 'aktif'),
+(78, 5, 'Arilliansyah', NULL, NULL, NULL, '23.24.028', '0075828230', 'l', 'Pandeglang', '2005-04-05', 'Kp. Ciboboko', '', '1355010769', NULL, NULL, NULL, 'aktif'),
+(79, 5, 'Fatir Erpansyah', NULL, NULL, NULL, '23.24.033', '0083327157', 'l', 'Lebak', '2008-07-22', 'Kp. Rumbut', '', '1348619201', NULL, NULL, NULL, 'aktif'),
+(80, 5, 'Perdi Duhriansyah', NULL, NULL, NULL, '23.24.027', '0086315785', 'l', 'Pandeglang', '2008-05-26', 'Kp. Sindang', '', '1345445345', '2025-01-25 14:27:44', '2025-01-25 14:27:44', NULL, 'aktif'),
+(81, 5, 'Siti Sulistiani', NULL, NULL, NULL, '23.24.030', '0081769339', 'p', 'Pandeglang', '2008-04-17', 'Kp. Sampora', '', '1418475843', '2025-01-25 14:27:44', '2025-01-25 14:27:44', NULL, 'aktif'),
+(82, 4, 'Munajar Alvian Prasetya', NULL, NULL, 1, '24.25.038', '0094892260', 'l', 'Pandeglang', '2009-11-03', 'Perum Teras', '', '1419823155', '2025-01-25 14:27:44', '2026-10-12 13:24:20', NULL, 'aktif'),
+(83, 4, 'Vina Zahrotu Ni\'mah', NULL, NULL, 1, '24.25.037', '0102703114', 'p', 'Bogor', '2010-04-24', 'Kp. Juga Raya', '', '1552137712', '2025-01-25 14:27:44', '2026-10-12 13:24:30', NULL, 'aktif'),
+(84, 4, 'Reina Raudanisa A.', NULL, NULL, 1, '24.25.036', '0095106535', 'p', 'Lampung', '2009-02-26', 'Kp. Pasir Walet', '', '1348060353', '2025-01-25 14:35:35', '2026-10-12 13:24:38', NULL, 'aktif'),
+(85, 4, 'Fatimah Ayu Rayhana P.', NULL, NULL, 1, '24.25.034', '0094365575', 'p', 'Suban', '2009-03-23', 'Suban', '', '1351606977', '2025-01-25 14:37:38', '2026-10-12 13:24:46', NULL, 'aktif'),
+(86, 4, 'Nurul Aulia', NULL, NULL, 1, '24.25.035', '0099681140', 'p', 'Pandeglang', '2009-12-17', 'Kp. Kadulisung', '', '1409363283', '2025-01-25 14:39:17', '2026-10-12 13:24:53', NULL, 'aktif'),
+(87, 4, 'ego', NULL, NULL, 1, '795793', '8058358', 'l', 'serang', '2000-06-17', 'serang', '1.png', '758937753', '2026-10-08 19:48:22', '2026-10-12 13:22:54', NULL, 'aktif');
 
 -- --------------------------------------------------------
 
@@ -10606,7 +10651,23 @@ INSERT INTO `migrations` (`id`, `version`, `class`, `group`, `namespace`, `time`
 (18, '2026-10-08-100000', 'App\\Database\\Migrations\\AddSubjectReportGroup', 'default', 'App', 1791428941, 8),
 (19, '2026-10-08-103000', 'App\\Database\\Migrations\\CreateStudentAssessments', 'default', 'App', 1791430753, 9),
 (20, '2026-10-08-104500', 'App\\Database\\Migrations\\CreatePersonalityAspects', 'default', 'App', 1791431250, 10),
-(21, '2026-10-17-020000', 'App\\Database\\Migrations\\CreateAdminNotificationsAndOnlineSessions', 'default', 'App', 1792176846, 11);
+(21, '2026-10-17-020000', 'App\\Database\\Migrations\\CreateAdminNotificationsAndOnlineSessions', 'default', 'App', 1792176846, 11),
+(22, '2026-10-19-090000', 'App\\Database\\Migrations\\CreateTeacherDutySchedules', 'default', 'App', 1792379292, 12),
+(23, '2026-10-07-102400', 'App\\Database\\Migrations\\CreateSidebarMenuIconOverrides', 'default', 'App', 1792380952, 13),
+(24, '2026-10-08-141800', 'App\\Database\\Migrations\\AddTeacherUserSync', 'default', 'App', 1792380952, 13),
+(25, '2026-10-09-090000', 'App\\Database\\Migrations\\CreateExtracurricularAttendance', 'default', 'App', 1792380952, 13),
+(26, '2026-10-09-120000', 'App\\Database\\Migrations\\CreateMasterExtracurricular', 'default', 'App', 1792380952, 13),
+(27, '2026-10-12-125000', 'App\\Database\\Migrations\\AddParentWhatsAppToStudent', 'default', 'App', 1792380952, 13),
+(28, '2026-10-12-130000', 'App\\Database\\Migrations\\CreateParentContacts', 'default', 'App', 1792380953, 13),
+(29, '2026-10-13-105000', 'App\\Database\\Migrations\\CreateRoleActionSettings', 'default', 'App', 1792380953, 13),
+(30, '2026-10-13-140000', 'App\\Database\\Migrations\\CreateMasterKokurikuler', 'default', 'App', 1792380953, 13),
+(31, '2026-10-13-141000', 'App\\Database\\Migrations\\CreateKokurikulerAssessments', 'default', 'App', 1792380953, 13),
+(32, '2026-10-14-113500', 'App\\Database\\Migrations\\CreateSchoolWebsiteMessages', 'default', 'App', 1792380953, 13),
+(33, '2026-10-16-110000', 'App\\Database\\Migrations\\CreateDailyAttendanceWhatsAppLog', 'default', 'App', 1792380953, 13),
+(34, '2026-10-16-140000', 'App\\Database\\Migrations\\CreateWhatsAppAttendanceSchedule', 'default', 'App', 1792380953, 13),
+(35, '2026-10-16-170000', 'App\\Database\\Migrations\\AddClassSessionToDailyAttendanceWhatsAppLog', 'default', 'App', 1792380953, 13),
+(36, '2026-10-17-011200', 'App\\Database\\Migrations\\AddParentStudentLookupIndex', 'default', 'App', 1792380953, 13),
+(37, '2026-10-19-110000', 'App\\Database\\Migrations\\AddMapelIdsToTeacherDutySchedules', 'default', 'App', 1792380996, 14);
 
 -- --------------------------------------------------------
 
@@ -10991,7 +11052,8 @@ INSERT INTO `teacher_mapel` (`guru_id`, `mapel_id`, `created_at`) VALUES
 (1, 1, NULL),
 (1, 2, NULL),
 (1, 3, NULL),
-(1, 4, NULL);
+(1, 4, NULL),
+(2, 5, NULL);
 
 -- --------------------------------------------------------
 
@@ -11184,7 +11246,8 @@ ALTER TABLE `admin_online_sessions`
 ALTER TABLE `auth_users`
   ADD PRIMARY KEY (`user_id`),
   ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `auth_users_username_unique` (`username`);
+  ADD UNIQUE KEY `auth_users_username_unique` (`username`),
+  ADD UNIQUE KEY `auth_users_guru_unique` (`guru_id`);
 
 --
 -- Indexes for table `custom_sidebar_items`
@@ -11206,6 +11269,13 @@ ALTER TABLE `master_ekstrakurikuler`
 ALTER TABLE `master_guru`
   ADD PRIMARY KEY (`guru_id`),
   ADD UNIQUE KEY `guru_nip` (`guru_nip`);
+
+--
+-- Indexes for table `master_jadwal_piket_guru`
+--
+ALTER TABLE `master_jadwal_piket_guru`
+  ADD PRIMARY KEY (`jadwal_piket_guru_id`),
+  ADD KEY `idx_jadwal_piket_guru_hari` (`guru_id`,`hari`,`is_active`);
 
 --
 -- Indexes for table `master_jam_pelajaran`
@@ -11251,7 +11321,8 @@ ALTER TABLE `master_orang_tua`
 -- Indexes for table `master_siswa`
 --
 ALTER TABLE `master_siswa`
-  ADD PRIMARY KEY (`siswa_id`);
+  ADD PRIMARY KEY (`siswa_id`),
+  ADD KEY `idx_master_siswa_orang_tua_id` (`orang_tua_id`);
 
 --
 -- Indexes for table `master_tahun_ajaran`
@@ -11458,7 +11529,13 @@ ALTER TABLE `master_ekstrakurikuler`
 -- AUTO_INCREMENT for table `master_guru`
 --
 ALTER TABLE `master_guru`
-  MODIFY `guru_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `guru_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `master_jadwal_piket_guru`
+--
+ALTER TABLE `master_jadwal_piket_guru`
+  MODIFY `jadwal_piket_guru_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `master_jam_pelajaran`
@@ -11488,7 +11565,7 @@ ALTER TABLE `master_kokurikuler`
 -- AUTO_INCREMENT for table `master_mapel`
 --
 ALTER TABLE `master_mapel`
-  MODIFY `mapel_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `mapel_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `master_orang_tua`
@@ -11512,7 +11589,7 @@ ALTER TABLE `master_tahun_ajaran`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `school_website_messages`
@@ -11553,6 +11630,12 @@ ALTER TABLE `whatsapp_daily_attendance_log`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `auth_users`
+--
+ALTER TABLE `auth_users`
+  ADD CONSTRAINT `fk_auth_users_guru` FOREIGN KEY (`guru_id`) REFERENCES `master_guru` (`guru_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
 -- Constraints for table `user_action_settings`

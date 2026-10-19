@@ -59,6 +59,53 @@ class AcademicDataController extends Controller
                 ['name' => 'guru_telepon', 'label' => 'Nomor Telepon', 'maxlength' => 30],
             ],
         ],
+        'teacher-duty-schedules' => [
+            'title' => 'Jadwal Piket Guru',
+            'table' => 'master_jadwal_piket_guru',
+            'key' => 'jadwal_piket_guru_id',
+            'activePage' => 'teacher-duty-schedules',
+            'columns' => [
+                'guru_nama' => 'Nama Guru',
+                'hari' => 'Hari',
+                'tugas_label' => 'Tugas Piket',
+                'mapel_names' => 'Mapel yang Ditangani',
+                'jam_mulai' => 'Jam Mulai',
+                'jam_selesai' => 'Jam Selesai',
+                'is_active' => 'Status',
+            ],
+            'fields' => [
+                ['name' => 'guru_id', 'label' => 'Guru Bertugas', 'type' => 'select', 'required' => true, 'options' => []],
+                [
+                    'name' => 'hari',
+                    'label' => 'Hari',
+                    'type' => 'select',
+                    'required' => true,
+                    'options' => [
+                        'Senin' => 'Senin',
+                        'Selasa' => 'Selasa',
+                        'Rabu' => 'Rabu',
+                        'Kamis' => 'Kamis',
+                        'Jumat' => 'Jumat',
+                        'Sabtu' => 'Sabtu',
+                    ],
+                ],
+                [
+                    'name' => 'tugas',
+                    'label' => 'Tugas Piket',
+                    'type' => 'select',
+                    'required' => true,
+                    'options' => [
+                        'keterlambatan' => 'Menangani keterlambatan siswa',
+                        'absen_kelas' => 'Mengabsen kelas saat guru tidak hadir',
+                        'keduanya' => 'Keduanya',
+                    ],
+                ],
+                ['name' => 'mapel_ids', 'label' => 'Mapel yang dapat digantikan', 'type' => 'subject-checklist', 'required' => true],
+                ['name' => 'jam_mulai', 'label' => 'Jam Mulai', 'type' => 'time', 'required' => true],
+                ['name' => 'jam_selesai', 'label' => 'Jam Selesai', 'type' => 'time', 'required' => true],
+                ['name' => 'is_active', 'label' => 'Aktifkan jadwal piket', 'type' => 'checkbox', 'checked' => true],
+            ],
+        ],
         'parents' => [
             'title' => 'Data Orang Tua',
             'table' => 'master_orang_tua',
@@ -159,10 +206,45 @@ class AcademicDataController extends Controller
             return redirect()->to(site_url('panel'));
         }
 
-        $rows = $this->db->table($config['table'])
-            ->orderBy($config['key'], 'DESC')
+        if ($type === 'teacher-duty-schedules') {
+            $this->populateTeacherOptions($config);
+        }
+
+        $subjects = $this->db->table('master_mapel')
+            ->select('mapel_id, mapel_nama')
+            ->orderBy('mapel_nama')
             ->get()
             ->getResultArray();
+
+        if ($type === 'teacher-duty-schedules') {
+            $taskOptions = [];
+            foreach ($config['fields'] as $field) {
+                if ($field['name'] === 'tugas') {
+                    $taskOptions = $field['options'];
+                    break;
+                }
+            }
+            $subjectNamesById = [];
+            foreach ($subjects as $subject) {
+                $subjectNamesById[(int) $subject['mapel_id']] = $subject['mapel_nama'];
+            }
+            $rows = $this->db->table($config['table'] . ' jpg')
+                ->select('jpg.*, mg.guru_nama')
+                ->join('master_guru mg', 'mg.guru_id = jpg.guru_id', 'left')
+                ->orderBy($config['key'], 'DESC')
+                ->get()
+                ->getResultArray();
+            foreach ($rows as &$row) {
+                $row['tugas_label'] = $taskOptions[$row['tugas']] ?? $row['tugas'];
+                $row['mapel_names'] = $this->formatSubjectNames((string) ($row['mapel_ids'] ?? ''), $subjectNamesById);
+            }
+            unset($row);
+        } else {
+            $rows = $this->db->table($config['table'])
+                ->orderBy($config['key'], 'DESC')
+                ->get()
+                ->getResultArray();
+        }
         $students = [];
         $selectedStudentIds = [];
         if ($type === 'parents') {
@@ -220,6 +302,10 @@ class AcademicDataController extends Controller
             'editRecord' => $editRecord,
             'students' => $students,
             'selectedStudentIds' => $selectedStudentIds,
+            'subjects' => $subjects,
+            'selectedSubjectIds' => $type === 'teacher-duty-schedules' && $editRecord !== null
+                ? $this->parseSubjectIds((string) ($editRecord['mapel_ids'] ?? ''))
+                : [],
             'masterDataRoute' => $type,
             'canImportMasterData' => \App\Libraries\ActionAccess::can($type . '.create'),
             'message' => session()->getFlashdata('academicMessage'),
@@ -306,6 +392,11 @@ class AcademicDataController extends Controller
             return redirect()->to(site_url($type))
                 ->with('academicError', 'Data guru tidak bisa dihapus karena sudah memiliki data nilai siswa.');
         }
+        if ($type === 'teachers'
+            && $this->db->table('master_jadwal_piket_guru')->where('guru_id', $id)->countAllResults() > 0) {
+            return redirect()->to(site_url($type))
+                ->with('academicError', 'Data guru tidak bisa dihapus karena masih digunakan pada jadwal piket.');
+        }
 
         if ($type === 'academic-years' && (int) $record['is_active'] === 1) {
             return redirect()->to(site_url($type))
@@ -339,6 +430,9 @@ class AcademicDataController extends Controller
         if ($config === null || ($id !== null && $id < 1)) {
             return redirect()->to(site_url('panel'));
         }
+        if ($type === 'teacher-duty-schedules') {
+            $this->populateTeacherOptions($config);
+        }
         $formUrl = site_url($type . ($id === null ? '' : '?edit=' . $id));
 
         $existing = $id !== null
@@ -355,6 +449,42 @@ class AcademicDataController extends Controller
             if (($field['type'] ?? '') === 'student-picker') {
                 continue;
             }
+
+            if (($field['type'] ?? '') === 'subject-checklist') {
+                $requiresSubjectCoverage = in_array(
+                    (string) $this->request->getPost('tugas'),
+                    ['absen_kelas', 'keduanya'],
+                    true
+                );
+                if ($type === 'teacher-duty-schedules' && ! $requiresSubjectCoverage) {
+                    $data[$name] = null;
+                    continue;
+                }
+
+                $submitted = $this->request->getPost($name);
+                if ($submitted !== null && ! is_array($submitted)) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'Pilihan ' . $field['label'] . ' tidak valid.');
+                }
+                $subjectIds = [];
+                foreach ($submitted ?? [] as $subjectId) {
+                    $validatedSubjectId = filter_var($subjectId, FILTER_VALIDATE_INT);
+                    if ($validatedSubjectId === false || $validatedSubjectId < 1) {
+                        return redirect()->to($formUrl)
+                            ->with('academicError', 'Pilihan ' . $field['label'] . ' tidak valid.');
+                    }
+                    $subjectIds[] = (int) $validatedSubjectId;
+                }
+                $subjectIds = array_values(array_unique($subjectIds));
+                sort($subjectIds, SORT_NUMERIC);
+                if (! empty($field['required']) && $subjectIds === []) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', $field['label'] . ' wajib dipilih.');
+                }
+                $data[$name] = $subjectIds === [] ? null : implode(',', $subjectIds);
+                continue;
+            }
+
             $value = trim((string) $this->request->getPost($name));
 
             if (($field['type'] ?? '') === 'checkbox') {
@@ -411,6 +541,62 @@ class AcademicDataController extends Controller
                 ->with('academicError', 'Jam selesai harus sesudah jam mulai.');
         }
 
+        if ($type === 'teacher-duty-schedules') {
+            $mapelIds = $this->parseSubjectIds((string) ($data['mapel_ids'] ?? ''));
+            $requiresSubjectCoverage = in_array($data['tugas'], ['absen_kelas', 'keduanya'], true);
+            if ($requiresSubjectCoverage && $mapelIds === []) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Mapel yang dapat digantikan wajib dipilih.');
+            }
+            if ($requiresSubjectCoverage) {
+                $subjectRows = $this->db->table('master_mapel')
+                    ->select('mapel_id')
+                    ->whereIn('mapel_id', $mapelIds)
+                    ->get()
+                    ->getResultArray();
+                $existingSubjectIds = array_map(static fn (array $row): int => (int) $row['mapel_id'], $subjectRows);
+                sort($existingSubjectIds, SORT_NUMERIC);
+                sort($mapelIds, SORT_NUMERIC);
+                if ($existingSubjectIds !== $mapelIds) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'Satu atau beberapa mapel yang dipilih tidak ditemukan.');
+                }
+                $data['mapel_ids'] = implode(',', $mapelIds);
+            } else {
+                $data['mapel_ids'] = null;
+            }
+
+            $startTime = $this->normalizeTime((string) $data['jam_mulai']);
+            $endTime = $this->normalizeTime((string) $data['jam_selesai']);
+            if ($startTime === null || $endTime === null) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Format jam piket tidak valid.');
+            }
+            if ($startTime >= $endTime) {
+                return redirect()->to($formUrl)
+                    ->with('academicError', 'Jam selesai harus sesudah jam mulai.');
+            }
+
+            $data['jam_mulai'] = $startTime;
+            $data['jam_selesai'] = $endTime;
+            $data['is_active'] = $this->request->getPost('is_active') === '1' ? 1 : 0;
+            if ($data['is_active'] === 1) {
+                $overlappingSchedules = $this->db->table('master_jadwal_piket_guru')
+                    ->where('guru_id', $data['guru_id'])
+                    ->where('hari', $data['hari'])
+                    ->where('is_active', 1)
+                    ->where('jam_mulai <', $data['jam_selesai'])
+                    ->where('jam_selesai >', $data['jam_mulai']);
+                if ($id !== null) {
+                    $overlappingSchedules->where('jadwal_piket_guru_id !=', $id);
+                }
+                if ($overlappingSchedules->countAllResults() > 0) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'Jadwal guru tersebut bertumpang tindih dengan jadwal piket aktif lainnya pada hari yang sama.');
+                }
+            }
+        }
+
         if ($type === 'academic-years'
             && ! empty($data['tanggal_mulai'])
             && ! empty($data['tanggal_selesai'])
@@ -463,6 +649,7 @@ class AcademicDataController extends Controller
             'extracurriculars' => ['nama_kegiatan' => 'Nama kegiatan'],
             'kokurikuler' => ['nama_kegiatan' => 'Nama kegiatan'],
             'academic-years' => ['tahun_ajaran_nama' => 'Tahun ajaran', 'semester' => 'Semester'],
+            'teacher-duty-schedules' => [],
         ];
         $uniqueBuilder = $this->db->table($config['table']);
         $hasUniqueValue = false;
@@ -661,5 +848,82 @@ class AcademicDataController extends Controller
         }
 
         return $username;
+    }
+
+    private function populateTeacherOptions(array &$config): void
+    {
+        $teachers = $this->db->table('master_guru')
+            ->select('guru_id, guru_nama, guru_nip')
+            ->orderBy('guru_nama')
+            ->get()
+            ->getResultArray();
+
+        foreach ($config['fields'] as &$field) {
+            if ($field['name'] !== 'guru_id') {
+                continue;
+            }
+            foreach ($teachers as $teacher) {
+                $field['options'][(int) $teacher['guru_id']] = $teacher['guru_nama']
+                    . (! empty($teacher['guru_nip']) ? ' (' . $teacher['guru_nip'] . ')' : '');
+            }
+            break;
+        }
+        unset($field);
+    }
+
+    private function parseSubjectIds(string $serialized): array
+    {
+        if ($serialized === '') {
+            return [];
+        }
+
+        $ids = [];
+        foreach (preg_split('/[,\s]+/', trim($serialized), -1, PREG_SPLIT_NO_EMPTY) ?: [] as $token) {
+            $parsed = filter_var($token, FILTER_VALIDATE_INT);
+            if ($parsed === false || $parsed < 1) {
+                continue;
+            }
+            $ids[] = (int) $parsed;
+        }
+
+        return array_values(array_unique($ids));
+    }
+
+    private function formatSubjectNames(string $serialized, array $subjectNamesById): string
+    {
+        $subjectIds = $this->parseSubjectIds($serialized);
+        if ($subjectIds === []) {
+            return '-';
+        }
+
+        $names = [];
+        foreach ($subjectIds as $subjectId) {
+            if (isset($subjectNamesById[$subjectId])) {
+                $names[] = $subjectNamesById[$subjectId];
+            }
+        }
+
+        return $names === [] ? '-' : implode(', ', $names);
+    }
+
+    private function normalizeTime(string $time): ?string
+    {
+        $time = trim($time);
+        if (preg_match('/^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/', $time, $matches) === 1) {
+            return sprintf('%02d:%02d:%02d', (int) $matches[1], (int) $matches[2], (int) ($matches[3] ?? 0));
+        }
+
+        if (preg_match('/^(0?[1-9]|1[0-2]):([0-5]\d)(?::([0-5]\d))?\s*([AP]M)$/i', $time, $matches) !== 1) {
+            return null;
+        }
+
+        $hour = (int) $matches[1] % 12;
+        if (strtoupper($matches[4]) === 'PM') {
+            $hour += 12;
+        } elseif ((int) $matches[1] === 12) {
+            $hour = 12;
+        }
+
+        return sprintf('%02d:%02d:%02d', $hour, (int) $matches[2], (int) ($matches[3] ?? 0));
     }
 }

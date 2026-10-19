@@ -48,18 +48,22 @@
             <?php if ($canSendWhatsApp) : ?>
                 <hr>
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <p class="small text-muted mb-0">Kirim satu rekap untuk kelas terpilih, meliputi tap datang, status tiap jam pelajaran, dan tap pulang pada tanggal tersebut.</p>
-                    <form method="post" action="<?= site_url('class-attendance/send-daily-whatsapp'); ?>" onsubmit="return confirm('Kirim rekap WhatsApp lengkap untuk kelas dan tanggal yang dipilih? Pesan akan dikirim kepada wali murid yang memiliki nomor WhatsApp.');">
+                    <p class="small text-muted mb-0">
+                        <?= $classId === ''
+                            ? 'Kirim rekap untuk semua kelas, meliputi tap datang, status tiap jam pelajaran, dan tap pulang pada tanggal tersebut.'
+                            : 'Kirim satu rekap untuk kelas terpilih, meliputi tap datang, status tiap jam pelajaran, dan tap pulang pada tanggal tersebut.'; ?>
+                    </p>
+                    <form method="post" action="<?= site_url('class-attendance/send-daily-whatsapp'); ?>" onsubmit="return confirm('<?= $classId === '' ? 'Kirim rekap WhatsApp untuk semua kelas pada tanggal yang dipilih?' : 'Kirim rekap WhatsApp lengkap untuk kelas dan tanggal yang dipilih?'; ?> Pesan akan dikirim kepada wali murid yang memiliki nomor WhatsApp.');">
                         <?= csrf_field(); ?>
                         <input type="hidden" name="tanggal" value="<?= esc($date); ?>">
                         <input type="hidden" name="kelas_id" value="<?= esc($classId); ?>">
-                        <button class="btn btn-success" type="submit" <?= $date === '' || $classId === '' ? 'disabled' : ''; ?>>
-                            <i class="bi bi-whatsapp me-1" aria-hidden="true"></i>Kirim Rekap WhatsApp Kelas
+                        <button class="btn btn-success" type="submit" <?= $date === '' ? 'disabled' : ''; ?>>
+                            <i class="bi bi-whatsapp me-1" aria-hidden="true"></i><?= $classId === '' ? 'Kirim Rekap Semua Kelas' : 'Kirim Rekap WhatsApp Kelas'; ?>
                         </button>
                     </form>
                 </div>
-                <?php if ($date === '' || $classId === '') : ?>
-                    <small class="text-muted d-block mt-2">Pilih tanggal dan satu kelas, lalu klik Filter untuk mengaktifkan pengiriman rekap.</small>
+                <?php if ($date === '') : ?>
+                    <small class="text-muted d-block mt-2">Pilih tanggal, lalu klik Filter. Pilih satu kelas atau “Semua kelas” untuk menentukan cakupan pengiriman.</small>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

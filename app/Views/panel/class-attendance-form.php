@@ -132,14 +132,29 @@
     const classSelect = document.getElementById('attendanceClass');
     const teacherSelect = document.getElementById('attendanceTeacher');
     const subjectSelect = document.getElementById('attendanceSubject');
+    const attendanceDate = document.getElementById('attendanceDate');
     const studentRows = Array.from(document.querySelectorAll('#attendanceStudents tr[data-class-id]'));
     const counter = document.getElementById('visibleStudentCount');
     const submitButton = document.getElementById('saveAttendance');
+    const dutyTeacherSubjectIds = <?= json_encode($dutyTeacherSubjectIds, JSON_THROW_ON_ERROR); ?>;
 
-    if (!classSelect || !teacherSelect || !subjectSelect || !counter || !submitButton) return;
+    if (!classSelect || !teacherSelect || !subjectSelect || !attendanceDate || !counter || !submitButton) return;
+
+    const getDutyDayName = () => {
+        const value = attendanceDate.value;
+        if (!value) return '';
+        const parsed = new Date(`${value}T00:00:00`);
+        if (Number.isNaN(parsed.getTime())) return '';
+        const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        return days[parsed.getDay()];
+    };
 
     const updateAssignedSubjects = () => {
         const teacherId = teacherSelect.value;
+        const dutySubjectsForTeacher = teacherId !== '' && dutyTeacherSubjectIds[teacherId]
+            ? dutyTeacherSubjectIds[teacherId][getDutyDayName()] ?? []
+            : [];
+        const dutySubjectSet = new Set(dutySubjectsForTeacher.map(Number));
         let selectedStillAvailable = false;
         Array.from(subjectSelect.options).forEach((option) => {
             if (option.value === '') {
@@ -147,8 +162,8 @@
                 option.disabled = false;
                 return;
             }
-            const teacherIds = (option.dataset.teachers || '').split(',').filter(Boolean);
-            const allowed = teacherId !== '' && teacherIds.includes(teacherId);
+            const teacherIds = (option.dataset.teachers || '').split(',').filter(Boolean).map(Number);
+            const allowed = teacherId !== '' && (teacherIds.includes(Number(teacherId)) || dutySubjectSet.has(Number(option.value)));
             option.hidden = !allowed;
             option.disabled = !allowed;
             if (allowed && option.selected) selectedStillAvailable = true;
@@ -157,8 +172,8 @@
         document.getElementById('subjectAssignmentHint').textContent = teacherId === ''
             ? 'Pilih guru untuk menampilkan mapel yang ditetapkan.'
             : selectedStillAvailable || Array.from(subjectSelect.options).some((option) => option.value !== '' && !option.disabled)
-                ? 'Daftar mapel mengikuti pengaturan mapel untuk guru yang dipilih.'
-                : 'Belum ada mapel yang ditetapkan untuk guru ini. Atur melalui menu Settings > Mapel Guru.';
+                ? 'Daftar mapel mengikuti pengaturan mapel untuk guru yang dipilih atau jadwal piket aktif.'
+                : 'Belum ada mapel yang ditetapkan untuk guru ini. Atur melalui menu Settings > Mapel Guru atau Jadwal Piket Guru.';
     };
 
     const updateStudentRows = () => {
@@ -178,6 +193,7 @@
 
     classSelect.addEventListener('change', updateStudentRows);
     teacherSelect.addEventListener('change', updateAssignedSubjects);
+    attendanceDate.addEventListener('change', updateAssignedSubjects);
     updateAssignedSubjects();
     updateStudentRows();
 })();
