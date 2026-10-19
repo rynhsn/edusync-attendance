@@ -31,6 +31,8 @@ class StudentController extends ResourceController
             'parents' => db_connect()->table('master_orang_tua')->orderBy('nama_orang_tua')->get()->getResultArray(),
             'importMessage' => session()->getFlashdata('studentImportMessage'),
             'importError' => session()->getFlashdata('studentImportError'),
+            'canImportStudents' => \App\Libraries\ActionAccess::can('student.import'),
+            'canExportStudents' => \App\Libraries\ActionAccess::can('student.export'),
         ];
 
         return view('student/index', $data);

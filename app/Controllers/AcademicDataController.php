@@ -307,7 +307,8 @@ class AcademicDataController extends Controller
                 ? $this->parseSubjectIds((string) ($editRecord['mapel_ids'] ?? ''))
                 : [],
             'masterDataRoute' => $type,
-            'canImportMasterData' => \App\Libraries\ActionAccess::can($type . '.create'),
+            'canImportMasterData' => \App\Libraries\ActionAccess::can($type . '.import'),
+            'canExportMasterData' => \App\Libraries\ActionAccess::can($type . '.export'),
             'message' => session()->getFlashdata('academicMessage'),
             'error' => session()->getFlashdata('academicError'),
             'warning' => session()->getFlashdata('academicWarning'),

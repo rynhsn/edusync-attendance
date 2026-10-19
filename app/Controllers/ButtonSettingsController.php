@@ -22,7 +22,7 @@ class ButtonSettingsController extends BaseController
             ->where('role !=', 'super_admin')
             ->orderBy('display_name', 'ASC')
             ->findAll();
-        $validUserIds = array_map(static fn (array $user): int => (int) $user['user_id'], $users);
+        $validUserIds = array_map(static fn(array $user): int => (int) $user['user_id'], $users);
         $selectedUserId = $requestedUserId !== false && in_array((int) $requestedUserId, $validUserIds, true)
             ? (int) $requestedUserId
             : null;
@@ -40,7 +40,7 @@ class ButtonSettingsController extends BaseController
         $effectiveRole = $targetType === 'user' && $selectedUser !== null
             ? (string) $selectedUser['role']
             : $selectedRole;
-        $roleSettings = array_merge(ActionAccess::defaults($effectiveRole), ActionAccess::settingsFor($effectiveRole));
+        $roleSettings = ActionAccess::settingsForRole($effectiveRole);
         $userSettings = $targetType === 'user' && $selectedUserId !== null
             ? ActionAccess::settingsForUser($selectedUserId)
             : [];
@@ -130,7 +130,8 @@ class ButtonSettingsController extends BaseController
             $whereValue = $targetType === 'role' ? $role : (int) $userId;
             $db->table($table)->where($whereColumn, $whereValue)->delete();
             if (($rows !== [] && ! $db->table($table)->insertBatch($rows))
-                || $db->transStatus() === false) {
+                || $db->transStatus() === false
+            ) {
                 throw new DatabaseException('Could not replace role action settings.');
             }
             $db->transCommit();

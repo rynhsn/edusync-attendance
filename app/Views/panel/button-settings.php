@@ -4,7 +4,7 @@
 <div class="container-fluid p-4 p-lg-4">
     <div class="mb-4">
         <h1 class="h3 mb-1">Pengaturan Akses Tombol</h1>
-        <p class="text-muted mb-0">Super Admin dapat memberikan izin aksi tambah, edit, hapus, dan simpan per role atau per akun user.</p>
+        <p class="text-muted mb-0">Super Admin dapat mengatur izin tambah, edit, hapus, simpan, import, dan export per role atau per akun user.</p>
     </div>
 
     <?php if (! empty($message)) : ?><div class="alert alert-success" role="status"><?= esc($message); ?></div><?php endif; ?>
