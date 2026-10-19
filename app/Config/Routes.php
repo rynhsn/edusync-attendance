@@ -104,18 +104,20 @@ $routes->get('teacher-subjects', 'TeacherSubjectController::index', ['filter' =>
 $routes->post('teacher-subjects', 'TeacherSubjectController::save', ['filter' => ['actionAccess:teacher-subjects.save', 'csrf']]);
 
 // Master data spreadsheet import and export
-foreach ([
-    'major' => 'major.manage',
-    'class' => 'class.manage',
-    'subjects' => 'subjects.create',
-    'teachers' => 'teachers.create',
-    'parents' => 'parents.create',
-    'lesson-periods' => 'lesson-periods.create',
-    'academic-years' => 'academic-years.create',
-] as $masterDataType => $importAction) {
-    $routes->get($masterDataType . '/import-template', 'MasterDataSpreadsheetController::template/' . $masterDataType, ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
-    $routes->get($masterDataType . '/export', 'MasterDataSpreadsheetController::export/' . $masterDataType, ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
-    $routes->post($masterDataType . '/import', 'MasterDataSpreadsheetController::import/' . $masterDataType, ['filter' => ['actionAccess:' . $importAction, 'csrf']]);
+foreach (
+    [
+        'major',
+        'class',
+        'subjects',
+        'teachers',
+        'parents',
+        'lesson-periods',
+        'academic-years',
+    ] as $masterDataType
+) {
+    $routes->get($masterDataType . '/import-template', 'MasterDataSpreadsheetController::template/' . $masterDataType, ['filter' => 'actionAccess:' . $masterDataType . '.import']);
+    $routes->get($masterDataType . '/export', 'MasterDataSpreadsheetController::export/' . $masterDataType, ['filter' => 'actionAccess:' . $masterDataType . '.export']);
+    $routes->post($masterDataType . '/import', 'MasterDataSpreadsheetController::import/' . $masterDataType, ['filter' => ['actionAccess:' . $masterDataType . '.import', 'csrf']]);
 }
 
 // Academic master data
@@ -174,8 +176,8 @@ $routes->post('class-attendance/delete/(:num)', 'ClassAttendanceController::dele
 $routes->get('student', 'StudentController::index', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->get('student/', 'StudentController::index', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
 $routes->get('student/show', 'StudentController::show', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
-$routes->get('student/export', 'StudentController::export', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
-$routes->get('student/import-template', 'StudentController::importTemplate', ['filter' => 'roleAccess:super_admin,user,kepala_sekolah,bendahara,kurikulum,operator']);
+$routes->get('student/export', 'StudentController::export', ['filter' => 'actionAccess:student.export']);
+$routes->get('student/import-template', 'StudentController::importTemplate', ['filter' => 'actionAccess:student.import']);
 $routes->post('student/import', 'StudentController::import', ['filter' => ['actionAccess:student.import', 'csrf']]);
 $routes->post('student/create', 'StudentController::create', ['filter' => ['actionAccess:student.create', 'csrf']]);
 $routes->post('student/update/(:num)', 'StudentController::update/$1', ['filter' => ['actionAccess:student.edit', 'csrf']]);

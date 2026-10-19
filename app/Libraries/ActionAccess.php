@@ -7,6 +7,16 @@ class ActionAccess
     private static ?array $savedSettings = null;
     private static ?array $savedUserSettings = null;
 
+    private const LEGACY_IMPORT_ACTIONS = [
+        'major.import' => 'major.manage',
+        'class.import' => 'class.manage',
+        'subjects.import' => 'subjects.create',
+        'teachers.import' => 'teachers.create',
+        'parents.import' => 'parents.create',
+        'lesson-periods.import' => 'lesson-periods.create',
+        'academic-years.import' => 'academic-years.create',
+    ];
+
     public static function catalog(): array
     {
         return [
@@ -32,7 +42,6 @@ class ActionAccess
                 'student.edit' => 'Edit siswa',
                 'student.delete' => 'Hapus siswa',
                 'student.status' => 'Ubah status siswa',
-                'student.import' => 'Import siswa',
             ],
             'Master Akademik' => [
                 'subjects.create' => 'Tambah mata pelajaran',
@@ -82,6 +91,24 @@ class ActionAccess
                 'website-content.delete' => 'Hapus konten website',
                 'teacher-subjects.save' => 'Simpan penetapan mapel guru',
             ],
+            'Import dan Export Data' => [
+                'student.import' => 'Import data siswa',
+                'student.export' => 'Export data siswa',
+                'major.import' => 'Import data jurusan',
+                'major.export' => 'Export data jurusan',
+                'class.import' => 'Import data kelas',
+                'class.export' => 'Export data kelas',
+                'subjects.import' => 'Import data mata pelajaran',
+                'subjects.export' => 'Export data mata pelajaran',
+                'teachers.import' => 'Import data guru',
+                'teachers.export' => 'Export data guru',
+                'parents.import' => 'Import data orang tua',
+                'parents.export' => 'Export data orang tua',
+                'lesson-periods.import' => 'Import data jam pelajaran',
+                'lesson-periods.export' => 'Export data jam pelajaran',
+                'academic-years.import' => 'Import data tahun ajaran',
+                'academic-years.export' => 'Export data tahun ajaran',
+            ],
         ];
     }
 
@@ -93,10 +120,17 @@ class ActionAccess
 
         // These actions were already available to all roles before configurable action access.
         if (in_array($role, ['user', 'kepala_sekolah', 'bendahara', 'kurikulum', 'operator'], true)) {
-            return [
+            $defaults = [
                 'grades.save' => true,
                 'academic-assessments.save' => true,
             ];
+            foreach (array_keys(self::flatCatalog()) as $actionKey) {
+                if (str_ends_with($actionKey, '.export')) {
+                    $defaults[$actionKey] = true;
+                }
+            }
+
+            return $defaults;
         }
 
         return [];
@@ -118,10 +152,44 @@ class ActionAccess
         if (array_key_exists($actionKey, $userSettings)) {
             return $userSettings[$actionKey];
         }
+        $legacyAction = self::LEGACY_IMPORT_ACTIONS[$actionKey] ?? null;
+        if ($legacyAction !== null && array_key_exists($legacyAction, $userSettings)) {
+            return $userSettings[$legacyAction];
+        }
+
+        return self::roleCan($actionKey, $role);
+    }
+
+    public static function settingsForRole(string $role): array
+    {
+        $settings = [];
+        foreach (array_keys(self::flatCatalog()) as $actionKey) {
+            $settings[$actionKey] = self::roleCan($actionKey, $role);
+        }
+
+        return $settings;
+    }
+
+    private static function roleCan(string $actionKey, string $role): bool
+    {
+        if ($role === 'super_admin') {
+            return true;
+        }
 
         $saved = self::settingsFor($role);
+        if (array_key_exists($actionKey, $saved)) {
+            return $saved[$actionKey];
+        }
+        $defaults = self::defaults($role);
+        if (array_key_exists($actionKey, $defaults)) {
+            return $defaults[$actionKey];
+        }
 
-        return $saved[$actionKey] ?? (self::defaults($role)[$actionKey] ?? false);
+        $legacyAction = self::LEGACY_IMPORT_ACTIONS[$actionKey] ?? null;
+        if ($legacyAction === null) {
+            return false;
+        }
+        return $saved[$legacyAction] ?? ($defaults[$legacyAction] ?? false);
     }
 
     public static function settingsFor(string $role): array

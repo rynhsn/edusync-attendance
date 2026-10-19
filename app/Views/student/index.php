@@ -21,20 +21,25 @@
         <div class="alert alert-danger student-import-error" role="alert"><?= esc($importError); ?></div>
     <?php endif; ?>
 
+    <?php if ($canImportStudents || $canExportStudents) : ?>
     <div class="card mb-4">
         <div class="card-header">
             <h2 class="h5 card-title mb-0">Import dan Export Excel</h2>
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <a class="btn btn-outline-primary" href="<?= site_url('student/import-template'); ?>">
-                    <i class="bi bi-download me-2" aria-hidden="true"></i>Unduh Template Import
-                </a>
-                <a class="btn btn-outline-success" href="<?= site_url('student/export'); ?>">
-                    <i class="bi bi-file-earmark-spreadsheet me-2" aria-hidden="true"></i>Export Data Siswa
-                </a>
+                <?php if ($canImportStudents) : ?>
+                    <a class="btn btn-outline-primary" href="<?= site_url('student/import-template'); ?>">
+                        <i class="bi bi-download me-2" aria-hidden="true"></i>Unduh Template Import
+                    </a>
+                <?php endif; ?>
+                <?php if ($canExportStudents) : ?>
+                    <a class="btn btn-outline-success" href="<?= site_url('student/export'); ?>">
+                        <i class="bi bi-file-earmark-spreadsheet me-2" aria-hidden="true"></i>Export Data Siswa
+                    </a>
+                <?php endif; ?>
             </div>
-            <?php if (\App\Libraries\ActionAccess::can('student.import')) : ?>
+            <?php if ($canImportStudents) : ?>
                 <form class="d-flex flex-column flex-md-row align-items-md-end gap-2 mt-3" method="post" action="<?= site_url('student/import'); ?>" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
                     <div class="flex-grow-1">
@@ -49,6 +54,7 @@
             <?php endif; ?>
         </div>
     </div>
+    <?php endif; ?>
 
     <div class="card mb-4">
         <div class="card-header">

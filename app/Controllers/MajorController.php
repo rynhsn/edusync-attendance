@@ -31,7 +31,8 @@ class MajorController extends ResourceController
             'majors'     => $this->majorModel->orderBy('jurusan_nama', 'ASC')->findAll(),
             'editMajor'  => $editMajor,
             'masterDataRoute' => 'major',
-            'canImportMasterData' => \App\Libraries\ActionAccess::can('major.manage'),
+            'canImportMasterData' => \App\Libraries\ActionAccess::can('major.import'),
+            'canExportMasterData' => \App\Libraries\ActionAccess::can('major.export'),
             'message'    => session()->getFlashdata('majorMessage'),
             'error'      => session()->getFlashdata('majorError'),
         ]);
