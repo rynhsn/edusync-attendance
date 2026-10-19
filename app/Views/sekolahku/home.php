@@ -48,23 +48,48 @@
             $principal_data = is_string($principal) ? json_decode($principal, true) : $principal;
           }
           ?>
-          <?php if(!empty($principal_data)): ?>
-          <div class="hero-card hero-card-principal">
-            <div class="hc-img">
-              <span class="hc-badge">Kata Sambutan</span>
-              <img src="<?= esc($principal_data['photo'] ?? '') ?: base_url('sekolahku/public/images/default-principal.jpg') ?>" alt="<?= esc($principal_data['name'] ?? 'Kepala Sekolah') ?>" loading="lazy">
-            </div>
-            <div class="hc-body">
-              <h4><?= esc($principal_data['name'] ?? '') ?></h4>
-              <span class="hc-role"><?= esc($principal_data['role'] ?? $principal_data['role_title'] ?? 'Kepala Sekolah') ?></span>
-              <p><?= esc($principal_data['quote'] ?? $principal_data['sambutan'] ?? $principal_data['welcome_message'] ?? '') ?></p>
-              <?php if(isset($principal_data['meta']) && is_array($principal_data['meta'])): ?>
-              <div class="hc-principal-meta">
-                <?php foreach($principal_data['meta'] as $m): ?>
-                <span><i class="fas fa-<?= esc($m['icon'] ?? 'graduation-cap') ?>" aria-hidden="true"></i> <?= esc($m['text'] ?? $m) ?></span>
-                <?php endforeach; ?>
+          <?php if(isset($principal_data['smp']) || isset($principal_data['smk'])): ?>
+          <div class="hero-principal-slider" data-principal-slider aria-label="Sambutan kepala sekolah">
+            <div class="hero-principal-viewport">
+              <div class="hero-principal-track" data-principal-track>
+            <?php foreach(['smp' => 'SMP', 'smk' => 'SMK'] as $schoolLevel => $schoolLevelLabel): ?>
+              <?php $principalItem = is_array($principal_data[$schoolLevel] ?? null) ? $principal_data[$schoolLevel] : []; ?>
+              <div class="hero-principal-slide" data-principal-slide aria-hidden="<?= $schoolLevel === 'smp' ? 'false' : 'true'; ?>">
+                <div class="hero-card hero-card-principal">
+                  <div class="hc-img">
+                    <span class="hc-badge">Kepala Sekolah <?= esc($schoolLevelLabel) ?></span>
+                    <img src="<?= esc($principalItem['photo'] ?? '') ?: base_url('sekolahku/public/images/default-principal.jpg') ?>" alt="<?= esc($principalItem['name'] ?? 'Kepala Sekolah ' . $schoolLevelLabel) ?>" loading="lazy">
+                  </div>
+                  <div class="hc-body">
+                    <h4><?= esc($principalItem['name'] ?? 'Kepala Sekolah ' . $schoolLevelLabel) ?></h4>
+                    <span class="hc-role"><?= esc($principalItem['role'] ?? $principalItem['role_title'] ?? 'Kepala Sekolah ' . $schoolLevelLabel) ?></span>
+                    <?php if (! empty($principalItem['quote'] ?? $principalItem['sambutan'] ?? $principalItem['welcome_message'] ?? '')): ?>
+                      <p><?= esc($principalItem['quote'] ?? $principalItem['sambutan'] ?? $principalItem['welcome_message'] ?? '') ?></p>
+                    <?php endif; ?>
+                    <?php if(isset($principalItem['meta']) && is_array($principalItem['meta']) && $principalItem['meta'] !== []): ?>
+                    <div class="hc-principal-meta">
+                      <?php foreach($principalItem['meta'] as $m): ?>
+                      <span><i class="fas fa-<?= esc($m['icon'] ?? 'graduation-cap') ?>" aria-hidden="true"></i> <?= esc($m['text'] ?? $m) ?></span>
+                      <?php endforeach; ?>
+                    </div>
+                    <?php endif; ?>
+                  </div>
+                </div>
               </div>
-              <?php endif; ?>
+            <?php endforeach; ?>
+              </div>
+            </div>
+            <div class="hero-principal-controls">
+              <button class="hero-principal-arrow" type="button" data-principal-prev aria-label="Sambutan kepala sekolah sebelumnya">
+                <i class="fas fa-chevron-left" aria-hidden="true"></i>
+              </button>
+              <div class="hero-principal-dots" role="tablist" aria-label="Pilih kepala sekolah">
+                <button type="button" class="active" data-principal-dot="0" role="tab" aria-label="Kepala Sekolah SMP" aria-selected="true"></button>
+                <button type="button" data-principal-dot="1" role="tab" aria-label="Kepala Sekolah SMK" aria-selected="false"></button>
+              </div>
+              <button class="hero-principal-arrow" type="button" data-principal-next aria-label="Sambutan kepala sekolah berikutnya">
+                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+              </button>
             </div>
           </div>
           <?php endif; ?>
@@ -72,6 +97,47 @@
       </div>
     </div>
   </section>
+  <script>
+  (() => {
+    const slider = document.querySelector('[data-principal-slider]');
+    if (!slider) return;
+
+    const track = slider.querySelector('[data-principal-track]');
+    const slides = Array.from(slider.querySelectorAll('[data-principal-slide]'));
+    const dots = Array.from(slider.querySelectorAll('[data-principal-dot]'));
+    let activeIndex = 0;
+
+    const showSlide = (index) => {
+      activeIndex = (index + slides.length) % slides.length;
+      const slideOffset = slides[activeIndex].offsetLeft - slides[0].offsetLeft;
+      track.style.transform = `translateX(-${slideOffset}px)`;
+      slides.forEach((slide, slideIndex) => {
+        slide.setAttribute('aria-hidden', slideIndex === activeIndex ? 'false' : 'true');
+      });
+      dots.forEach((dot, dotIndex) => {
+        const isActive = dotIndex === activeIndex;
+        dot.classList.toggle('active', isActive);
+        dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+    };
+
+    slider.querySelector('[data-principal-prev]')?.addEventListener('click', () => showSlide(activeIndex - 1));
+    slider.querySelector('[data-principal-next]')?.addEventListener('click', () => showSlide(activeIndex + 1));
+    dots.forEach((dot, index) => dot.addEventListener('click', () => showSlide(index)));
+
+    let touchStartX = null;
+    slider.addEventListener('touchstart', (event) => {
+      touchStartX = event.changedTouches[0]?.screenX ?? null;
+    }, { passive: true });
+    slider.addEventListener('touchend', (event) => {
+      const touchEndX = event.changedTouches[0]?.screenX;
+      if (touchStartX === null || touchEndX === undefined) return;
+      const distance = touchEndX - touchStartX;
+      if (Math.abs(distance) > 40) showSlide(activeIndex + (distance < 0 ? 1 : -1));
+      touchStartX = null;
+    }, { passive: true });
+  })();
+  </script>
 
   <!-- ===== COUNTER ===== -->
   <?php

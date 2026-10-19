@@ -18,7 +18,7 @@ class SchoolkuWebsiteSettingsController extends BaseController
         'hero_btn_secondary_url' => '/news/contact',
         'hero_stats' => '[{"value":"1200+","label":"Siswa"},{"value":"85+","label":"Guru"},{"value":"150+","label":"Prestasi"}]',
         'counter_stats' => '[{"icon":"layer-group","number":"40","suffix":"+","label":"Rombongan Belajar"},{"icon":"calendar-alt","number":"25","suffix":"+","label":"Tahun Berdiri"},{"icon":"book-open","number":"24","suffix":"+","label":"Program Studi"},{"icon":"user-friends","number":"3000","suffix":"+","label":"Alumni"}]',
-        'principal' => '{"name":"Kepala Sekolah","role":"Kepala Sekolah","quote":"Bersama kita membangun generasi cerdas dan berkarakter.","photo":"","meta":[]}',
+        'principal' => '{"smp":{"name":"Kepala Sekolah SMP","role":"Kepala Sekolah SMP","quote":"Bersama kita membangun generasi cerdas dan berkarakter.","photo":"","meta":[]},"smk":{"name":"Kepala Sekolah SMK","role":"Kepala Sekolah SMK","quote":"Bersama kita membangun generasi cerdas dan berkarakter.","photo":"","meta":[]}}',
     ];
 
     private const PROFILE_DEFAULTS = [
@@ -79,6 +79,31 @@ class SchoolkuWebsiteSettingsController extends BaseController
         $heroStats = $this->decodeArray($settings['hero_stats']);
         $counterStats = $this->decodeArray($settings['counter_stats']);
         $principal = $this->decodeArray($settings['principal']);
+        if (! isset($principal['smp']) && ! isset($principal['smk'])) {
+            $legacyPrincipal = $principal;
+            $legacyPrincipal['role'] = ($legacyPrincipal['role'] ?? $legacyPrincipal['role_title'] ?? '') === 'Kepala Sekolah'
+                ? 'Kepala Sekolah SMP'
+                : ($legacyPrincipal['role'] ?? $legacyPrincipal['role_title'] ?? 'Kepala Sekolah SMP');
+            $principal = [
+                'smp' => $legacyPrincipal,
+                'smk' => [
+                    'name' => 'Kepala Sekolah SMK',
+                    'role' => 'Kepala Sekolah SMK',
+                    'quote' => '',
+                    'photo' => '',
+                    'meta' => [],
+                ],
+            ];
+        }
+        foreach (['smp', 'smk'] as $schoolLevel) {
+            $principal[$schoolLevel] = array_merge([
+                'name' => 'Kepala Sekolah ' . strtoupper($schoolLevel),
+                'role' => 'Kepala Sekolah ' . strtoupper($schoolLevel),
+                'quote' => '',
+                'photo' => '',
+                'meta' => [],
+            ], is_array($principal[$schoolLevel] ?? null) ? $principal[$schoolLevel] : []);
+        }
 
         return view('panel/website-home-settings', [
             'title' => 'Pengaturan Beranda',
@@ -104,10 +129,12 @@ class SchoolkuWebsiteSettingsController extends BaseController
             'hero_btn_secondary_url' => 'permit_empty|max_length[255]',
             'hero_stats' => 'permit_empty|max_length[2000]',
             'counter_stats' => 'permit_empty|max_length[3000]',
-            'principal_name' => 'permit_empty|max_length[200]',
-            'principal_role' => 'permit_empty|max_length[150]',
-            'principal_quote' => 'permit_empty|max_length[1000]',
-            'principal_photo' => 'permit_empty|max_length[500]',
+            'principal_smp_name' => 'permit_empty|max_length[200]',
+            'principal_smp_role' => 'permit_empty|max_length[150]',
+            'principal_smp_quote' => 'permit_empty|max_length[1000]',
+            'principal_smk_name' => 'permit_empty|max_length[200]',
+            'principal_smk_role' => 'permit_empty|max_length[150]',
+            'principal_smk_quote' => 'permit_empty|max_length[1000]',
         ];
         if (! $this->validate($rules)) {
             return $this->redirectBack('website-settings/home', 'Periksa kembali kolom beranda.');
@@ -140,28 +167,116 @@ class SchoolkuWebsiteSettingsController extends BaseController
 
         $values['hero_stats'] = json_encode($heroStats, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
         $values['counter_stats'] = json_encode($counterStats, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $principalName = $this->request->getPost('principal_name');
-        $principalRole = $this->request->getPost('principal_role');
-        $principalQuote = $this->request->getPost('principal_quote');
-        $principalPhoto = $this->request->getPost('principal_photo');
-        if (! is_string($principalName) || ! is_string($principalRole) || ! is_string($principalQuote) || ! is_string($principalPhoto)) {
-            return $this->redirectBack('website-settings/home', 'Data sambutan kepala sekolah tidak valid.');
+        $settingsModel = new SchoolkuWebsiteContentModel();
+        $storedPrincipal = $this->decodeArray($settingsModel->getSettings(self::HOME_DEFAULTS)['principal']);
+        if (! isset($storedPrincipal['smp']) && ! isset($storedPrincipal['smk'])) {
+            $legacyPrincipal = $storedPrincipal;
+            if (($legacyPrincipal['role'] ?? $legacyPrincipal['role_title'] ?? '') === 'Kepala Sekolah') {
+                $legacyPrincipal['role'] = 'Kepala Sekolah SMP';
+            }
+            $storedPrincipal = [
+                'smp' => $legacyPrincipal,
+                'smk' => [
+                    'name' => 'Kepala Sekolah SMK',
+                    'role' => 'Kepala Sekolah SMK',
+                    'quote' => '',
+                    'photo' => '',
+                    'meta' => [],
+                ],
+            ];
         }
-        $principalPhoto = trim($principalPhoto);
-        if ($principalPhoto !== '' && ! $this->isSafeImageSource($principalPhoto)) {
-            return $this->redirectBack('website-settings/home', 'Foto harus menggunakan URL http/https atau path gambar lokal.');
-        }
-        $existingPrincipal = $this->decodeArray((new SchoolkuWebsiteContentModel())
-            ->getSettings(self::HOME_DEFAULTS)['principal']);
-        $values['principal'] = json_encode([
-            'name' => trim($principalName),
-            'role' => trim($principalRole),
-            'quote' => trim($principalQuote),
-            'photo' => $principalPhoto ?: base_url('sekolahku/public/images/default-principal.jpg'),
-            'meta' => $existingPrincipal['meta'] ?? [],
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        return $this->saveSettings('website-settings/home', $values);
+        $principals = [];
+        foreach (['smp', 'smk'] as $schoolLevel) {
+            $name = $this->request->getPost('principal_' . $schoolLevel . '_name');
+            $role = $this->request->getPost('principal_' . $schoolLevel . '_role');
+            $quote = $this->request->getPost('principal_' . $schoolLevel . '_quote');
+            if (! is_string($name) || ! is_string($role) || ! is_string($quote)) {
+                return $this->redirectBack('website-settings/home', 'Data sambutan kepala sekolah tidak valid.');
+            }
+            $principals[$schoolLevel] = [
+                'name' => trim($name),
+                'role' => trim($role),
+                'quote' => trim($quote),
+                'photo' => (string) ($storedPrincipal[$schoolLevel]['photo'] ?? ''),
+                'meta' => is_array($storedPrincipal[$schoolLevel]['meta'] ?? null)
+                    ? $storedPrincipal[$schoolLevel]['meta']
+                    : [],
+            ];
+        }
+
+        $filesToStore = [];
+        foreach (['smp', 'smk'] as $schoolLevel) {
+            $file = $this->request->getFile('principal_' . $schoolLevel . '_photo');
+            if ($file === null || $file->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
+            }
+            if (! $file->isValid() || $file->hasMoved() || $file->getSize() > 5 * 1024 * 1024) {
+                return $this->redirectBack('website-settings/home', 'Foto kepala sekolah harus JPG, PNG, atau WebP yang valid dengan ukuran maksimal 5 MB.');
+            }
+            $image = @getimagesize($file->getTempName());
+            $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+            $mime = $image['mime'] ?? '';
+            if ($image === false
+                || ! isset($extensions[$mime])
+                || $file->getMimeType() !== $mime) {
+                return $this->redirectBack('website-settings/home', 'Foto kepala sekolah harus berupa JPG, PNG, atau WebP yang valid dengan ukuran maksimal 5 MB.');
+            }
+            $filesToStore[$schoolLevel] = [$file, $extensions[$mime]];
+        }
+
+        $storedPaths = [];
+        foreach ($filesToStore as $schoolLevel => [$file, $extension]) {
+            $directory = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'school-website'
+                . DIRECTORY_SEPARATOR . 'principals';
+            if (! is_dir($directory) && ! mkdir($directory, 0755, true) && ! is_dir($directory)) {
+                log_message('error', 'Unable to create principal photo upload directory: {directory}', ['directory' => $directory]);
+                $this->removePrincipalUploads($storedPaths);
+
+                return $this->redirectBack('website-settings/home', 'Folder penyimpanan foto kepala sekolah gagal disiapkan.');
+            }
+            $filename = bin2hex(random_bytes(16)) . '.' . $extension;
+            try {
+                if (! $file->move($directory, $filename)) {
+                    throw new \RuntimeException('Uploaded principal photo could not be moved.');
+                }
+            } catch (\RuntimeException $exception) {
+                log_message('error', 'Failed to save principal photo for {level}: {message}', [
+                    'level' => $schoolLevel,
+                    'message' => $exception->getMessage(),
+                ]);
+                $this->removePrincipalUploads($storedPaths);
+
+                return $this->redirectBack('website-settings/home', 'Foto kepala sekolah gagal disimpan.');
+            }
+            $uploadedPath = '/uploads/school-website/principals/' . $filename;
+            $storedPaths[] = $uploadedPath;
+            $principals[$schoolLevel]['photo'] = $uploadedPath;
+        }
+
+        try {
+            $values['principal'] = json_encode(
+                $principals,
+                JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR
+            );
+            $settingsModel->saveSettings($values);
+        } catch (\JsonException|DatabaseException $exception) {
+            log_message('error', 'Failed to save homepage settings: {message}', ['message' => $exception->getMessage()]);
+            $this->removePrincipalUploads($storedPaths);
+
+            return $this->redirectBack('website-settings/home', 'Pengaturan website gagal disimpan. Silakan coba kembali.');
+        }
+
+        foreach (['smp', 'smk'] as $schoolLevel) {
+            $oldPhoto = (string) ($storedPrincipal[$schoolLevel]['photo'] ?? '');
+            if ($oldPhoto !== $principals[$schoolLevel]['photo']
+                && ! in_array($oldPhoto, array_column($principals, 'photo'), true)) {
+                $this->removeManagedPrincipalPhoto($oldPhoto);
+            }
+        }
+
+        return redirect()->to(site_url('website-settings/home'))
+            ->with('websiteMessage', 'Pengaturan berhasil disimpan dan ditampilkan di website publik.');
     }
 
     public function profile()
@@ -447,5 +562,24 @@ class SchoolkuWebsiteSettingsController extends BaseController
 
         return ! str_starts_with($value, '//')
             && preg_match('/^[A-Za-z0-9._~%\/-]+$/', $value) === 1;
+    }
+
+    private function removePrincipalUploads(array $paths): void
+    {
+        foreach ($paths as $path) {
+            $this->removeManagedPrincipalPhoto((string) $path);
+        }
+    }
+
+    private function removeManagedPrincipalPhoto(string $path): void
+    {
+        if (preg_match('#^/uploads/school-website/principals/[a-f0-9]{32}\.(?:jpg|png|webp)$#', $path) !== 1) {
+            return;
+        }
+
+        $filePath = FCPATH . str_replace('/', DIRECTORY_SEPARATOR, ltrim($path, '/'));
+        if (is_file($filePath) && ! unlink($filePath)) {
+            log_message('error', 'Unable to remove replaced principal photo: {path}', ['path' => $filePath]);
+        }
     }
 }

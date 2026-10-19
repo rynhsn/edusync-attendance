@@ -150,17 +150,10 @@ unset($menuGroup);
                                         if ($currentLocale === 'en') {
                                             $nestedLabels = $translatedSubmenuLabels;
                                         }
-                                        $nestedIcons = [
-                                            'academic-data' => 'bi-collection',
-                                            'assessment' => 'bi-ui-checks-grid',
-                                            'attendance' => 'bi-clipboard-check',
-                                            'reports' => 'bi-file-earmark-text',
-                                            'website-settings' => 'bi-gear',
-                                        ];
                                         ?>
                                         <li class="nav-item">
                                             <a class="nav-link <?= $nestedExpanded ? 'active' : ''; ?>" href="#<?= esc($nestedId); ?>" data-bs-toggle="collapse" data-bs-target="#<?= esc($nestedId); ?>" aria-expanded="<?= $nestedExpanded ? 'true' : 'false'; ?>" aria-controls="<?= esc($nestedId); ?>">
-                                                <i class="bi <?= esc($nestedIcons[$nestedMenuKey] ?? 'bi-folder2-open'); ?>"></i>
+                                                <i class="bi <?= esc($item['submenu_icon'] ?? 'bi-folder2-open'); ?>"></i>
                                                 <span><?= esc($nestedLabels[$nestedMenuKey] ?? ucfirst($nestedMenuKey)); ?></span>
                                                 <i class="bi bi-chevron-down ms-auto"></i>
                                             </a>

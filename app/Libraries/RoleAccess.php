@@ -7,6 +7,22 @@ class RoleAccess
     private static ?array $savedSettings = null;
     private static ?array $menuCatalogSections = null;
 
+    private const SUBMENU_LABELS = [
+        'academic-data' => 'Data Akademik',
+        'assessment' => 'Penilaian',
+        'attendance' => 'Absensi',
+        'reports' => 'Laporan',
+        'website-settings' => 'Pengaturan',
+    ];
+
+    private const SUBMENU_ICONS = [
+        'academic-data' => 'bi-collection',
+        'assessment' => 'bi-ui-checks-grid',
+        'attendance' => 'bi-clipboard-check',
+        'reports' => 'bi-file-earmark-text',
+        'website-settings' => 'bi-gear',
+    ];
+
     public const ROLES = [
         'super_admin' => 'Super Admin',
         'user' => 'User',
@@ -132,6 +148,12 @@ class RoleAccess
                 if (isset($iconOverrides[$itemKey])) {
                     $item['icon'] = $iconOverrides[$itemKey];
                 }
+                if (isset($item['submenu'])) {
+                    $submenuOverrideKey = 'submenu:' . $item['submenu'];
+                    $item['submenu_icon'] = $iconOverrides[$submenuOverrideKey]
+                        ?? self::SUBMENU_ICONS[$item['submenu']]
+                        ?? 'bi-folder2-open';
+                }
             }
             unset($item);
 
@@ -186,7 +208,19 @@ class RoleAccess
                 ];
             }
 
+            $addedSubmenus = [];
             foreach ($group['items'] as $key => $item) {
+                if (isset($item['submenu']) && ! isset($addedSubmenus[$item['submenu']])) {
+                    $submenuKey = (string) $item['submenu'];
+                    $addedSubmenus[$submenuKey] = true;
+                    $items[] = [
+                        'key' => 'submenu:' . $submenuKey,
+                        'label' => self::SUBMENU_LABELS[$submenuKey] ?? ucfirst($submenuKey),
+                        'parent' => 'Submenu: ' . ($group['title'] ?? 'Menu utama'),
+                        'icon' => $item['submenu_icon'] ?? 'bi-folder2-open',
+                    ];
+                }
+
                 if (str_starts_with((string) $key, 'custom-')) {
                     continue;
                 }
