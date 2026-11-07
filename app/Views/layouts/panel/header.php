@@ -3,7 +3,7 @@
 
 <head>
     <!-- Kita kunci base href langsung ke folder template di public -->
-    <base href="<?= base_url('metis-1.0.0/dist-modern/') ?>">
+    <base href="<?= base_url('assets/vendors/dist-modern/') ?>">
 
     <!-- Meta Tags -->
     <meta charset="UTF-8">

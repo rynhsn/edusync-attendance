@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title); ?> - EduSync CBT</title>
     <link rel="shortcut icon" href="<?= base_url('assets/img/favicon/favicon.ico'); ?>" type="image/x-icon">
-    <link rel="stylesheet" href="<?= base_url('metis-1.0.0/dist-modern/assets/main-Kuf3cpUe.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/vendors/dist-modern/assets/main-Kuf3cpUe.css'); ?>">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
