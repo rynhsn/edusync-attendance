@@ -3,7 +3,7 @@
 
 <head>
     <!-- Kita aktifkan kembali base href karena folder dist-modern sudah ada -->
-    <base href="<?= base_url('metis-1.0.0/dist-modern/'); ?>">
+    <base href="<?= base_url('assets/vendors/dist-modern/'); ?>">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Autentikasi EduSync">

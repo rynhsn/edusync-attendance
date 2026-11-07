@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title); ?> - EduSync</title>
-    <link rel="stylesheet" href="<?= base_url('metis-1.0.0/dist-modern/assets/main-Kuf3cpUe.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/vendors/dist-modern/assets/main-Kuf3cpUe.css'); ?>">
     <style>
         @media print {
             .no-print { display: none !important; }
