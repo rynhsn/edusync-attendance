@@ -38,7 +38,7 @@
         <div class="card mb-4">
             <div class="card-header"><h2 class="h5 mb-0">Edit <?= esc($config['title']); ?></h2></div>
             <div class="card-body">
-                <form method="post" action="<?= site_url($type . '/update/' . $editRecord[$config['key']]); ?>">
+                <form method="post" action="<?= site_url($type . '/update/' . $editRecord[$config['key']]); ?>" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
                     <div class="row g-3">
                         <?php foreach ($config['fields'] as $field) : ?>
@@ -49,6 +49,15 @@
                                     'selectedStudentIds' => $selectedStudentIds,
                                     'pickerId' => 'editParentStudents',
                                 ]); ?>
+                            <?php elseif (($field['type'] ?? '') === 'photo') : ?>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="edit_<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
+                                    <input class="form-control" id="edit_<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                                    <div class="form-text">JPG, PNG, atau WebP; maksimal 2 MB. Latar foto diproses otomatis dan menjadi merah pada ID card. Kosongkan saat edit untuk mempertahankan foto saat ini.</div>
+                                    <div class="teacher-photo-preview mt-2" id="edit_<?= esc($field['name']); ?>_preview" <?= empty($fieldValue) ? 'hidden' : ''; ?>>
+                                        <img id="edit_<?= esc($field['name']); ?>_preview_img" src="<?= ! empty($fieldValue) ? base_url('uploads/student-photos/' . rawurlencode(basename((string) $fieldValue))) : ''; ?>" alt="Pratinjau <?= esc($field['label']); ?>">
+                                    </div>
+                                </div>
                             <?php elseif (($field['type'] ?? '') === 'checkbox') : ?>
                                 <div class="col-12">
                                     <input type="hidden" name="<?= esc($field['name']); ?>" value="0">
@@ -110,7 +119,7 @@
         <div class="card">
             <div class="card-header"><h2 class="h5 mb-0">Tambah <?= esc($config['title']); ?></h2></div>
             <div class="card-body">
-                <form method="post" action="<?= site_url($type); ?>">
+                <form method="post" action="<?= site_url($type); ?>" enctype="multipart/form-data">
                     <?= csrf_field(); ?>
                     <div class="row g-3">
                         <?php foreach ($config['fields'] as $field) : ?>
@@ -120,6 +129,15 @@
                                     'selectedStudentIds' => [],
                                     'pickerId' => 'newParentStudents',
                                 ]); ?>
+                            <?php elseif (($field['type'] ?? '') === 'photo') : ?>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="<?= esc($field['name']); ?>"><?= esc($field['label']); ?></label>
+                                    <input class="form-control" id="<?= esc($field['name']); ?>" name="<?= esc($field['name']); ?>" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                                    <div class="form-text">JPG, PNG, atau WebP; maksimal 2 MB. Latar foto diproses otomatis dan menjadi merah pada ID card.</div>
+                                    <div class="teacher-photo-preview mt-2" id="<?= esc($field['name']); ?>_preview" hidden>
+                                        <img id="<?= esc($field['name']); ?>_preview_img" src="" alt="Pratinjau <?= esc($field['label']); ?>">
+                                    </div>
+                                </div>
                             <?php elseif (($field['type'] ?? '') === 'checkbox') : ?>
                                 <div class="col-12">
                                     <input type="hidden" name="<?= esc($field['name']); ?>" value="0">
@@ -203,7 +221,13 @@
                             <td><?= $index + 1; ?></td>
                             <?php foreach ($config['columns'] as $column => $label) : ?>
                                 <td>
-                                    <?php if ($column === 'is_active') : ?>
+                                    <?php if ($column === 'foto') : ?>
+                                        <?php if (! empty($row[$column])) : ?>
+                                            <img src="<?= base_url('uploads/student-photos/' . rawurlencode(basename((string) $row[$column]))); ?>" alt="Foto <?= esc($row['guru_nama'] ?? ''); ?>" class="rounded-circle object-fit-cover border" style="width: 38px; height: 38px;">
+                                        <?php else : ?>
+                                            <span class="badge bg-light text-muted border">Tanpa Foto</span>
+                                        <?php endif; ?>
+                                    <?php elseif ($column === 'is_active') : ?>
                                         <span class="badge <?= (bool) $row[$column] ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-secondary'; ?>">
                                             <?= (bool) $row[$column] ? 'Aktif' : 'Tidak Aktif'; ?>
                                         </span>
@@ -268,4 +292,55 @@
 })();
 </script>
 <?php endif; ?>
+
+<style>
+    .teacher-photo-preview {
+        align-items: center;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: .5rem;
+        display: flex;
+        height: 120px;
+        justify-content: center;
+        overflow: hidden;
+        padding: .25rem;
+        width: 100px;
+    }
+    .teacher-photo-preview[hidden] {
+        display: none;
+    }
+    .teacher-photo-preview img {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
+    }
+</style>
+
+<script>
+(() => {
+    const setupPreview = (inputId, previewId, imgId) => {
+        const input = document.getElementById(inputId);
+        const preview = document.getElementById(previewId);
+        const img = document.getElementById(imgId);
+        if (!input || !preview || !img) return;
+
+        input.addEventListener('change', () => {
+            const file = input.files?.[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    img.src = e.target.result;
+                    preview.hidden = false;
+                };
+                reader.readAsDataURL(file);
+            } else if (!img.getAttribute('src')) {
+                preview.hidden = true;
+            }
+        });
+    };
+
+    setupPreview('foto', 'foto_preview', 'foto_preview_img');
+    setupPreview('edit_foto', 'edit_foto_preview', 'edit_foto_preview_img');
+})();
+</script>
 <?= $this->endSection(); ?>

@@ -132,9 +132,10 @@ if (($currentUser['role'] ?? '') === 'super_admin') {
                 <?php endif; ?>
 
                 <!-- User Menu -->
-                <div class="dropdown">
+                <div class="dropdown" id="userMenuDropdown">
                     <button class="btn btn-outline-secondary d-flex align-items-center"
                         type="button"
+                        id="userMenuButton"
                         data-bs-toggle="dropdown"
                         aria-expanded="false">
                         <?php if (! empty($currentUser['avatar_path'])) : ?>
@@ -149,17 +150,16 @@ if (($currentUser['role'] ?? '') === 'super_admin') {
                         <span class="d-none d-md-inline"><?= esc($currentUser['display_name'] ?? 'Akun'); ?></span>
                         <i class="bi bi-chevron-down ms-1"></i>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userMenuButton">
                         <li><a class="dropdown-item" href="<?= site_url('profile'); ?>"><i class="bi bi-person me-2"></i>Profil</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="<?= site_url('profile'); ?>"><i class="bi bi-gear me-2"></i>Pengaturan</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form method="post" action="<?= site_url('auth/logout'); ?>">
-                                <?= csrf_field(); ?>
-                                <button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                            </form>
+                            <a class="dropdown-item text-danger" href="<?= site_url('auth/logout'); ?>" id="userLogoutLink">
+                                <i class="bi bi-box-arrow-right me-2"></i>Logout
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -167,3 +167,41 @@ if (($currentUser['role'] ?? '') === 'super_admin') {
         </div>
     </nav>
 </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const userBtn = document.getElementById('userMenuButton');
+    const userDropdown = document.getElementById('userMenuDropdown');
+    if (!userBtn || !userDropdown) return;
+    const userMenu = userDropdown.querySelector('.dropdown-menu');
+    if (!userMenu) return;
+
+    userBtn.addEventListener('click', function (e) {
+        if (window.bootstrap && window.bootstrap.Dropdown) {
+            try {
+                const instance = window.bootstrap.Dropdown.getOrCreateInstance(userBtn);
+                if (instance && typeof instance.toggle === 'function') {
+                    return;
+                }
+            } catch (err) {
+                console.warn('Bootstrap dropdown error:', err);
+            }
+        }
+        // Manual fallback toggle
+        e.preventDefault();
+        e.stopPropagation();
+        const isOpen = userMenu.classList.contains('show');
+        userMenu.classList.toggle('show', !isOpen);
+        userBtn.classList.toggle('show', !isOpen);
+        userBtn.setAttribute('aria-expanded', String(!isOpen));
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!userDropdown.contains(e.target)) {
+            userMenu.classList.remove('show');
+            userBtn.classList.remove('show');
+            userBtn.setAttribute('aria-expanded', 'false');
+        }
+    });
+});
+</script>

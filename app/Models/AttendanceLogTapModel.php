@@ -15,6 +15,7 @@ class AttendanceLogTapModel extends Model
     protected $allowedFields    = [
         'log_id',
         'siswa_id',
+        'guru_id',
         'waktu_tap',
         'jenis_tap',
         'rfid_tag'

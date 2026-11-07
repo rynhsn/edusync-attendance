@@ -19,7 +19,7 @@ class RoleAccessFilter implements FilterInterface
         }
 
         $user = (new AuthUserModel())
-            ->select('user_id, email, display_name, username, avatar_path, role, is_verified')
+            ->select('user_id, email, display_name, username, avatar_path, role, guru_id, siswa_id, is_verified')
             ->find((int) $sessionUser['user_id']);
 
         if ($user === null || ! (bool) $user['is_verified']) {
@@ -35,16 +35,28 @@ class RoleAccessFilter implements FilterInterface
             'username' => $user['username'],
             'avatar_path' => $user['avatar_path'],
             'role' => $user['role'],
+            'guru_id' => $user['guru_id'] ?? null,
+            'siswa_id' => $user['siswa_id'] ?? null,
         ]);
         OnlineUserTracker::touch();
 
         $allowedRoles = $arguments ?? [];
         if (! in_array($user['role'], $allowedRoles, true)) {
-            return redirect()->to(site_url('auth/access-denied'));
+            if ($user['role'] === 'wali_kelas' && in_array('user', $allowedRoles, true)) {
+                // wali_kelas role is allowed on backoffice routes
+            } else {
+                if ($user['role'] === 'siswa') {
+                    return redirect()->to(site_url('cbt'));
+                }
+                return redirect()->to(site_url('auth/access-denied'));
+            }
         }
 
         $menuKey = RoleAccess::menuKeyForUri($request->getUri()->getPath());
         if ($menuKey !== null && $menuKey !== 'panel' && ! RoleAccess::isEnabled($user['role'], $menuKey)) {
+            if ($user['role'] === 'siswa') {
+                return redirect()->to(site_url('cbt'));
+            }
             return redirect()->to(site_url('auth/access-denied'));
         }
 

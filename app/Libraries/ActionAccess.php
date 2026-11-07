@@ -44,6 +44,8 @@ class ActionAccess
                 'student.status' => 'Ubah status siswa',
                 'student-id-cards.templates' => 'Unggah template ID card SMK, SMP, dan Guru',
                 'student-id-cards.layout' => 'Atur posisi data ID card SMK, SMP, dan Guru',
+                'student-exam-cards.print' => 'Cetak kartu siswa/ujian',
+                'student-exam-cards.settings' => 'Ubah pengaturan kartu ujian siswa',
             ],
             'Master Akademik' => [
                 'subjects.create' => 'Tambah mata pelajaran',
@@ -75,6 +77,8 @@ class ActionAccess
             'Nilai dan Penilaian' => [
                 'grades.save' => 'Simpan nilai siswa',
                 'academic-assessments.save' => 'Simpan penilaian raport',
+                'online-assessments.manage' => 'Kelola ujian online dan bank soal',
+                'online-assessments.grade' => 'Koreksi essay dan atur nilai ujian siswa',
             ],
             'Absensi Ekstrakurikuler' => [
                 'extracurricular-attendance.save' => 'Simpan absensi ekstrakurikuler',
@@ -121,11 +125,17 @@ class ActionAccess
         }
 
         // These actions were already available to all roles before configurable action access.
-        if (in_array($role, ['user', 'kepala_sekolah', 'bendahara', 'kurikulum', 'operator'], true)) {
+        if (in_array($role, ['user', 'kepala_sekolah', 'bendahara', 'kurikulum', 'operator', 'wali_kelas'], true)) {
             $defaults = [
                 'grades.save' => true,
                 'academic-assessments.save' => true,
+                'student-exam-cards.print' => true,
+                'student-exam-cards.settings' => true,
             ];
+            if ($role === 'wali_kelas') {
+                $defaults['class-attendance.create'] = true;
+                $defaults['class-attendance.edit'] = true;
+            }
             foreach (array_keys(self::flatCatalog()) as $actionKey) {
                 if (str_ends_with($actionKey, '.export')) {
                     $defaults[$actionKey] = true;

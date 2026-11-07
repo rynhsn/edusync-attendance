@@ -510,6 +510,7 @@
         'Nama Aspek': 'Aspect Name',
         'Nama siswa': 'Student name',
         'Nilai Siswa': 'Student Grades',
+        'Wali Kelas': 'Homeroom Teacher',
         'Email aktif': 'Active Email',
         'Nomor HP / WhatsApp calon siswa': 'Prospective Student Phone / WhatsApp',
         'Nomor HP orang tua / wali': 'Parent / Guardian Phone',

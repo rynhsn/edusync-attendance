@@ -16,8 +16,51 @@ class GradeController extends BaseController
         $this->db = db_connect();
     }
 
+    protected function getAuthUser(): array
+    {
+        $authUser = session()->get('authUser');
+        return is_array($authUser) ? $authUser : [];
+    }
+
+    protected function isManagementRole(array $authUser): bool
+    {
+        $role = $authUser['role'] ?? '';
+        return in_array($role, ['super_admin', 'operator', 'kurikulum', 'kepala_sekolah'], true);
+    }
+
+    protected function resolveGuruId(array $authUser): ?int
+    {
+        $guruId = ! empty($authUser['guru_id']) ? (int) $authUser['guru_id'] : null;
+        if ($guruId !== null && $guruId > 0) {
+            return $guruId;
+        }
+
+        $userId = (int) ($authUser['user_id'] ?? 0);
+        if ($userId > 0) {
+            $syncedId = \App\Libraries\UserTeacherSync::syncUserToTeacher($userId);
+            if ($syncedId) {
+                $authUser['guru_id'] = $syncedId;
+                session()->set('authUser', $authUser);
+                return $syncedId;
+            }
+        }
+
+        return null;
+    }
+
     public function index()
     {
+        $authUser = $this->getAuthUser();
+        $isManagement = $this->isManagementRole($authUser);
+        $currentGuruId = $this->resolveGuruId($authUser);
+        $currentTeacher = null;
+        if ($currentGuruId !== null) {
+            $currentTeacher = $this->db->table('master_guru')
+                ->where('guru_id', $currentGuruId)
+                ->get()
+                ->getRowArray();
+        }
+
         $hasKnowledgeGrade = $this->db->fieldExists('nilai_pengetahuan', 'academic_student_grades');
         $classes = $this->db->table('master_kelas')
             ->select('kelas_id, kelas_tingkat, kelas_nama')
@@ -32,7 +75,7 @@ class GradeController extends BaseController
             ->orderBy('semester')
             ->get()
             ->getResultArray();
-        $subjects = $this->db->table('master_mapel')
+        $allSubjects = $this->db->table('master_mapel')
             ->select('mapel_id, mapel_kode, mapel_nama')
             ->orderBy('mapel_nama')
             ->get()
@@ -48,16 +91,45 @@ class GradeController extends BaseController
             ->get()
             ->getResultArray();
         $teachersBySubject = [];
+        $subjectsByTeacher = [];
         foreach ($assignments as $assignment) {
-            $teachersBySubject[(int) $assignment['mapel_id']][] = (int) $assignment['guru_id'];
+            $gId = (int) $assignment['guru_id'];
+            $mId = (int) $assignment['mapel_id'];
+            $teachersBySubject[$mId][] = $gId;
+            $subjectsByTeacher[$gId][] = $mId;
+        }
+
+        // Saring mapel: Jika bukan role manajemen (misal guru / wali_kelas / user),
+        // hanya mapel yang ditetapkan pada guru ini di teacher_mapel (Gambar 2) yang dapat diakses.
+        if (! $isManagement) {
+            $assignedMapelIds = $currentGuruId && isset($subjectsByTeacher[$currentGuruId])
+                ? $subjectsByTeacher[$currentGuruId]
+                : [];
+            $subjects = array_values(array_filter(
+                $allSubjects,
+                static fn (array $s): bool => in_array((int) $s['mapel_id'], $assignedMapelIds, true)
+            ));
+        } else {
+            $subjects = $allSubjects;
         }
 
         $selected = [
             'kelas_id' => $this->getSelectedId('kelas_id'),
             'tahun_ajaran_id' => $this->getSelectedId('tahun_ajaran_id'),
             'mapel_id' => $this->getSelectedId('mapel_id'),
-            'guru_id' => $this->getSelectedId('guru_id'),
+            'guru_id' => ! $isManagement ? $currentGuruId : $this->getSelectedId('guru_id'),
         ];
+
+        // Jika bukan manajemen dan mapel_id yang diminta tidak termasuk mapel guru ini, reset mapel_id
+        if (! $isManagement && $selected['mapel_id'] !== null) {
+            $assignedMapelIds = $currentGuruId && isset($subjectsByTeacher[$currentGuruId])
+                ? $subjectsByTeacher[$currentGuruId]
+                : [];
+            if (! in_array($selected['mapel_id'], $assignedMapelIds, true)) {
+                $selected['mapel_id'] = null;
+            }
+        }
+
         $studentRows = [];
         $selectionError = null;
 
@@ -96,12 +168,19 @@ class GradeController extends BaseController
             'classes' => $classes,
             'years' => $years,
             'subjects' => $subjects,
+            'allSubjects' => $allSubjects,
             'teachers' => $teachers,
             'teachersBySubject' => $teachersBySubject,
+            'subjectsByTeacher' => $subjectsByTeacher,
             'selected' => $selected,
             'studentRows' => $studentRows,
             'hasKnowledgeGrade' => $hasKnowledgeGrade,
             'selectionError' => $selectionError,
+            'isAdmin' => $isManagement,
+            'isManagementRole' => $isManagement,
+            'currentGuruId' => $currentGuruId,
+            'currentTeacher' => $currentTeacher,
+            'authUserRole' => $authUser['role'] ?? '',
             'message' => session()->getFlashdata('gradeMessage'),
             'error' => session()->getFlashdata('gradeError'),
         ]);
@@ -109,11 +188,15 @@ class GradeController extends BaseController
 
     public function student(int $studentId)
     {
+        $authUser = $this->getAuthUser();
+        $isManagement = $this->isManagementRole($authUser);
+        $currentGuruId = $this->resolveGuruId($authUser);
+
         $selected = [
             'kelas_id' => $this->getSelectedId('kelas_id'),
             'tahun_ajaran_id' => $this->getSelectedId('tahun_ajaran_id'),
             'mapel_id' => $this->getSelectedId('mapel_id'),
-            'guru_id' => $this->getSelectedId('guru_id'),
+            'guru_id' => ! $isManagement ? $currentGuruId : $this->getSelectedId('guru_id'),
         ];
         if ($studentId < 1 || in_array(null, $selected, true)) {
             return redirect()->to(site_url('grades'))
@@ -177,11 +260,15 @@ class GradeController extends BaseController
 
     public function save(): RedirectResponse
     {
+        $authUser = $this->getAuthUser();
+        $isManagement = $this->isManagementRole($authUser);
+        $currentGuruId = $this->resolveGuruId($authUser);
+
         $selected = [
             'kelas_id' => $this->postSelectedId('kelas_id'),
             'tahun_ajaran_id' => $this->postSelectedId('tahun_ajaran_id'),
             'mapel_id' => $this->postSelectedId('mapel_id'),
-            'guru_id' => $this->postSelectedId('guru_id'),
+            'guru_id' => ! $isManagement ? $currentGuruId : $this->postSelectedId('guru_id'),
         ];
         $redirect = redirect()->to(site_url('grades?' . http_build_query($selected)));
         if (in_array(null, $selected, true)) {
@@ -307,6 +394,24 @@ class GradeController extends BaseController
 
     private function validateSelection(array $selected): ?string
     {
+        $authUser = $this->getAuthUser();
+        $isManagement = $this->isManagementRole($authUser);
+
+        if (! $isManagement) {
+            $currentGuruId = $this->resolveGuruId($authUser);
+            if ($currentGuruId === null || (int) $selected['guru_id'] !== $currentGuruId) {
+                return 'Anda hanya memiliki akses untuk menginput nilai pada profil guru Anda.';
+            }
+
+            $isAssigned = $this->db->table('teacher_mapel')
+                ->where('guru_id', $currentGuruId)
+                ->where('mapel_id', $selected['mapel_id'])
+                ->countAllResults() > 0;
+            if (! $isAssigned) {
+                return 'Mata pelajaran yang dipilih tidak sesuai dengan penugasan mapel Anda di Pengaturan Mapel Guru.';
+            }
+        }
+
         foreach ([
             ['table' => 'master_kelas', 'key' => 'kelas_id', 'id' => $selected['kelas_id']],
             ['table' => 'master_tahun_ajaran', 'key' => 'tahun_ajaran_id', 'id' => $selected['tahun_ajaran_id']],

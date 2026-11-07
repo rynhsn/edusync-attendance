@@ -662,6 +662,18 @@ class StudentController extends ResourceController
             ]);
         }
 
+        if (! empty($data['rfid_tag'])) {
+            $existingTeacher = db_connect()->table('master_guru')
+                ->where('rfid_tag', $data['rfid_tag'])
+                ->countAllResults();
+            if ($existingTeacher > 0) {
+                return $this->response->setStatusCode(422)->setJSON([
+                    'message' => 'RFID Tag tersebut sudah digunakan oleh guru.',
+                    'errors' => ['rfid_tag' => 'RFID Tag sudah digunakan oleh guru.'],
+                ]);
+            }
+        }
+
         return $data;
     }
 

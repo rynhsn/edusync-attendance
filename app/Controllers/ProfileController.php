@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\UserTeacherSync;
 use App\Models\AuthUserModel;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -17,12 +18,35 @@ class ProfileController extends Controller
             return redirect()->to(site_url('login'));
         }
 
+        $teacher = null;
+        if (($user['role'] ?? '') !== 'siswa') {
+            if (empty($user['guru_id'])) {
+                $user['guru_id'] = UserTeacherSync::syncUserToTeacher((int) $user['user_id']);
+            }
+            if (! empty($user['guru_id'])) {
+                $teacher = db_connect()->table('master_guru')->where('guru_id', (int) $user['guru_id'])->get()->getRowArray();
+            }
+        }
+
+        $student = null;
+        if (($user['role'] ?? '') === 'siswa' && ! empty($user['siswa_id'])) {
+            $student = db_connect()->table('master_siswa ms')
+                ->select('ms.*, mk.kelas_nama')
+                ->join('master_kelas mk', 'mk.kelas_id = ms.kelas_id', 'left')
+                ->where('ms.siswa_id', (int) $user['siswa_id'])
+                ->get()
+                ->getRowArray();
+        }
+
         return view('panel/profile', [
-            'title'      => 'Profil Saya',
-            'activePage' => 'profile',
-            'user'       => $user,
-            'message'    => session()->getFlashdata('profileMessage'),
-            'error'      => session()->getFlashdata('profileError'),
+            'title'           => 'Profil Saya',
+            'activePage'      => 'profile',
+            'user'            => $user,
+            'teacher'         => $teacher,
+            'student'         => $student,
+            'roleLabel'       => \App\Libraries\RoleAccess::label($user['role'] ?? 'user'),
+            'message'         => session()->getFlashdata('profileMessage'),
+            'error'           => session()->getFlashdata('profileError'),
             'passwordMessage' => session()->getFlashdata('profilePasswordMessage'),
             'passwordError'   => session()->getFlashdata('profilePasswordError'),
         ]);
@@ -35,8 +59,15 @@ class ProfileController extends Controller
             return redirect()->to(site_url('login'));
         }
 
-        $displayName = trim((string) $this->request->getPost('display_name'));
-        $username    = strtolower(trim((string) $this->request->getPost('username')));
+        $displayName  = trim((string) $this->request->getPost('display_name'));
+        $username     = strtolower(trim((string) $this->request->getPost('username')));
+        $guruNip      = trim((string) $this->request->getPost('guru_nip'));
+        $guruTelepon  = trim((string) $this->request->getPost('guru_telepon'));
+        $tempatLahir  = trim((string) $this->request->getPost('tempat_lahir'));
+        $tanggalLahir = trim((string) $this->request->getPost('tanggal_lahir'));
+        $alamat       = trim((string) $this->request->getPost('alamat'));
+        $rt           = trim((string) $this->request->getPost('rt'));
+        $rw           = trim((string) $this->request->getPost('rw'));
 
         if ($displayName === '' || mb_strlen($displayName) > 100) {
             return redirect()->to(site_url('profile'))
@@ -53,6 +84,22 @@ class ProfileController extends Controller
         if ($usernameOwner !== null && (int) $usernameOwner['user_id'] !== (int) $user['user_id']) {
             return redirect()->to(site_url('profile'))
                 ->with('profileError', 'Username sudah digunakan oleh akun lain.');
+        }
+
+        $db = db_connect();
+        $teacherId = (int) ($user['guru_id'] ?? 0);
+
+        if (($user['role'] ?? '') !== 'siswa') {
+            if ($guruNip !== '') {
+                $nipCheck = $db->table('master_guru')->where('guru_nip', $guruNip);
+                if ($teacherId > 0) {
+                    $nipCheck->where('guru_id !=', $teacherId);
+                }
+                if ($nipCheck->countAllResults() > 0) {
+                    return redirect()->to(site_url('profile'))
+                        ->with('profileError', "NIP '{$guruNip}' sudah digunakan oleh guru lain.");
+                }
+            }
         }
 
         $photo = $this->request->getFile('photo');
@@ -81,6 +128,13 @@ class ProfileController extends Controller
 
             try {
                 $photo->move($uploadPath, $newPhotoName);
+
+                // Copy juga ke public/uploads/student-photos/ agar bisa dibaca ID Card guru
+                $publicPhotoDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos';
+                if (! is_dir($publicPhotoDir)) {
+                    @mkdir($publicPhotoDir, 0777, true);
+                }
+                @copy($uploadPath . DIRECTORY_SEPARATOR . $newPhotoName, $publicPhotoDir . DIRECTORY_SEPARATOR . $newPhotoName);
             } catch (\RuntimeException $exception) {
                 log_message('error', 'Failed to store an uploaded profile photo: {message}', [
                     'message' => $exception->getMessage(),
@@ -112,6 +166,46 @@ class ProfileController extends Controller
             $this->deletePhoto($user['avatar_path']);
         }
 
+        $extraTeacherData = [
+            'guru_nip'      => $guruNip,
+            'guru_telepon'  => $guruTelepon,
+            'tempat_lahir'  => $tempatLahir,
+            'tanggal_lahir' => $tanggalLahir !== '' ? $tanggalLahir : null,
+            'alamat'        => $alamat,
+            'rt'            => $rt,
+            'rw'            => $rw,
+        ];
+        if ($newPhotoName !== null) {
+            $teacherPhotoToUse = $newPhotoName;
+            $publicPhotoDir = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos';
+            $cutoutName = pathinfo($newPhotoName, PATHINFO_FILENAME) . '-cutout.png';
+            $processedPath = $publicPhotoDir . DIRECTORY_SEPARATOR . $cutoutName;
+            $scriptPath = ROOTPATH . 'scripts' . DIRECTORY_SEPARATOR . 'remove_student_photo_background.py';
+            $python = getenv('STUDENT_PHOTO_PYTHON') ?: 'python';
+            $command = [$python, $scriptPath, $uploadPath . DIRECTORY_SEPARATOR . $newPhotoName, $processedPath];
+
+            try {
+                $process = proc_open($command, [
+                    0 => ['pipe', 'r'],
+                    1 => ['pipe', 'w'],
+                    2 => ['pipe', 'w'],
+                ], $pipes, ROOTPATH);
+                if (is_resource($process)) {
+                    fclose($pipes[0]);
+                    fclose($pipes[1]);
+                    fclose($pipes[2]);
+                    $exitCode = proc_close($process);
+                    if ($exitCode === 0 && is_file($processedPath) && filesize($processedPath) > 0) {
+                        $teacherPhotoToUse = $cutoutName;
+                    }
+                }
+            } catch (\Throwable $e) {}
+
+            $extraTeacherData['foto'] = $teacherPhotoToUse;
+        }
+
+        UserTeacherSync::syncUserToTeacher((int) $user['user_id'], $extraTeacherData);
+
         $authUser = session()->get('authUser');
         $authUser['display_name'] = $displayName;
         if ($newPhotoName !== null) {
@@ -120,7 +214,7 @@ class ProfileController extends Controller
         session()->set('authUser', $authUser);
 
         return redirect()->to(site_url('profile'))
-            ->with('profileMessage', 'Profil berhasil diperbarui.');
+            ->with('profileMessage', 'Profil dan data guru berhasil diperbarui.');
     }
 
     public function changePassword()
@@ -203,6 +297,53 @@ class ProfileController extends Controller
             ->setHeader('Cache-Control', 'private, no-store')
             ->setHeader('X-Content-Type-Options', 'nosniff')
             ->setBody($contents);
+    }
+
+    public function idCard()
+    {
+        $user = $this->currentUser();
+        if ($user === null) {
+            return redirect()->to(site_url('login'));
+        }
+
+        if (($user['role'] ?? '') === 'siswa') {
+            $siswaId = (int) ($user['siswa_id'] ?? 0);
+            if ($siswaId <= 0) {
+                return redirect()->to(site_url('profile'))
+                    ->with('profileError', 'Akun Anda belum terhubung dengan data siswa.');
+            }
+
+            $student = db_connect()->table('master_siswa ms')
+                ->select('ms.siswa_id, mk.kelas_nama, mk.kelas_tingkat')
+                ->join('master_kelas mk', 'mk.kelas_id = ms.kelas_id', 'left')
+                ->where('ms.siswa_id', $siswaId)
+                ->get()
+                ->getRowArray();
+
+            if ($student === null) {
+                return redirect()->to(site_url('profile'))
+                    ->with('profileError', 'Data siswa tidak ditemukan.');
+            }
+
+            $kelas = strtoupper((string) ($student['kelas_nama'] ?? ''));
+            $tingkat = strtoupper((string) ($student['kelas_tingkat'] ?? ''));
+            $category = (str_contains($kelas, 'SMK') || in_array($tingkat, ['X', 'XI', 'XII'], true)) ? 'smk' : 'smp';
+
+            return redirect()->to(site_url("student-id-cards/print/{$siswaId}/{$category}"));
+        }
+
+        // Guru / Tenaga Pendidik / Admin
+        $teacherId = ! empty($user['guru_id']) ? (int) $user['guru_id'] : 0;
+        if ($teacherId <= 0) {
+            $teacherId = (int) UserTeacherSync::syncUserToTeacher((int) $user['user_id']);
+        }
+
+        if ($teacherId <= 0) {
+            return redirect()->to(site_url('profile'))
+                ->with('profileError', 'Data guru belum terhubung dengan akun Anda.');
+        }
+
+        return redirect()->to(site_url("student-id-cards/teacher/print/{$teacherId}"));
     }
 
     private function currentUser(): ?array

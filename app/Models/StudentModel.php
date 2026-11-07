@@ -25,6 +25,7 @@ class StudentModel extends Model
         "foto",
         "status",
         "rfid_tag",
+        "no_peserta",
         "created_at",
         "updated_at",
         "deleted_at",
@@ -63,9 +64,10 @@ class StudentModel extends Model
     //get semua data siswa dengan relasi kelas
     public function getAllStudent()
     {
-        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas, master_orang_tua.nama_orang_tua, master_orang_tua.no_whatsapp')
+        return $this->select('master_siswa.*, master_kelas.kelas_nama as kelas, master_orang_tua.nama_orang_tua, master_orang_tua.no_whatsapp, auth_users.user_id as cbt_user_id, auth_users.username as cbt_username, auth_users.status as cbt_user_status')
             ->join('master_kelas', 'master_kelas.kelas_id = master_siswa.kelas_id', 'left')
             ->join('master_orang_tua', 'master_orang_tua.orang_tua_id = master_siswa.orang_tua_id', 'left')
+            ->join('auth_users', 'auth_users.siswa_id = master_siswa.siswa_id', 'left')
             ->findAll();
     }
 

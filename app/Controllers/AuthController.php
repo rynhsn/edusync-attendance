@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Libraries\OnlineUserTracker;
+use App\Libraries\UserTeacherSync;
 use App\Models\AdminNotificationModel;
 use App\Models\AuthUserModel;
 use CodeIgniter\Controller;
@@ -101,6 +102,8 @@ class AuthController extends Controller
                 ->with('authError', 'Username sudah digunakan. Silakan pilih username lain.');
         }
 
+        $teacherId = UserTeacherSync::ensureTeacherForRegistration($email, $displayName);
+
         $superAdminEmail = strtolower(trim((string) env('auth.super_admin_email')));
         $account = [
             'email'        => $email,
@@ -108,6 +111,8 @@ class AuthController extends Controller
             'username'     => $username,
             'password_hash'=> password_hash($password, PASSWORD_DEFAULT),
             'role'         => hash_equals($superAdminEmail, $email) ? 'super_admin' : 'user',
+            'guru_id'      => $teacherId,
+            'status'       => hash_equals($superAdminEmail, $email) ? 'active' : 'nonaktif',
             'is_verified'  => 0,
         ];
 
@@ -225,6 +230,12 @@ class AuthController extends Controller
 
         session()->remove(['otpEmail']);
 
+        $updatedUser = $this->users->find($user['user_id']);
+        if (($updatedUser['status'] ?? 'active') === 'nonaktif') {
+            return redirect()->to(site_url('login'))
+                ->with('authMessage', 'Email berhasil diverifikasi. Akun Anda saat ini masih nonaktif dan menunggu persetujuan / aktivasi dari Administrator.');
+        }
+
         return redirect()->to(site_url('login'))
             ->with('authMessage', 'Email berhasil diverifikasi. Silakan login dengan username dan password.');
     }
@@ -245,13 +256,21 @@ class AuthController extends Controller
                 ->with('authError', 'Email belum diverifikasi. Silakan selesaikan pendaftaran terlebih dahulu.');
         }
 
+        if (($user['status'] ?? 'active') === 'nonaktif') {
+            return redirect()->to(site_url('login'))
+                ->with('authError', 'Akun Anda berstatus nonaktif atau belum diaktifkan oleh Administrator. Silakan hubungi Super Admin.');
+        }
+
         session()->regenerate(true);
         session()->set('authUser', [
             'user_id'      => (int) $user['user_id'],
             'email'        => $user['email'],
             'display_name' => $user['display_name'],
+            'username'     => $user['username'],
             'avatar_path'  => $user['avatar_path'] ?? null,
             'role'         => $user['role'],
+            'guru_id'      => $user['guru_id'] ?? null,
+            'siswa_id'     => $user['siswa_id'] ?? null,
         ]);
         OnlineUserTracker::touch();
 
@@ -261,6 +280,7 @@ class AuthController extends Controller
     public function logout()
     {
         OnlineUserTracker::removeCurrent();
+        session()->remove(['authUser', 'activeUserToken', 'otpEmail']);
         session()->destroy();
 
         return redirect()->to(site_url('login'));
@@ -363,6 +383,9 @@ class AuthController extends Controller
     private function destination(): string
     {
         $user = session()->get('authUser');
+        if (is_array($user) && ($user['role'] ?? '') === 'siswa') {
+            return site_url('cbt');
+        }
 
         return is_array($user) ? site_url('panel') : site_url('login');
     }

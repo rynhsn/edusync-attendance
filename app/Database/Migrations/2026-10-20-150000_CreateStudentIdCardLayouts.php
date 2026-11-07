@@ -21,6 +21,7 @@ class CreateStudentIdCardLayouts extends Migration
             'position_y' => ['type' => 'DECIMAL', 'constraint' => '10,2', 'default' => 0],
             'font_family' => ['type' => 'VARCHAR', 'constraint' => 100, 'null' => true],
             'font_size' => ['type' => 'DECIMAL', 'constraint' => '6,2', 'null' => true],
+            'font_color' => ['type' => 'VARCHAR', 'constraint' => 30, 'null' => true, 'default' => '#102b58'],
             'width' => ['type' => 'DECIMAL', 'constraint' => '10,2', 'null' => true],
             'height' => ['type' => 'DECIMAL', 'constraint' => '10,2', 'null' => true],
             'zoom' => ['type' => 'DECIMAL', 'constraint' => '5,2', 'default' => 1.00],

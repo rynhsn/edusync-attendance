@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const actionButton = deleteButton ?? statusButton;
     const row = actionButton.closest("tr");
-    const studentName = row.cells[1].textContent.trim();
+    const studentName = row.dataset.studentName || row.cells[2]?.textContent.trim() || "";
     const nextStatus = statusButton?.dataset.nextStatus;
     const action = deleteButton
       ? "menghapus"
@@ -243,11 +243,11 @@ document.addEventListener("DOMContentLoaded", () => {
       Array.from(document.querySelectorAll(".student-status-filter:checked"))
         .map((checkbox) => checkbox.value),
     );
-    const searchableColumns = [1, 2, 3, 7];
+    const searchableColumns = [2, 3, 4, 8];
 
     tableBody.querySelectorAll("tr[data-student-id]").forEach((row) => {
       const matchesSearch = query === "" || searchableColumns.some((column) =>
-        row.cells[column].textContent.toLocaleLowerCase().includes(query),
+        row.cells[column]?.textContent.toLocaleLowerCase().includes(query),
       );
       row.hidden = !matchesSearch || !selectedStatuses.has(row.dataset.status);
     });

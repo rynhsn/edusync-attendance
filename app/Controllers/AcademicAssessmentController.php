@@ -24,12 +24,15 @@ class AcademicAssessmentController extends BaseController
             return redirect()->to(site_url('panel'));
         }
 
-        $classes = $this->db->table('master_kelas')
+        $classesQuery = $this->db->table('master_kelas')
             ->select('kelas_id, kelas_tingkat, kelas_nama')
             ->orderBy('kelas_tingkat')
-            ->orderBy('kelas_nama')
-            ->get()
-            ->getResultArray();
+            ->orderBy('kelas_nama');
+        if ($type === 'kokurikuler') {
+            $classesQuery->where('CAST(kelas_tingkat AS UNSIGNED) <=', 9);
+        }
+        $classes = $classesQuery->get()->getResultArray();
+
         $years = $this->db->table('master_tahun_ajaran')
             ->select('tahun_ajaran_id, tahun_ajaran_nama, semester, is_active')
             ->orderBy('is_active', 'DESC')
@@ -42,6 +45,14 @@ class AcademicAssessmentController extends BaseController
             'tahun_ajaran_id' => $this->getPositiveInt($this->request->getGet('tahun_ajaran_id')),
             'siswa_id' => $this->getPositiveInt($this->request->getGet('siswa_id')),
         ];
+        if ($type === 'kokurikuler' && $selected['kelas_id'] !== null) {
+            $matchedClass = array_filter($classes, static fn (array $c): bool => (int) $c['kelas_id'] === $selected['kelas_id']);
+            if ($matchedClass === []) {
+                $selected['kelas_id'] = null;
+                $selected['siswa_id'] = null;
+                $selectionError = 'Penilaian Kokurikuler hanya untuk kelas SMP (VII, VIII, IX).';
+            }
+        }
         $students = [];
         $student = null;
         $personalityAspects = [];
@@ -52,7 +63,9 @@ class AcademicAssessmentController extends BaseController
         $kokurikulerOptions = [];
         $kokurikulerTableAvailable = $type !== 'kokurikuler'
             || $this->db->tableExists('academic_student_kokurikuler');
-        $selectionError = null;
+        if (! isset($selectionError)) {
+            $selectionError = null;
+        }
         if (! $kokurikulerTableAvailable) {
             $selectionError = 'Tabel nilai Kokurikuler belum tersedia. Jalankan create_kokurikuler_assessments.sql di phpMyAdmin, lalu muat ulang halaman.';
         }
@@ -239,6 +252,18 @@ class AcademicAssessmentController extends BaseController
             || $this->db->table('master_tahun_ajaran')->where('tahun_ajaran_id', $selected['tahun_ajaran_id'])->countAllResults() !== 1) {
             return redirect()->to(site_url('academic-assessments/' . $type))
                 ->with('assessmentError', 'Pilih kelas, tahun ajaran, dan siswa yang valid.');
+        }
+
+        if ($type === 'kokurikuler') {
+            $classRow = $this->db->table('master_kelas')
+                ->select('kelas_tingkat')
+                ->where('kelas_id', $selected['kelas_id'])
+                ->get()
+                ->getRowArray();
+            if ($classRow === null || (int) $classRow['kelas_tingkat'] > 9) {
+                return redirect()->to(site_url('academic-assessments/' . $type))
+                    ->with('assessmentError', 'Penilaian Kokurikuler hanya diperuntukkan bagi kelas SMP (VII, VIII, IX).');
+            }
         }
 
         $student = $this->db->table('master_siswa')

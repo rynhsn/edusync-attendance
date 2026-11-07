@@ -93,6 +93,7 @@
                 <thead class="table-light">
                     <tr>
                         <th scope="col">No.</th>
+                        <th scope="col">Foto</th>
                         <th scope="col">Nama Siswa</th>
                         <th scope="col">NIS</th>
                         <th scope="col">NISN</th>
@@ -107,10 +108,35 @@
                 </thead>
                 <tbody>
                     <?php foreach ($students as $index => $student) : ?>
-                        <?php $studentStatus = $student['status'] ?? 'aktif'; ?>
-                        <tr data-student-id="<?= esc($student['siswa_id']); ?>" data-class-id="<?= esc($student['kelas_id'] ?? ''); ?>" data-status="<?= esc($studentStatus); ?>">
+                        <?php
+                        $studentStatus = $student['status'] ?? 'aktif';
+                        $photo = trim((string) ($student['foto'] ?? ''));
+                        $photoUrl = '';
+                        if ($photo !== '') {
+                            $encoded = rawurlencode(basename($photo));
+                            $photoUrl = preg_match('/\A[a-f0-9]{32}(?:-cutout)?\.(?:jpg|png|webp)\z/i', $photo) === 1
+                                ? base_url('uploads/student-photos/' . $encoded)
+                                : base_url('assets/img/avatars/' . $encoded);
+                        }
+                        ?>
+                        <tr data-student-id="<?= esc($student['siswa_id']); ?>" data-student-name="<?= esc($student['nama_siswa'] ?? ''); ?>" data-class-id="<?= esc($student['kelas_id'] ?? ''); ?>" data-status="<?= esc($studentStatus); ?>">
                             <td><?= $index + 1; ?></td>
-                            <td><?= esc($student['nama_siswa'] ?? '-'); ?></td>
+                            <td>
+                                <?php if ($photoUrl !== '') : ?>
+                                    <img src="<?= $photoUrl; ?>" alt="Foto <?= esc($student['nama_siswa'] ?? ''); ?>" class="rounded-circle object-fit-cover border" style="width: 38px; height: 38px;">
+                                <?php else : ?>
+                                    <span class="badge bg-light text-muted border">Tanpa Foto</span>
+                                <?php endif; ?>
+                            <td>
+                                <div><?= esc($student['nama_siswa'] ?? '-'); ?></div>
+                                <?php if (! empty($student['cbt_username'])) : ?>
+                                    <div class="mt-1">
+                                        <span class="badge bg-primary-subtle text-primary border border-primary border-opacity-25" title="Username Login CBT: <?= esc($student['cbt_username']); ?>">
+                                            <i class="bi bi-laptop me-1"></i><?= esc($student['cbt_username']); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
+                            </td>
                             <td><?= esc($student['nis'] ?? '-'); ?></td>
                             <td><?= esc($student['nisn'] ?? '-'); ?></td>
                             <td><?= esc(JK[$student['jk'] ?? ''] ?? '-'); ?></td>
@@ -169,7 +195,7 @@
                     <?php endforeach; ?>
                     <?php if ($students === []) : ?>
                         <tr>
-                            <td colspan="11" class="text-center text-muted py-4">Belum ada data siswa.</td>
+                            <td colspan="12" class="text-center text-muted py-4">Belum ada data siswa.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
