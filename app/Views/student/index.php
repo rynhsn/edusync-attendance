@@ -186,7 +186,7 @@
                 <h2 class="h5 card-title mb-0" id="studentModalTitle">Tambah Siswa</h2>
                 <button type="button" class="btn-close" aria-label="Tutup" data-close-student-modal></button>
             </div>
-            <form id="studentForm" data-create-url="<?= site_url('student/create'); ?>" data-update-url="<?= site_url('student/update'); ?>" data-delete-url="<?= site_url('student/delete'); ?>" data-status-url="<?= site_url('student/status'); ?>" data-csrf-token-name="<?= esc(config('Security')->tokenName, 'attr'); ?>" data-csrf-header-name="<?= esc(config('Security')->headerName, 'attr'); ?>">
+            <form id="studentForm" data-create-url="<?= site_url('student/create'); ?>" data-update-url="<?= site_url('student/update'); ?>" data-delete-url="<?= site_url('student/delete'); ?>" data-status-url="<?= site_url('student/status'); ?>" data-student-photo-url="<?= base_url('uploads/student-photos'); ?>" data-student-avatar-url="<?= base_url('assets/img/avatars'); ?>" data-csrf-token-name="<?= esc(config('Security')->tokenName, 'attr'); ?>" data-csrf-header-name="<?= esc(config('Security')->headerName, 'attr'); ?>">
                 <?= csrf_field(); ?>
                 <input type="hidden" name="siswa_id">
                 <div class="card-body">
@@ -214,6 +214,14 @@
                                     <option value="<?= esc($class['kelas_id']); ?>"><?= esc($class['kelas_nama']); ?></option>
                                 <?php endforeach; ?>
                             </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="studentPhoto">Foto Siswa</label>
+                            <input class="form-control" id="studentPhoto" name="student_photo" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+                            <div class="form-text">JPG, PNG, atau WebP; maksimal 2 MB. Latar foto diproses otomatis dan menjadi merah pada ID card. Kosongkan saat edit untuk mempertahankan foto saat ini.</div>
+                            <div class="student-photo-preview mt-2" id="studentPhotoPreview" hidden>
+                                <img id="studentPhotoPreviewImage" src="" alt="Pratinjau foto siswa">
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="studentStatus">Status</label>
@@ -300,6 +308,29 @@
         width: min(100%, 760px);
         max-height: 90vh;
         overflow-y: auto;
+    }
+
+    .student-photo-preview {
+        align-items: center;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: .5rem;
+        display: flex;
+        height: 120px;
+        justify-content: center;
+        overflow: hidden;
+        padding: .25rem;
+        width: 100px;
+    }
+
+    .student-photo-preview[hidden] {
+        display: none;
+    }
+
+    .student-photo-preview img {
+        height: 100%;
+        object-fit: cover;
+        width: 100%;
     }
 </style>
 <?= $this->endSection(); ?>

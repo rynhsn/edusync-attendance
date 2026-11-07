@@ -42,6 +42,8 @@ class ActionAccess
                 'student.edit' => 'Edit siswa',
                 'student.delete' => 'Hapus siswa',
                 'student.status' => 'Ubah status siswa',
+                'student-id-cards.templates' => 'Unggah template ID card SMK, SMP, dan Guru',
+                'student-id-cards.layout' => 'Atur posisi data ID card SMK, SMP, dan Guru',
             ],
             'Master Akademik' => [
                 'subjects.create' => 'Tambah mata pelajaran',

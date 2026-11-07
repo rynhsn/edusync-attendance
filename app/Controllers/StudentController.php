@@ -8,6 +8,9 @@ use CodeIgniter\RESTful\ResourceController;
 
 class StudentController extends ResourceController
 {
+    private const MAX_STUDENT_PHOTO_SIZE = 2097152;
+    private const MAX_STUDENT_PHOTO_DIMENSION = 6000;
+
     protected $studentModel;
 
     public function __construct()
@@ -425,11 +428,39 @@ class StudentController extends ResourceController
             return $data;
         }
 
-        $data['foto'] = '1.png';
+        $photo = $this->request->getFile('student_photo');
+        if ($photo !== null && $photo->getError() !== UPLOAD_ERR_NO_FILE) {
+            $photoError = $this->validateStudentPhoto($photo);
+            if ($photoError !== null) {
+                return $this->response->setStatusCode(422)->setJSON(['message' => $photoError]);
+            }
+            $photoName = $this->storeStudentPhoto($photo);
+            if ($photoName instanceof \CodeIgniter\HTTP\ResponseInterface) {
+                return $photoName;
+            }
+            $data['foto'] = $photoName;
+        } else {
+            $data['foto'] = '1.png';
+        }
         $data['status'] = 'aktif';
-        $id = $this->studentModel->insert($data, true);
+        try {
+            $id = $this->studentModel->insert($data, true);
+        } catch (DatabaseException $exception) {
+            if (isset($photoName)) {
+                $this->removeStudentPhoto($photoName);
+            }
+            log_message('error', 'Failed to create student record: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'Data siswa gagal disimpan.',
+            ]);
+        }
 
         if ($id === false) {
+            if (isset($photoName)) {
+                $this->removeStudentPhoto($photoName);
+            }
             return $this->response->setStatusCode(500)->setJSON([
                 'message' => 'Data siswa gagal disimpan.',
             ]);
@@ -462,7 +493,8 @@ class StudentController extends ResourceController
      */
     public function update($id = null)
     {
-        if ($id === null || $this->studentModel->find($id) === null) {
+        $existingStudent = $id === null ? null : $this->studentModel->find($id);
+        if ($id === null || $existingStudent === null) {
             return $this->response->setStatusCode(404)->setJSON([
                 'message' => 'Data siswa tidak ditemukan.',
             ]);
@@ -474,10 +506,46 @@ class StudentController extends ResourceController
             return $data;
         }
 
-        if (!$this->studentModel->update($id, $data)) {
+        $photo = $this->request->getFile('student_photo');
+        $newPhotoName = null;
+        if ($photo !== null && $photo->getError() !== UPLOAD_ERR_NO_FILE) {
+            $photoError = $this->validateStudentPhoto($photo);
+            if ($photoError !== null) {
+                return $this->response->setStatusCode(422)->setJSON(['message' => $photoError]);
+            }
+            $storedPhoto = $this->storeStudentPhoto($photo);
+            if ($storedPhoto instanceof \CodeIgniter\HTTP\ResponseInterface) {
+                return $storedPhoto;
+            }
+            $newPhotoName = $storedPhoto;
+            $data['foto'] = $newPhotoName;
+        }
+
+        try {
+            $updated = $this->studentModel->update($id, $data);
+        } catch (DatabaseException $exception) {
+            if ($newPhotoName !== null) {
+                $this->removeStudentPhoto($newPhotoName);
+            }
+            log_message('error', 'Failed to update student record: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
             return $this->response->setStatusCode(500)->setJSON([
                 'message' => 'Data siswa gagal diperbarui.',
             ]);
+        }
+
+        if (! $updated) {
+            if ($newPhotoName !== null) {
+                $this->removeStudentPhoto($newPhotoName);
+            }
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'Data siswa gagal diperbarui.',
+            ]);
+        }
+
+        if ($newPhotoName !== null) {
+            $this->removeStudentPhoto((string) ($existingStudent['foto'] ?? ''));
         }
 
         return $this->response->setStatusCode(200)->setJSON([
@@ -595,5 +663,121 @@ class StudentController extends ResourceController
         }
 
         return $data;
+    }
+
+    private function validateStudentPhoto(\CodeIgniter\HTTP\Files\UploadedFile $photo): ?string
+    {
+        if (! $photo->isValid() || $photo->hasMoved()) {
+            log_message('warning', 'Student photo upload failed with code {code}.', [
+                'code' => $photo->getError(),
+            ]);
+            return 'Foto siswa gagal diunggah. Silakan pilih file lagi.';
+        }
+        if ($photo->getSize() > self::MAX_STUDENT_PHOTO_SIZE) {
+            return 'Ukuran foto siswa maksimal 2 MB.';
+        }
+
+        $mimeType = $photo->getMimeType();
+        $imageInfo = @getimagesize($photo->getTempName());
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (! in_array($mimeType, $allowedMimeTypes, true)
+            || $imageInfo === false
+            || ! in_array($imageInfo['mime'] ?? '', $allowedMimeTypes, true)) {
+            return 'Foto siswa harus berupa gambar JPG, PNG, atau WebP yang valid.';
+        }
+        if ($imageInfo[0] > 6000 || $imageInfo[1] > 6000) {
+            return 'Dimensi foto siswa maksimal 6000 × 6000 piksel.';
+        }
+
+        return null;
+    }
+
+    private function storeStudentPhoto(\CodeIgniter\HTTP\Files\UploadedFile $photo): string|\CodeIgniter\HTTP\ResponseInterface
+    {
+        if (! function_exists('proc_open')) {
+            log_message('error', 'Student photo background removal requires the PHP proc_open function.');
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'Pemrosesan latar foto belum tersedia di server. Hubungi administrator.',
+            ]);
+        }
+
+        $directory = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos';
+
+        if (! is_dir($directory) && ! mkdir($directory, 0750, true) && ! is_dir($directory)) {
+            log_message('error', 'Could not create the student photo upload directory.');
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'Folder penyimpanan foto siswa gagal disiapkan.',
+            ]);
+        }
+
+        $processedPath = tempnam(WRITEPATH . 'uploads', 'student-photo-');
+        if ($processedPath === false) {
+            log_message('error', 'Could not create a temporary student photo file.');
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'File sementara untuk memproses foto gagal disiapkan.',
+            ]);
+        }
+
+        $scriptPath = ROOTPATH . 'scripts' . DIRECTORY_SEPARATOR . 'remove_student_photo_background.py';
+        $python = getenv('STUDENT_PHOTO_PYTHON');
+        $python = is_string($python) && trim($python) !== '' ? trim($python) : 'python';
+        $command = [$python, $scriptPath, $photo->getTempName(), $processedPath];
+
+        try {
+            $process = proc_open($command, [
+                0 => ['pipe', 'r'],
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ], $pipes, ROOTPATH);
+            if (! is_resource($process)) {
+                throw new \RuntimeException('Could not start the student photo background-removal process.');
+            }
+
+            fclose($pipes[0]);
+            $output = stream_get_contents($pipes[1]);
+            $errors = stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $exitCode = proc_close($process);
+
+            if ($exitCode !== 0 || ! is_file($processedPath) || filesize($processedPath) === 0) {
+                throw new \RuntimeException(trim((string) $errors . ' ' . (string) $output) ?: 'Photo background removal returned no image.');
+            }
+
+            $filename = bin2hex(random_bytes(16)) . '-cutout.png';
+            if (! rename($processedPath, $directory . DIRECTORY_SEPARATOR . $filename)) {
+                throw new \RuntimeException('Could not move the processed student photo into storage.');
+            }
+        } catch (\RuntimeException $exception) {
+            if (is_file($processedPath) && ! unlink($processedPath)) {
+                log_message('warning', 'Could not remove failed student photo processing file.');
+            }
+            log_message('error', 'Failed to remove student photo background: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+            return $this->response->setStatusCode(500)->setJSON([
+                'message' => 'Foto gagal diproses menjadi latar merah. Pastikan Python dan OpenCV sudah terpasang, lalu coba kembali.',
+            ]);
+        } finally {
+            if (is_file($processedPath) && ! unlink($processedPath)) {
+                log_message('warning', 'Could not remove temporary student photo processing file.');
+            }
+        }
+
+        return $filename;
+    }
+
+    private function removeStudentPhoto(string $filename): void
+    {
+        if (preg_match('/\A[a-f0-9]{32}(?:-cutout\.png|\.(?:jpg|png|webp))\z/i', $filename) !== 1) {
+            return;
+        }
+
+        $path = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos' . DIRECTORY_SEPARATOR . $filename;
+        if (is_file($path) && ! unlink($path)) {
+            log_message('warning', 'Could not remove replaced student photo: {filename}', [
+                'filename' => $filename,
+            ]);
+        }
     }
 }

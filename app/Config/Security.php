@@ -12,10 +12,11 @@ class Security extends BaseConfig
      * --------------------------------------------------------------------------
      *
      * Protection Method for Cross Site Request Forgery protection.
+     * Session storage keeps form tokens bound to the authenticated session.
      *
      * @var string 'cookie' or 'session'
      */
-    public string $csrfProtection = 'cookie';
+    public string $csrfProtection = 'session';
 
     /**
      * --------------------------------------------------------------------------

@@ -18,8 +18,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorBox = document.getElementById("studentFormError");
   const saveButton = document.getElementById("saveStudentButton");
   const addButton = document.getElementById("addStudentButton");
+  const photoInput = document.getElementById("studentPhoto");
+  const photoPreview = document.getElementById("studentPhotoPreview");
+  const photoPreviewImage = document.getElementById("studentPhotoPreviewImage");
   const tableBody = table.querySelector("tbody");
   const csrfToken = form.elements.namedItem(form.dataset.csrfTokenName);
+  let selectedPhotoUrl = null;
+  let currentPhotoUrl = null;
   const fields = [
     "siswa_id",
     "nama_siswa",
@@ -38,10 +43,28 @@ document.addEventListener("DOMContentLoaded", () => {
   const closeModal = () => {
     modal.hidden = true;
     document.body.classList.remove("student-modal-open");
+    if (selectedPhotoUrl !== null) {
+      URL.revokeObjectURL(selectedPhotoUrl);
+      selectedPhotoUrl = null;
+    }
+    currentPhotoUrl = null;
+  };
+
+  const showPhotoPreview = (url, alt = "Pratinjau foto siswa") => {
+    photoPreviewImage.src = url;
+    photoPreviewImage.alt = alt;
+    photoPreview.hidden = false;
   };
 
   const openModal = (student = null) => {
+    if (selectedPhotoUrl !== null) {
+      URL.revokeObjectURL(selectedPhotoUrl);
+      selectedPhotoUrl = null;
+    }
     form.reset();
+    photoPreview.hidden = true;
+    photoPreviewImage.removeAttribute("src");
+    currentPhotoUrl = null;
     errorBox.hidden = true;
     errorBox.textContent = "";
     form.elements.namedItem("siswa_id").value = student?.siswa_id ?? "";
@@ -54,6 +77,14 @@ document.addEventListener("DOMContentLoaded", () => {
           input.value = student[field] ?? "";
         }
       });
+      const photoName = String(student.foto ?? "");
+      if (photoName !== "") {
+        const photoPath = /^[a-f0-9]{32}(?:-cutout\.png|\.(?:jpg|png|webp))$/i.test(photoName)
+          ? form.dataset.studentPhotoUrl
+          : form.dataset.studentAvatarUrl;
+        currentPhotoUrl = `${photoPath}/${encodeURIComponent(photoName)}`;
+        showPhotoPreview(currentPhotoUrl, `Foto ${student.nama_siswa}`);
+      }
     } else {
       title.textContent = "Tambah Siswa";
     }
@@ -75,7 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "X-Requested-With": "XMLHttpRequest",
         [form.dataset.csrfHeaderName]: csrfToken.value,
       },
-      body: new URLSearchParams(values),
+      body: values instanceof FormData || values instanceof URLSearchParams
+        ? values
+        : new URLSearchParams(values),
     });
 
     if (!response.headers.get("content-type")?.includes("application/json")) {
@@ -125,6 +158,27 @@ document.addEventListener("DOMContentLoaded", () => {
     } finally {
       saveButton.disabled = false;
     }
+  });
+
+  photoInput.addEventListener("change", () => {
+    if (selectedPhotoUrl !== null) {
+      URL.revokeObjectURL(selectedPhotoUrl);
+      selectedPhotoUrl = null;
+    }
+
+    const photo = photoInput.files?.[0];
+    if (!photo) {
+      if (currentPhotoUrl !== null) {
+        showPhotoPreview(currentPhotoUrl);
+      } else {
+        photoPreview.hidden = true;
+        photoPreviewImage.removeAttribute("src");
+      }
+      return;
+    }
+
+    selectedPhotoUrl = URL.createObjectURL(photo);
+    showPhotoPreview(selectedPhotoUrl, "Pratinjau foto yang akan diunggah");
   });
 
   tableBody.addEventListener("click", async (event) => {

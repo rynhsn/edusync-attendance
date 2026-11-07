@@ -111,6 +111,7 @@ class RoleAccess
                     'menu-settings' => ['label' => 'Pengaturan Menu', 'url' => 'menu-settings', 'icon' => 'bi-list-nested', 'page' => 'menu-settings'],
                     'online-users' => ['label' => 'User Sedang Login', 'url' => 'online-users', 'icon' => 'bi-person-check', 'page' => 'online-users'],
                     'teacher-subjects' => ['label' => 'Mapel Guru', 'url' => 'teacher-subjects', 'icon' => 'bi-journal-bookmark', 'page' => 'teacher-subjects'],
+                    'student-id-cards' => ['label' => 'ID Card Siswa & Guru', 'url' => 'student-id-cards', 'icon' => 'bi-person-vcard', 'page' => 'student-id-cards'],
                 ],
             ],
             [
@@ -295,6 +296,7 @@ class RoleAccess
                 'menu-settings' => 'Pengaturan Menu',
                 'online-users' => 'User Sedang Login',
                 'teacher-subjects' => 'Mapel Guru',
+                'student-id-cards' => 'ID Card Siswa & Guru',
             ],
             'Website Sekolah' => [
                 'website-home-settings' => 'Pengaturan Beranda',
@@ -425,6 +427,7 @@ class RoleAccess
             'spmb/applications' => 'spmb-applications',
             'website-messages' => 'website-messages',
             'teacher-subjects' => 'teacher-subjects',
+            'student-id-cards' => 'student-id-cards',
             'parents' => 'parents',
             'website-news' => 'website-news',
             'user-passwords' => 'user-passwords',

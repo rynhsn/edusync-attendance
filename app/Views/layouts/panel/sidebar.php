@@ -45,6 +45,7 @@ $translatedMenuLabels = [
     'menu-settings' => 'Menu Settings',
     'online-users' => 'Currently Logged-in Users',
     'teacher-subjects' => 'Teacher Subjects',
+    'student-id-cards' => 'Student & Teacher ID Cards',
     'website-home-settings' => 'Homepage Settings',
     'website-spmb-schedule' => 'Online SPMB Schedule',
     'website-profile-settings' => 'Profile Settings',
