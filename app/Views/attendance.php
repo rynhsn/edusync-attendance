@@ -270,8 +270,17 @@
         </div>
 
         <div class="status-container">
-            <p class="status-message" id="attendanceStatus">Silakan tap NFC untuk absen</p>
-            <i class="tf-icons ti ti-qrcode icon"></i>
+            <p class="status-message" id="attendanceStatus">Silakan tap NFC atau scan Barcode / QR Code untuk absen</p>
+            <div class="d-flex justify-content-center align-items-center gap-3 my-2">
+                <i class="tf-icons ti ti-nfc icon" style="font-size: 50px;"></i>
+                <span class="fs-4 text-white opacity-75">atau</span>
+                <i class="tf-icons ti ti-qrcode icon" style="font-size: 50px;"></i>
+            </div>
+            <div class="mt-4">
+                <button type="button" class="btn btn-warning btn-lg fw-bold px-4 py-2 rounded-pill shadow-lg text-dark scan-pulse-btn" data-bs-toggle="modal" data-bs-target="#scanAttendanceModal" style="border: 2px solid #ffffff; font-size: 1.15rem; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                    <i class="tf-icons ti ti-scan me-2"></i> Absen Scan (Barcode / QR)
+                </button>
+            </div>
         </div>
     </div>
     <footer class="footer">
@@ -318,12 +327,15 @@
                             // console.log('Success:', data.message);
                             // Tampilkan pesan sukses menggunakan SweetAlert dengan durasi 2 detik gunakan countdown dengan isi foto, nama 
 
+                            const photoUrl = data.photo_url || (data.student?.foto ? `/assets/img/avatars/${data.student.foto}` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png');
+                            const personRole = data.role === 'teacher' ? '<b>(Guru)</b>' : `kelas <b>${data.student?.kelas || ''}</b>`;
                             Swal.fire({
                                 title: 'Berhasil',
-                                html: `Absen berhasil untuk <b>${data.student.nama_siswa}</b>, kelas <b>${data.student.kelas}</b><br><small>${data.whatsapp}</small>`,
-                                imageUrl: `/assets/img/avatars/${data.student.foto}`,
-                                imageWidth: 200,
-                                imageAlt: "Custom image",
+                                html: `Absen berhasil untuk <b>${data.student.nama_siswa}</b>, ${personRole}<br><small>${data.whatsapp}</small>`,
+                                imageUrl: photoUrl,
+                                imageWidth: 150,
+                                imageHeight: 150,
+                                imageAlt: "Foto Profil",
                                 timer: 4000,
                                 timerProgressBar: true,
                                 showConfirmButton: false,
@@ -456,15 +468,21 @@
             initializeDateTime(); // Initialize the global variables when the DOM is loaded
             getHistory(); // Panggil getHistory saat halaman dimuat
 
-            // Tambahkan event listener untuk tombol F2
+            // Tambahkan event listener untuk tombol F2 dan F3
             $(document).keydown(function(e) {
                 if (e.key === 'F2') {
                     window.location.href = '<?= base_url('panel') ?>';
+                } else if (e.key === 'F3') {
+                    const modal = new bootstrap.Modal(document.getElementById('scanAttendanceModal'));
+                    modal.show();
                 }
             });
 
         });
     </script>
+
+    <!-- Modal Scan Barcode & QR Code -->
+    <?= view('attendance/modal_scan'); ?>
 </body>
 
 </html>

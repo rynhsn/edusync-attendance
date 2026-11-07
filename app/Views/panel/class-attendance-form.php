@@ -73,7 +73,7 @@
                         <select class="form-select" id="attendanceYear" name="tahun_ajaran_id" required>
                             <option value="">Pilih tahun ajaran</option>
                             <?php foreach ($academicYears as $year) : ?>
-                                <option value="<?= esc($year['tahun_ajaran_id']); ?>" <?= $record !== null && (int) $record['tahun_ajaran_id'] === (int) $year['tahun_ajaran_id'] ? 'selected' : ''; ?>><?= esc($year['tahun_ajaran_nama']); ?> - Semester <?= esc($year['semester']); ?><?= (bool) $year['is_active'] ? ' - Aktif' : ''; ?></option>
+                                <option value="<?= esc($year['tahun_ajaran_id']); ?>" <?= ($record !== null ? (int) $record['tahun_ajaran_id'] === (int) $year['tahun_ajaran_id'] : (bool) $year['is_active']) ? 'selected' : ''; ?>><?= esc($year['tahun_ajaran_nama']); ?> - Semester <?= esc($year['semester']); ?><?= (bool) $year['is_active'] ? ' - Aktif' : ''; ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>

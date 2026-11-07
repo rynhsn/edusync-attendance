@@ -59,8 +59,8 @@
                         <select class="form-select" id="reportYear" name="tahun_ajaran_id" required>
                             <option value="">Pilih tahun ajaran</option>
                             <?php foreach ($years as $year) : ?>
-                                <option value="<?= esc($year['tahun_ajaran_id']); ?>" <?= $selected['tahun_ajaran_id'] === (int) $year['tahun_ajaran_id'] ? 'selected' : ''; ?>>
-                                    <?= esc($year['tahun_ajaran_nama']); ?> - Semester <?= (int) $year['semester'] === 1 ? 'Ganjil' : 'Genap'; ?><?= (bool) $year['is_active'] ? ' - Aktif' : ''; ?>
+                                <option value="<?= esc($year['tahun_ajaran_id']); ?>" <?= (int) $selected['tahun_ajaran_id'] === (int) $year['tahun_ajaran_id'] ? 'selected' : ''; ?>>
+                                    <?= esc($year['tahun_ajaran_nama']); ?> - Semester <?= esc($year['semester']); ?> (<?= (int) $year['semester'] === 1 ? 'Ganjil' : 'Genap'; ?>)<?= (bool) $year['is_active'] ? ' - Aktif' : ''; ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -301,6 +301,40 @@
                     </tbody>
                 </table>
 
+                <?php
+                $activityRowCount = max(1, count($extracurriculars), count($kokurikulerGrades));
+                ?>
+                <table class="smp-activities-table">
+                    <thead>
+                        <tr>
+                            <th colspan="3">Kegiatan Ekstrakurikuler</th>
+                            <th colspan="3">Kegiatan Kokurikuler</th>
+                        </tr>
+                        <tr>
+                            <th>No.</th>
+                            <th>Ekstrakurikuler</th>
+                            <th>Nilai</th>
+                            <th>No.</th>
+                            <th>Kokurikuler</th>
+                            <th>Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for ($index = 0; $index < $activityRowCount; $index++) : ?>
+                            <?php $extra = $extracurriculars[$index] ?? null; ?>
+                            <?php $koku = $kokurikulerGrades[$index] ?? null; ?>
+                            <tr>
+                                <td><?= $extra !== null ? $index + 1 . '.' : ($index === 0 && $extracurriculars === [] ? '-' : ''); ?></td>
+                                <td><?= $extra !== null ? esc($extra['nama_kegiatan']) : ($index === 0 && $extracurriculars === [] ? 'Belum ada kegiatan' : ''); ?></td>
+                                <td><?= $extra !== null ? esc($extra['nilai'] ?: '-') : ($index === 0 && $extracurriculars === [] ? '-' : ''); ?></td>
+                                <td><?= $koku !== null ? $index + 1 . '.' : ($index === 0 && $kokurikulerGrades === [] ? '-' : ''); ?></td>
+                                <td><?= $koku !== null ? esc($koku['nama_kegiatan']) : ($index === 0 && $kokurikulerGrades === [] ? 'Belum ada kegiatan' : ''); ?></td>
+                                <td><?= $koku !== null ? esc($koku['nilai'] ?: '-') : ($index === 0 && $kokurikulerGrades === [] ? '-' : ''); ?></td>
+                            </tr>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+
                 <section class="smp-homeroom-note">
                     <h2>CATATAN WALI KELAS</h2>
                     <div><?= $comment !== '' ? nl2br(esc(mb_strtoupper($comment))) : '&nbsp;'; ?></div>
@@ -350,32 +384,13 @@
                                 </tbody>
                             </table>
                         </section>
-
-                        <section class="report-assessment-section">
-                            <h2>D. Kegiatan Kokurikuler</h2>
-                            <table class="report-assessment-table">
-                                <thead><tr><th>No.</th><th>Kokurikuler</th><th>Nilai</th></tr></thead>
-                                <tbody>
-                                    <?php foreach ($kokurikulerGrades as $index => $activity) : ?>
-                                        <tr>
-                                            <td><?= $index + 1; ?></td>
-                                            <td><?= esc($activity['nama_kegiatan']); ?></td>
-                                            <td><?= esc($activity['nilai'] ?: '-'); ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                    <?php if ($kokurikulerGrades === []) : ?>
-                                        <tr><td colspan="3">Belum ada kegiatan kokurikuler</td></tr>
-                                    <?php endif; ?>
-                                </tbody>
-                            </table>
-                        </section>
                     </div>
 
                     <table class="report-assessment-table report-attendance-table">
                         <thead><tr><th>Ketidakhadiran</th><th>Hari</th></tr></thead>
                         <tbody>
-                            <tr><td>Izin</td><td><?= esc($attendance['izin']); ?></td></tr>
                             <tr><td>Sakit</td><td><?= esc($attendance['sakit']); ?></td></tr>
+                            <tr><td>Izin</td><td><?= esc($attendance['izin']); ?></td></tr>
                             <tr><td>Tanpa Keterangan</td><td><?= esc($attendance['alpa']); ?></td></tr>
                         </tbody>
                     </table>
@@ -424,7 +439,8 @@
 </script>
 <?php endif; ?>
 <style>
-    .report-paper { background: #fff; border: 1px solid #adb5bd; color: #111; margin: 0 auto; max-width: 1100px; padding: 22px 28px 28px; }
+    .report-paper { background: #fff; border: 1px solid #adb5bd; color: #111; font-family: 'Times New Roman', Times, serif; margin: 0 auto; max-width: 1100px; padding: 22px 28px 28px; }
+    .report-paper, .report-paper * { font-family: 'Times New Roman', Times, serif; }
     .report-heading { min-height: 120px; padding: 18px 90px 0; position: relative; text-align: center; }
     .report-logo { height: 82px; left: 0; object-fit: contain; position: absolute; top: 14px; width: 82px; }
     .report-heading h1 { font-size: 1.1rem; font-weight: 700; margin: 20px 0 8px; }
@@ -459,7 +475,7 @@
     .report-signatures > div { min-width: 200px; }
     .signature-line { border-bottom: 1px solid #222; height: 75px; margin-top: 8px; width: 85%; }
     .report-generated { color: #666; font-size: .75rem; margin: 8px 0 0; text-align: right; }
-    .smp.report-paper { font-family: Arial, sans-serif; }
+    .smp.report-paper { font-family: 'Times New Roman', Times, serif; }
     .smp .report-heading { min-height: 112px; padding: 0 82px; }
     .smp .report-heading h1 { font-size: 1.2rem; margin: 0 0 4px; }
     .smp .report-heading h3 { font-size: 1.05rem; margin: 3px 0; }
@@ -492,6 +508,22 @@
     .smp-assessment-table tbody td:nth-child(4) { width: 38%; }
     .smp-assessment-table tbody td:nth-child(5) { width: 13%; }
     .smp-assessment-table tbody td:nth-child(6) { width: 10%; }
+    .smp-activities-table { border-collapse: collapse; font-size: .82rem; margin-top: 6px; table-layout: fixed; width: 100%; }
+    .smp-activities-table th, .smp-activities-table td { border: 1px solid #222; padding: 4px 5px; }
+    .smp-activities-table th { background: #0bb5e8; font-weight: 400; text-align: center; }
+    .smp-activities-table thead tr:first-child th { font-weight: 700; }
+    .smp-activities-table td:nth-child(1),
+    .smp-activities-table td:nth-child(3),
+    .smp-activities-table td:nth-child(4),
+    .smp-activities-table td:nth-child(6) { text-align: center; }
+    .smp-activities-table td:nth-child(2),
+    .smp-activities-table td:nth-child(5) { text-align: left; }
+    .smp-activities-table tbody td:nth-child(1) { width: 5%; }
+    .smp-activities-table tbody td:nth-child(2) { width: 35%; }
+    .smp-activities-table tbody td:nth-child(3) { width: 10%; }
+    .smp-activities-table tbody td:nth-child(4) { width: 5%; }
+    .smp-activities-table tbody td:nth-child(5) { width: 35%; }
+    .smp-activities-table tbody td:nth-child(6) { width: 10%; }
     .smp-homeroom-note { margin-top: 0; text-align: center; }
     .smp-homeroom-note h2 { border: 1px solid #222; font-size: .85rem; margin: 0; padding: 4px; }
     .smp-homeroom-note > div { align-items: center; background: #0bb5e8; border: 1px solid #222; border-top: 0; display: flex; font-size: .9rem; font-style: italic; font-weight: 700; justify-content: center; min-height: 46px; padding: 5px; }
@@ -508,13 +540,14 @@
         body { background: #fff !important; }
         .admin-header, .admin-sidebar, .admin-footer, .sidebar-backdrop, .no-print, #loading-screen { display: none !important; }
         .admin-main, .admin-wrapper, .container-fluid { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        .report-paper, .report-paper * { font-family: 'Times New Roman', Times, serif !important; }
         .report-paper { border: 0; max-width: none; margin: 0; padding: 14mm 10mm 10mm; }
         .report-logo { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
         .report-grades { font-size: 9pt; }
         .report-lower-grid { break-inside: avoid; }
-        .smp.report-paper, .smp .report-grades, .smp-assessment-table, .smp-homeroom-note { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-        .smp .report-grades, .smp-assessment-table { font-size: 8pt; }
-        .smp-assessment-table, .smp-homeroom-note, .smp-signatures { break-inside: avoid; }
+        .smp.report-paper, .smp .report-grades, .smp-assessment-table, .smp-activities-table, .smp-homeroom-note { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        .smp .report-grades, .smp-assessment-table, .smp-activities-table { font-size: 8pt; }
+        .smp-assessment-table, .smp-activities-table, .smp-homeroom-note, .smp-signatures { break-inside: avoid; }
     }
     @media screen and (max-width: 700px) {
         .report-lower-grid { gap: 14px; grid-template-columns: 1fr; }

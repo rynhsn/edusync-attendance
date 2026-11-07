@@ -49,6 +49,14 @@ class GradeReportController extends BaseController
             'tahun_ajaran_id' => $this->getPositiveInt($this->request->getGet('tahun_ajaran_id')),
             'siswa_id' => $this->getPositiveInt($this->request->getGet('siswa_id')),
         ];
+        if ($selected['tahun_ajaran_id'] === null) {
+            foreach ($years as $year) {
+                if ((bool) $year['is_active']) {
+                    $selected['tahun_ajaran_id'] = (int) $year['tahun_ajaran_id'];
+                    break;
+                }
+            }
+        }
         $selectionError = null;
         if ($selected['kelas_id'] !== null && ! in_array($selected['kelas_id'], array_map('intval', array_column($classes, 'kelas_id')), true)) {
             $selectionError = 'Kelas yang dipilih tidak ditemukan.';
@@ -141,7 +149,7 @@ class GradeReportController extends BaseController
                     ->orderBy('nama_kegiatan')
                     ->get()
                     ->getResultArray();
-                if ($this->db->tableExists('academic_student_kokurikuler')) {
+                if ((int) $student['kelas_tingkat'] <= 9 && $this->db->tableExists('academic_student_kokurikuler')) {
                     $kokurikulerGrades = $this->db->table('academic_student_kokurikuler')
                         ->select('nama_kegiatan, nilai')
                         ->where('siswa_id', $student['siswa_id'])
@@ -223,14 +231,14 @@ class GradeReportController extends BaseController
 
                 $attendanceRow = $this->db->table('absensi_absensi_kelas_siswa aks')
                     ->select(
-                        "SUM(CASE WHEN aks.status = 'sakit' THEN 1 ELSE 0 END) AS sakit, "
-                        . "SUM(CASE WHEN aks.status = 'izin' THEN 1 ELSE 0 END) AS izin, "
-                        . "SUM(CASE WHEN aks.status = 'alpa' THEN 1 ELSE 0 END) AS alpa",
+                        "COUNT(DISTINCT CASE WHEN aks.status = 'sakit' THEN ak.tanggal END) AS sakit, "
+                        . "COUNT(DISTINCT CASE WHEN aks.status = 'izin' THEN ak.tanggal END) AS izin, "
+                        . "COUNT(DISTINCT CASE WHEN aks.status = 'alpa' THEN ak.tanggal END) AS alpa",
                         false
                     )
                     ->join('absensi_absensi_kelas ak', 'ak.absensi_kelas_id = aks.absensi_kelas_id')
-                    ->where('aks.siswa_id', $student['siswa_id'])
-                    ->where('ak.tahun_ajaran_id', $selected['tahun_ajaran_id'])
+                    ->where('aks.siswa_id', (int) $student['siswa_id'])
+                    ->where('ak.tahun_ajaran_id', (int) $selected['tahun_ajaran_id'])
                     ->get()
                     ->getRowArray();
                 if ($attendanceRow !== null) {

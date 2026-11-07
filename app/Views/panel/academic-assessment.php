@@ -7,7 +7,7 @@
         <p class="text-muted mb-0">
             <?= $type === 'personality'
                 ? 'Input penilaian perkembangan akhlak siswa untuk dicantumkan pada raport.'
-                : 'Input penilaian kegiatan ' . ($type === 'kokurikuler' ? 'kokurikuler' : 'ekstrakurikuler') . ' siswa untuk dicantumkan pada raport.'; ?>
+                : 'Input penilaian kegiatan ' . ($type === 'kokurikuler' ? 'kokurikuler (khusus SMP kelas VII, VIII, IX)' : 'ekstrakurikuler') . ' siswa untuk dicantumkan pada raport.'; ?>
         </p>
     </div>
 

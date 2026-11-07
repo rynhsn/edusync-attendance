@@ -20,7 +20,7 @@ class ActionAccessFilter implements FilterInterface
         }
 
         $user = (new AuthUserModel())
-            ->select('user_id, email, display_name, username, avatar_path, role, is_verified')
+            ->select('user_id, email, display_name, username, avatar_path, role, guru_id, siswa_id, is_verified')
             ->find((int) $sessionUser['user_id']);
         if ($user === null || ! (bool) $user['is_verified']) {
             session()->remove('authUser');
@@ -36,6 +36,8 @@ class ActionAccessFilter implements FilterInterface
             'username' => $user['username'],
             'avatar_path' => $user['avatar_path'],
             'role' => $user['role'],
+            'guru_id' => $user['guru_id'] ?? null,
+            'siswa_id' => $user['siswa_id'] ?? null,
         ]);
         OnlineUserTracker::touch();
 

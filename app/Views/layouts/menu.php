@@ -93,6 +93,12 @@
                 <div data-i18n="Absensi Sekolah">Absensi Sekolah</div>
             </a>
         </li>
+        <li class="menu-item <?= ($activePage == 'attendance-scan') ? 'active' : ''; ?>">
+            <a href="<?= base_url('attendance/scan'); ?>" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-scan"></i>
+                <div data-i18n="Absen Scan">Absen Scan (Barcode/QR)</div>
+            </a>
+        </li>
 
     </ul>
 </aside>

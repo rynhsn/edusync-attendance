@@ -4,19 +4,24 @@
 <div class="container-fluid p-4 p-lg-4">
     <div class="mb-4">
         <h1 class="h3 mb-1">Absensi RFID</h1>
-        <p class="text-muted mb-0">Riwayat absensi siswa yang tercatat melalui kartu RFID.</p>
+        <p class="text-muted mb-0">Riwayat absensi siswa dan guru yang tercatat melalui kartu RFID.</p>
     </div>
 
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h2 class="h5 card-title mb-0">Data Absensi Siswa</h2>
-            <span class="badge bg-primary-subtle text-primary"><?= count($attendance); ?> catatan</span>
+            <h2 class="h5 card-title mb-0">Data Absensi Siswa & Guru</h2>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-primary btn-sm d-flex align-items-center gap-1 shadow-sm" data-bs-toggle="modal" data-bs-target="#scanAttendanceModal">
+                    <i class="ti ti-scan fs-5"></i> Absen Scan (Barcode / QR)
+                </button>
+                <span class="badge bg-primary-subtle text-primary"><?= count($attendance); ?> catatan</span>
+            </div>
         </div>
         <div class="table-responsive">
             <table class="table table-hover align-middle text-nowrap mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col">Nama Siswa</th>
+                        <th scope="col">Nama</th>
                         <th scope="col">Tanggal</th>
                         <th scope="col" class="text-center">Masuk</th>
                         <th scope="col" class="text-center">Pulang</th>
@@ -65,4 +70,6 @@
         </div>
     </div>
 </div>
+
+<?= view('attendance/modal_scan'); ?>
 <?= $this->endSection(); ?>

@@ -30,6 +30,8 @@ class RoleAccess
         'bendahara' => 'Bendahara',
         'kurikulum' => 'Kurikulum',
         'operator' => 'Operator',
+        'wali_kelas' => 'Wali Kelas',
+        'siswa' => 'Siswa',
     ];
 
     public static function label(string $role): string
@@ -45,6 +47,8 @@ class RoleAccess
             'bendahara' => 'Pantau ringkasan kehadiran sekolah. Modul keuangan belum tersedia.',
             'kurikulum' => 'Kelola dan pantau informasi akademik sesuai akses yang diberikan Super Admin.',
             'operator' => 'Kelola operasional sekolah sesuai akses yang diberikan Super Admin.',
+            'wali_kelas' => 'Kelola absensi kelas, penilaian, dan informasi akademik kelas perwalian Anda.',
+            'siswa' => 'Selamat datang di Portal Ujian Online (CBT). Silakan ikuti ujian yang tersedia.',
             default => 'Selamat datang di EduSync. Akses menu Anda disesuaikan dengan role akun.',
         };
     }
@@ -81,6 +85,7 @@ class RoleAccess
                     'extracurriculars' => ['label' => 'Data Ekstrakurikuler', 'url' => 'extracurriculars', 'icon' => 'bi-stars', 'page' => 'extracurriculars', 'submenu' => 'academic-data'],
                     'kokurikuler' => ['label' => 'Data Kokurikuler', 'url' => 'kokurikuler', 'icon' => 'bi-mortarboard', 'page' => 'kokurikuler', 'submenu' => 'academic-data'],
                     'grades' => ['label' => 'Input Nilai', 'url' => 'grades', 'icon' => 'bi-clipboard-data', 'page' => 'grades', 'submenu' => 'assessment'],
+                    'online-assessments' => ['label' => 'Ujian Online (CBT)', 'url' => 'online-assessments', 'icon' => 'bi-laptop', 'page' => 'online-assessments', 'submenu' => 'assessment'],
                     'grade-report' => ['label' => 'Raport Siswa', 'url' => 'report/grades', 'icon' => 'bi-file-earmark-medical', 'page' => 'grade-report'],
                     'personality-assessment' => ['label' => 'Kepribadian', 'url' => 'academic-assessments/personality', 'icon' => 'bi-person-heart', 'page' => 'personality-assessment', 'submenu' => 'assessment'],
                     'extracurricular-assessment' => ['label' => 'Ekstrakurikuler', 'url' => 'academic-assessments/extracurricular', 'icon' => 'bi-stars', 'page' => 'extracurricular-assessment', 'submenu' => 'assessment'],
@@ -111,6 +116,8 @@ class RoleAccess
                     'menu-settings' => ['label' => 'Pengaturan Menu', 'url' => 'menu-settings', 'icon' => 'bi-list-nested', 'page' => 'menu-settings'],
                     'online-users' => ['label' => 'User Sedang Login', 'url' => 'online-users', 'icon' => 'bi-person-check', 'page' => 'online-users'],
                     'teacher-subjects' => ['label' => 'Mapel Guru', 'url' => 'teacher-subjects', 'icon' => 'bi-journal-bookmark', 'page' => 'teacher-subjects'],
+                    'student-id-cards' => ['label' => 'ID Card Siswa & Guru', 'url' => 'student-id-cards', 'icon' => 'bi-person-vcard', 'page' => 'student-id-cards'],
+                    'student-exam-cards' => ['label' => 'Cetak Kartu Siswa', 'url' => 'student-exam-cards', 'icon' => 'bi-card-heading', 'page' => 'student-exam-cards'],
                 ],
             ],
             [
@@ -273,6 +280,7 @@ class RoleAccess
                 'extracurriculars' => 'Data Ekstrakurikuler',
                 'kokurikuler' => 'Data Kokurikuler',
                 'grades' => 'Input Nilai',
+                'online-assessments' => 'Ujian Online (CBT)',
                 'grade-report' => 'Raport Siswa',
                 'personality-assessment' => 'Penilaian Kepribadian',
                 'extracurricular-assessment' => 'Penilaian Ekstrakurikuler',
@@ -295,6 +303,8 @@ class RoleAccess
                 'menu-settings' => 'Pengaturan Menu',
                 'online-users' => 'User Sedang Login',
                 'teacher-subjects' => 'Mapel Guru',
+                'student-id-cards' => 'ID Card Siswa & Guru',
+                'student-exam-cards' => 'Cetak Kartu Siswa',
             ],
             'Website Sekolah' => [
                 'website-home-settings' => 'Pengaturan Beranda',
@@ -366,8 +376,21 @@ class RoleAccess
                 'extracurricular-attendance-report' => true,
                 'class-attendance-report' => true,
             ],
-            'user' => ['panel' => true, 'student' => true],
-            'kurikulum', 'operator' => ['panel' => true],
+            'user' => ['panel' => true, 'student' => true, 'grades' => true],
+            'kurikulum', 'operator' => ['panel' => true, 'grades' => true],
+            'wali_kelas' => [
+                'panel' => true,
+                'student' => true,
+                'class' => true,
+                'grades' => true,
+                'grade-report' => true,
+                'personality-assessment' => true,
+                'extracurricular-assessment' => true,
+                'kokurikuler-assessment' => true,
+                'class-attendance' => true,
+                'class-attendance-report' => true,
+                'online-assessments' => true,
+            ],
             default => ['panel' => true],
         };
 
@@ -425,6 +448,8 @@ class RoleAccess
             'spmb/applications' => 'spmb-applications',
             'website-messages' => 'website-messages',
             'teacher-subjects' => 'teacher-subjects',
+            'student-id-cards' => 'student-id-cards',
+            'student-exam-cards' => 'student-exam-cards',
             'parents' => 'parents',
             'website-news' => 'website-news',
             'user-passwords' => 'user-passwords',
@@ -447,6 +472,7 @@ class RoleAccess
             'kokurikuler' => 'kokurikuler',
             'extracurriculars' => 'extracurriculars',
             'grades' => 'grades',
+            'online-assessments' => 'online-assessments',
             'attendance-status' => 'attendance-status',
             'timesetting' => 'timesetting',
             'subjects' => 'subjects',

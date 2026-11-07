@@ -5,12 +5,12 @@
     <title>Raport Siswa</title>
     <style>
         @page { size: <?= esc($paperSize); ?> portrait; margin: 8mm 0; }
-        html, body { background: #fff; color: #111; margin: 0; padding: 0; }
+        html, body { background: #fff; color: #111; font-family: 'Times New Roman', 'Times-Roman', Times, serif; margin: 0; padding: 0; }
         .pdf-report .no-print { display: none !important; }
         .pdf-report .container-fluid { margin: 0; padding: 0; width: auto; }
         .pdf-report .pdf-report-frame { margin: 0; padding: 0 14mm; width: auto; }
         .pdf-report .pdf-report-frame.smp { padding-top: 6mm; }
-        .pdf-report .report-paper { border: 0; box-sizing: border-box; margin: 0; max-width: none; padding: 0; width: auto; }
+        .pdf-report .report-paper { border: 0; box-sizing: border-box; font-family: 'Times New Roman', 'Times-Roman', Times, serif; margin: 0; max-width: none; padding: 0; width: auto; }
     </style>
 </head>
 <body class="pdf-report">
@@ -24,17 +24,18 @@
     $signatureHeight = max(22, 72 - ((int) $pdfFitLevel * 6));
     ?>
     html { font-size: <?= $rootFontSize; ?>px; }
-    .report-paper, .report-paper * { box-sizing: border-box; }
+    .report-paper, .report-paper * { box-sizing: border-box; font-family: 'Times New Roman', 'Times-Roman', Times, serif; }
     .report-heading, .smp .report-heading { min-height: <?= $headingHeight; ?>px; }
     .pdf-report .smp .report-separator { margin-top: 40px; }
-    .report-identity, .report-grades, .report-assessment-table, .smp-assessment-table { font-size: .75rem; }
+    .report-identity, .report-grades, .report-assessment-table, .smp-assessment-table, .smp-activities-table { font-size: .75rem; }
     .report-grades { table-layout: fixed; width: 100%; }
     .report-grades th, .report-grades td { overflow-wrap: break-word; word-wrap: break-word; }
     .smk .report-grades { font-size: .68rem; }
     .report-identity th, .report-identity td,
     .report-grades th, .report-grades td,
     .report-assessment-table th, .report-assessment-table td,
-    .smp-assessment-table th, .smp-assessment-table td { padding: <?= $cellPadding; ?>px; }
+    .smp-assessment-table th, .smp-assessment-table td,
+    .smp-activities-table th, .smp-activities-table td { padding: <?= $cellPadding; ?>px; }
     .report-lower-grid { margin-top: 5px; }
     .report-assessment-section + .report-assessment-section { margin-top: 5px; }
     .report-comment { margin-top: 5px; min-height: 24px; padding: <?= $cellPadding; ?>px; }
@@ -49,7 +50,7 @@
     .report-signatures > div:last-child, .smp-signatures > div:last-child { float: right; text-align: left; }
     .report-signatures::after, .smp-signatures::after { clear: both; content: ""; display: block; }
     .report-generated { display: none; }
-    .report-heading, .smp-homeroom-note, .report-signatures, .smp-signatures { page-break-inside: avoid; }
+    .report-heading, .smp-activities-table, .smp-homeroom-note, .report-signatures, .smp-signatures { page-break-inside: avoid; }
 </style>
 </body>
 </html>

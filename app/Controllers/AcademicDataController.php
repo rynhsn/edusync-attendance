@@ -11,6 +11,9 @@ class AcademicDataController extends Controller
 {
     private BaseConnection $db;
 
+    private const MAX_TEACHER_PHOTO_SIZE = 2097152;
+    private const MAX_TEACHER_PHOTO_DIMENSION = 6000;
+
     private array $types = [
         'subjects' => [
             'title' => 'Data Mapel',
@@ -47,8 +50,10 @@ class AcademicDataController extends Controller
             'key' => 'guru_id',
             'activePage' => 'teachers',
             'columns' => [
+                'foto' => 'Foto',
                 'guru_nip' => 'NIP',
                 'guru_nama' => 'Nama Guru',
+                'rfid_tag' => 'RFID Tag',
                 'guru_email' => 'Email',
                 'guru_telepon' => 'Telepon',
             ],
@@ -57,6 +62,8 @@ class AcademicDataController extends Controller
                 ['name' => 'guru_nama', 'label' => 'Nama Guru', 'required' => true, 'maxlength' => 100],
                 ['name' => 'guru_email', 'label' => 'Email', 'type' => 'email', 'required' => true, 'maxlength' => 254],
                 ['name' => 'guru_telepon', 'label' => 'Nomor Telepon', 'maxlength' => 30],
+                ['name' => 'rfid_tag', 'label' => 'RFID Tag', 'maxlength' => 50],
+                ['name' => 'foto', 'label' => 'Foto Guru', 'type' => 'photo'],
             ],
         ],
         'teacher-duty-schedules' => [
@@ -421,6 +428,10 @@ class AcademicDataController extends Controller
                 ->with('academicError', 'Data gagal dihapus. Silakan coba kembali.');
         }
 
+        if ($type === 'teachers' && ! empty($record['foto'])) {
+            $this->removeTeacherPhoto((string) $record['foto']);
+        }
+
         return redirect()->to(site_url($type))
             ->with('academicMessage', $config['title'] . ' berhasil dihapus.');
     }
@@ -448,6 +459,9 @@ class AcademicDataController extends Controller
         foreach ($config['fields'] as $field) {
             $name = $field['name'];
             if (($field['type'] ?? '') === 'student-picker') {
+                continue;
+            }
+            if (($field['type'] ?? '') === 'photo') {
                 continue;
             }
 
@@ -537,6 +551,25 @@ class AcademicDataController extends Controller
             $data[$name] = $value === '' ? null : $value;
         }
 
+        if ($type === 'teachers') {
+            $photoFile = $this->request->getFile('foto');
+            if ($photoFile !== null && $photoFile->getError() !== UPLOAD_ERR_NO_FILE) {
+                $photoError = $this->validateTeacherPhoto($photoFile);
+                if ($photoError !== null) {
+                    return redirect()->to($formUrl)->with('academicError', $photoError);
+                }
+                $storedPhoto = $this->storeTeacherPhoto($photoFile);
+                if (is_string($storedPhoto)) {
+                    $data['foto'] = $storedPhoto;
+                    if ($existing !== null && ! empty($existing['foto'])) {
+                        $this->removeTeacherPhoto((string) $existing['foto']);
+                    }
+                } else {
+                    return redirect()->to($formUrl)->with('academicError', 'Foto guru gagal diproses. Silakan coba kembali.');
+                }
+            }
+        }
+
         if ($type === 'lesson-periods' && $data['jam_mulai'] >= $data['jam_selesai']) {
             return redirect()->to($formUrl)
                 ->with('academicError', 'Jam selesai harus sesudah jam mulai.');
@@ -608,6 +641,21 @@ class AcademicDataController extends Controller
 
         if ($type === 'teachers') {
             $data['guru_email'] = strtolower((string) $data['guru_email']);
+            if (! empty($data['rfid_tag'])) {
+                $existingTeacherTag = $this->db->table('master_guru')
+                    ->where('rfid_tag', $data['rfid_tag']);
+                if ($id !== null) {
+                    $existingTeacherTag->where('guru_id !=', $id);
+                }
+                if ($existingTeacherTag->countAllResults() > 0) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'RFID Tag tersebut sudah digunakan oleh guru lain.');
+                }
+                if ($this->db->table('master_siswa')->where('rfid_tag', $data['rfid_tag'])->countAllResults() > 0) {
+                    return redirect()->to($formUrl)
+                        ->with('academicError', 'RFID Tag tersebut sudah digunakan oleh siswa.');
+                }
+            }
         }
         if ($type === 'parents') {
             if (preg_match('/^\+?[0-9\s().-]{8,30}$/D', (string) $data['no_whatsapp']) !== 1) {
@@ -926,5 +974,121 @@ class AcademicDataController extends Controller
         }
 
         return sprintf('%02d:%02d:%02d', $hour, (int) $matches[2], (int) ($matches[3] ?? 0));
+    }
+
+    private function validateTeacherPhoto(\CodeIgniter\HTTP\Files\UploadedFile $photo): ?string
+    {
+        if (! $photo->isValid() || $photo->hasMoved()) {
+            log_message('warning', 'Teacher photo upload failed with code {code}.', [
+                'code' => $photo->getError(),
+            ]);
+            return 'Foto guru gagal diunggah. Silakan pilih file lagi.';
+        }
+        if ($photo->getSize() > self::MAX_TEACHER_PHOTO_SIZE) {
+            return 'Ukuran foto guru maksimal 2 MB.';
+        }
+
+        $mimeType = $photo->getMimeType();
+        $imageInfo = @getimagesize($photo->getTempName());
+        $allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (! in_array($mimeType, $allowedMimeTypes, true)
+            || $imageInfo === false
+            || ! in_array($imageInfo['mime'] ?? '', $allowedMimeTypes, true)) {
+            return 'Foto guru harus berupa gambar JPG, PNG, atau WebP yang valid.';
+        }
+        if ($imageInfo[0] > self::MAX_TEACHER_PHOTO_DIMENSION || $imageInfo[1] > self::MAX_TEACHER_PHOTO_DIMENSION) {
+            return 'Dimensi foto guru maksimal 6000 × 6000 piksel.';
+        }
+
+        return null;
+    }
+
+    private function storeTeacherPhoto(\CodeIgniter\HTTP\Files\UploadedFile $photo): string|false
+    {
+        $directory = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos';
+
+        if (! is_dir($directory) && ! mkdir($directory, 0750, true) && ! is_dir($directory)) {
+            log_message('error', 'Could not create the teacher photo upload directory.');
+            return false;
+        }
+
+        $processedPath = tempnam(WRITEPATH . 'uploads', 'teacher-photo-');
+        if ($processedPath === false) {
+            log_message('error', 'Could not create a temporary teacher photo file.');
+            return false;
+        }
+
+        $scriptPath = ROOTPATH . 'scripts' . DIRECTORY_SEPARATOR . 'remove_student_photo_background.py';
+        $python = getenv('STUDENT_PHOTO_PYTHON');
+        $python = is_string($python) && trim($python) !== '' ? trim($python) : 'python';
+        $command = [$python, $scriptPath, $photo->getTempName(), $processedPath];
+
+        try {
+            $process = proc_open($command, [
+                0 => ['pipe', 'r'],
+                1 => ['pipe', 'w'],
+                2 => ['pipe', 'w'],
+            ], $pipes, ROOTPATH);
+            if (! is_resource($process)) {
+                throw new \RuntimeException('Could not start the teacher photo background-removal process.');
+            }
+
+            fclose($pipes[0]);
+            $output = stream_get_contents($pipes[1]);
+            $errors = stream_get_contents($pipes[2]);
+            fclose($pipes[1]);
+            fclose($pipes[2]);
+            $exitCode = proc_close($process);
+
+            if ($exitCode !== 0 || ! is_file($processedPath) || filesize($processedPath) === 0) {
+                throw new \RuntimeException(trim((string) $errors . ' ' . (string) $output) ?: 'Photo background removal returned no image.');
+            }
+
+            $filename = bin2hex(random_bytes(16)) . '-cutout.png';
+            if (! rename($processedPath, $directory . DIRECTORY_SEPARATOR . $filename)) {
+                throw new \RuntimeException('Could not move the processed teacher photo into storage.');
+            }
+        } catch (\Throwable $exception) {
+            if (is_file($processedPath) && ! unlink($processedPath)) {
+                log_message('warning', 'Could not remove failed teacher photo processing file.');
+            }
+            log_message('error', 'Failed to remove teacher photo background: {message}', [
+                'message' => $exception->getMessage(),
+            ]);
+
+            // Fallback: save original photo directly if background removal script fails
+            try {
+                $ext = $photo->guessExtension() ?: 'png';
+                $filename = bin2hex(random_bytes(16)) . '.' . $ext;
+                $photo->move($directory, $filename);
+                return $filename;
+            } catch (\Throwable $moveException) {
+                log_message('error', 'Fallback photo move failed: {message}', [
+                    'message' => $moveException->getMessage(),
+                ]);
+                return false;
+            }
+        } finally {
+            if (is_file($processedPath) && ! unlink($processedPath)) {
+                log_message('warning', 'Could not remove temporary teacher photo processing file.');
+            }
+        }
+
+        return $filename;
+    }
+
+    private function removeTeacherPhoto(string $filename): void
+    {
+        $filename = basename($filename);
+        if ($filename === '' || $filename === '1.png') {
+            return;
+        }
+
+        $path = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'student-photos' . DIRECTORY_SEPARATOR . $filename;
+        if (is_file($path) && ! unlink($path)) {
+            log_message('warning', 'Could not remove teacher photo: {path}', [
+                'path' => $path,
+            ]);
+        }
     }
 }
